@@ -477,16 +477,40 @@ document.addEventListener('click', e => { const b = e.target.closest('[data-l]')
 
 // v3.2: on portrait screens the loader sits in the middle of the free space between the scale and the first-screen heading;
 // placed once per size, so it never moves when "Loaded" appears; shrinks a little on small phones instead of overlapping
+let LKEY = '';
 function placeLoader() {
   const ld = el('loader');
-  if (!portrait()) { ld.style.top = ''; ld.style.transform = ''; return; }
-  const st = stage.getBoundingClientRect(), intro = el('intro');
-  const hb = el('scale').getBoundingClientRect().bottom - st.top;
-  const cap = el('cap'), ih0 = intro.hidden, ch0 = cap.hidden; intro.hidden = false; cap.hidden = true;
-  const introTop = intro.getBoundingClientRect().top - st.top; intro.hidden = ih0; cap.hidden = ch0;
+  if (!portrait()) { ld.style.top = ''; ld.style.transform = ''; LKEY = ''; return; }
+  const key = innerWidth + '|' + mode + '|' + (document.fonts && document.fonts.status);
+  if (key === LKEY) return;                       // same width and frame: keep the place (language switch, address bar)
+  LKEY = key;
+  const st = stage.getBoundingClientRect(), intro = el('intro'), cap = el('cap');
+  const motto = document.querySelector('[data-i="h0"]'), geoH = document.querySelector('[data-i="geoH"]');
+  const marks = typeof sct !== 'undefined' ? [...sct.querySelectorAll('.sc-m')] : [];
+  const keep = [el('lt').textContent, el('lh').textContent, motto.textContent, geoH.textContent, el('geo').textContent, el('scu').textContent, marks.map(m => m.lastChild.textContent)];
+  const ih0 = intro.hidden, ch0 = cap.hidden; intro.hidden = false; cap.hidden = true;
   ld.style.transform = 'translateX(-50%)';
-  const lh = ld.offsetHeight, space = introTop - 10 - (hb + 6), k = Math.max(.6, Math.min(1, space / lh));
-  ld.style.top = (hb + 6 + Math.max(0, (space - lh * k) / 2)) + 'px';
+  // worst case of both languages: tallest scale, tallest heading block, tallest loader
+  let hb = 0, introTop = 1e9, lh = 0;
+  for (const g of ['en', 'ru']) {
+    const t = T[g];
+    el('lt').textContent = t.loading.length > t.loaded.length ? t.loading : t.loaded; el('lh').textContent = t.hint;
+    motto.textContent = t.h0; geoH.textContent = t.geoH; el('geo').textContent = t.countries.join(' · ');
+    el('scu').textContent = t.unit(0); marks.forEach((m, j) => m.lastChild.textContent = t.scale[j]);
+    hb = Math.max(hb, el('scale').getBoundingClientRect().bottom - st.top);
+    introTop = Math.min(introTop, intro.getBoundingClientRect().top - st.top);
+    lh = Math.max(lh, ld.offsetHeight);
+  }
+  [el('lt').textContent, el('lh').textContent, motto.textContent, geoH.textContent, el('geo').textContent, el('scu').textContent] = keep;
+  marks.forEach((m, j) => m.lastChild.textContent = keep[6][j]);
+  intro.hidden = ih0; cap.hidden = ch0;
+  let top = hb + 6, bot = introTop - 10;
+  if (mode === 'band') {                          // keep it inside the 16:9 picture
+    const sh = stage.clientHeight, bh = stage.clientWidth * 9 / 16, bt = (sh - bh) / 2;
+    top = Math.max(top, bt + 8); bot = Math.min(bot, bt + bh - 8);
+  }
+  const space = bot - top, k = Math.max(.5, Math.min(1, space / lh));
+  ld.style.top = (top + Math.max(0, (space - lh * k) / 2)) + 'px';
   ld.style.transform = 'translateX(-50%) scale(' + k.toFixed(3) + ')';
 }
 const cv = el('cv'), ctx = cv.getContext('2d'), stage = el('stage'), ring = el('ring');
@@ -671,7 +695,7 @@ addEventListener('scroll', onScroll, { passive: true });
 addEventListener('resize', () => { const m = portrait() ? (mode === 'land' ? 'full' : mode) : 'land'; if (m !== mode || setKey() !== curKey) setMode(m); size(); onScroll(); });
 function setMode(m) {
   mode = m; el('mode').hidden = !portrait(); el('mode').textContent = mode === 'band' ? 'Frame: 16:9' : 'Frame: full';
-  cache.forEach(b => b.close?.()); cache.clear(); lastBm = null; curKey = setKey(); loadSet(curKey); progress(); draw();
+  cache.forEach(b => b.close?.()); cache.clear(); lastBm = null; curKey = setKey(); loadSet(curKey); progress(); placeLoader(); draw();
 }
 el('mode').addEventListener('click', () => setMode(mode === 'band' ? 'full' : 'band'));
 applyLang(); setMode(mode); size(); onScroll();
