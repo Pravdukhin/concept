@@ -165,9 +165,13 @@ section.s{padding:96px var(--pad) 40px;max-width:1240px;margin:0 auto;scroll-mar
 .card p{margin:0;color:var(--dim);font-size:14px;line-height:1.4}
 .card .y{font-variant-numeric:tabular-nums}
 
-.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:20px;counter-reset:s}
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,1fr);gap:20px}
 .steps li{border-top:1px solid var(--line);padding-top:18px;counter-increment:s}
-.steps li::before{content:"0" counter(s);display:block;color:var(--amber);font-size:13px;font-weight:500;font-variant-numeric:tabular-nums;margin-bottom:10px}
+.steps .d{display:block;color:var(--amber);font-size:13px;font-weight:500;font-variant-numeric:tabular-nums;margin-bottom:10px}
+.steps .first p{color:var(--ink)}
+.steps .first .sm{color:var(--dim);margin-top:8px}
+.steps .first .btn{margin-top:16px}
+.about .cl{margin:18px 0 0;color:var(--dim);font-size:14px;line-height:1.7;max-width:60ch}
 .steps h3{margin:0 0 8px;font-weight:400;font-size:20px}
 .steps p{margin:0;color:var(--dim);line-height:1.5;font-size:15px}
 .note{margin:40px 0 0;padding:22px 24px;border:1px solid var(--line);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px}
@@ -236,7 +240,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <header class="bar" id="bar">
   <a class="me" href="#top" data-i="name">Yuriy Pravdukhin</a>
-  <nav aria-label="Sections"><a href="#work" data-i="nWork">Work</a><a href="#how" data-i="nHow">How we work</a><a href="#about" data-i="nAbout">About</a><a href="#where" data-i="nWhere">Where</a><a href="#contact" data-i="nContact">Contact</a><span class="lang" data-lang></span></nav>
+  <nav aria-label="Sections"><a href="#work" data-i="nWork">Work</a><a href="#about" data-i="nAbout">About</a><a href="#how" data-i="nHow">How we work</a><a href="#contact" data-i="nContact">Contact</a><span class="lang" data-lang></span></nav>
 </header>
 
 <main id="top">
@@ -282,14 +286,6 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
   </div>
 </section>
 
-<section class="brief" id="brief">
-  <div class="k" data-i="bK">Day −60 · First call</div>
-  <h2 data-i="bH">A preliminary budget in two working days</h2>
-  <p data-i="bP">8 questions about your event. Free, with no obligation.</p>
-  <p class="sm" data-i="bS">Preparation usually takes 30 to 60 days. If your date is sooner, get in touch.</p>
-  <div class="acts"><a class="btn wa" href="https://wa.me/393498929736" target="_blank" rel="noopener" data-i="cta">Discuss your project</a><a class="alt" href="#contact" data-i="bAlt">or write directly ↓</a></div>
-</section>
-
 <section class="s" id="work">
   <h2 data-i="wH">Selected work</h2>
   <p class="lead" data-i="wP">Weddings, galas and conferences in palaces, castles, stadiums and a Byzantine cistern. Every one of them was modelled before it was built.</p>
@@ -311,21 +307,6 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
   </div>
 </section>
 
-<section class="s" id="how">
-  <h2 data-i="hH">How we work</h2>
-  <p class="lead" data-i="hP">First the project is designed, then it is built. The client sees what they pay for, and the budget is agreed faster.</p>
-  <ol class="steps">
-    <li><h3 data-i="s1h">A digital copy of your venue</h3><p data-i="s1p">We inspect the venue and capture it with a 3D scanner, accurate to the centimetre. Scanners in Italy and the UAE.</p></li>
-    <li><h3 data-i="s2h">Technical design, true to size</h3><p data-i="s2p">Stage, screens, lighting, sound, décor and seating in one model of the real venue. Suppliers build from drawings.</p></li>
-    <li><h3 data-i="s3h">Visuals for your client</h3><p data-i="s3p">Photorealistic renders show the event before the budget is signed, so approval comes faster.</p></li>
-    <li><h3 data-i="s4h">Delivered as designed</h3><p data-i="s4p">We run the build, sign off every supplier and stay on site until the last guest leaves.</p></li>
-  </ol>
-  <div class="note">
-    <p data-i="bP">8 questions about your event. Free, with no obligation.</p>
-    <a class="btn wa" href="https://wa.me/393498929736" target="_blank" rel="noopener" data-i="cta">Discuss your project</a>
-  </div>
-</section>
-
 <section class="s" id="about">
   <h2 data-i="aH">About</h2>
   <div class="about">
@@ -339,25 +320,25 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
         <div><dt>500+</dt><dd data-i="f2">projects</dd></div>
         <div><dt>17</dt><dd data-i="f3">countries</dd></div>
       </dl>
+      <p class="cl" id="countries"></p>
     </div>
   </div>
 </section>
 
-<section class="s" id="where">
-  <h2 data-i="gH">Where</h2>
-  <p class="lead" data-i="gP">Based in Milan and Dubai. Projects so far in seventeen countries.</p>
-  <ul class="where" id="countries"></ul>
+<section class="s" id="how">
+  <h2 data-i="hH">How we work</h2>
+  <p class="lead" data-i="hP">First the project is designed, then it is built. The client sees what they pay for, and the budget is agreed faster.</p>
+  <ol class="steps">
+    <li id="brief" class="first"><span class="d" data-i="bK">Day −60 · First call</span><h3 data-i="bH">A preliminary budget in two working days</h3><p data-i="bP">8 questions about your event. Free, with no obligation.</p><p class="sm" data-i="bS">Preparation usually takes 30 to 60 days. If your date is sooner, get in touch.</p><a class="btn wa" href="https://wa.me/393498929736" target="_blank" rel="noopener" data-i="cta">Discuss your project</a></li>
+    <li><span class="d" data-capn="0">Day −45</span><h3 data-i="s1h">A digital copy of the venue</h3><p data-i="s1p"></p></li>
+    <li><span class="d" data-capn="1">Day −30</span><h3 data-i="s2h">Technical design, true to size</h3><p data-i="s2p"></p></li>
+    <li><span class="d" data-capn="2">Day −20</span><h3 data-i="s3h">Visuals for the client</h3><p data-i="s3p"></p></li>
+    <li><span class="d" data-capn="3">Show day</span><h3 data-i="s4h">Delivered as designed</h3><p data-i="s4p"></p></li>
+  </ol>
 </section>
 
 <section class="s contact" id="contact">
   <h2 data-i="nContact">Contact</h2>
-  <div class="brief" style="padding:0 0 32px;margin:0">
-  <div class="k" data-i="bK">Day −60 · First call</div>
-  <h2 data-i="bH">A preliminary budget in two working days</h2>
-  <p data-i="bP">8 questions about your event. Free, with no obligation.</p>
-  <p class="sm" data-i="bS">Preparation usually takes 30 to 60 days. If your date is sooner, get in touch.</p>
-  <div class="acts"><a class="btn wa" href="https://wa.me/393498929736" target="_blank" rel="noopener" data-i="cta">Discuss your project</a></div>
-  </div>
   <ul class="chan">
     <li><span>WhatsApp</span><a href="https://wa.me/393498929736" target="_blank" rel="noopener">+39 349 892 9736</a></li>
     <li><span>Telegram</span><a href="https://t.me/Iurii_Pravdukhin" target="_blank" rel="noopener">@Iurii_Pravdukhin</a></li>
@@ -464,7 +445,8 @@ function applyLang() {
   document.querySelectorAll('[data-i]').forEach(n => { const v = L()[n.dataset.i]; if (typeof v === 'string') n.textContent = v; });
   el('lt').textContent = LREADY ? L().loaded : L().loading; el('lh').textContent = L().hint;
   el('geo').textContent = L().countries.join(' · ');
-  el('countries').innerHTML = L().countries.map(c => `<li>${c}</li>`).join('');
+  el('countries').textContent = L().countries.join('\u00a0· ');
+  document.querySelectorAll('[data-capn]').forEach(n => n.textContent = L().caps[+n.dataset.capn][0]);
   document.querySelectorAll('a.wa').forEach(a => a.href = 'https://wa.me/393498929736?text=' + encodeURIComponent(L().wa));
   document.querySelectorAll('[data-lang]').forEach(box => {
     box.innerHTML = ['en', 'ru'].map(l => `<button type="button" data-l="${l}" aria-pressed="${l === LANG}">${l.toUpperCase()}</button>`).join('');
