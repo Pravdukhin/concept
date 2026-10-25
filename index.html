@@ -692,50 +692,72 @@ function setMode(m) {
 el('mode').addEventListener('click', () => setMode(mode === 'band' ? 'full' : 'band'));
 applyLang(); setMode(mode); size(); onScroll();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(size);
-// ---------- v3: auto rewind ----------
-// at the very top one push (wheel, swipe, key) plays the rewind on its own up to the start of day −45;
-// from there the visitor scrolls by hand. Re-arms when the page is back at the top.
-const AUTO = { armed: true, run: false, until: 0 };
+// ---------- v3.8: auto steps ----------
+// A forward push (wheel, swipe, key) plays the ring on its own to the next stage and stops there:
+// top → day −45 (cloud) → −30 (model) → −20 (render) → show day (end of the ring); after the last stop the page scrolls normally.
+// Any backward input (wheel up, swipe down, arrow up, a click on the rail/scale/menu) switches to free scrolling
+// in both directions; the steps come back only when the page returns to the very top.
+const AUTO = { armed: true, run: false, until: 0, idx: -1, raf: 0 };
 const ringTop = () => ring.getBoundingClientRect().top + scrollY;
-const autoTarget = () => ringTop() + (ring.offsetHeight - stage.clientHeight) * (R_END + 2) / (N - 1);
+const ringSpan = () => ring.offsetHeight - stage.clientHeight;
+const yOf = st => ringTop() + ringSpan() * st / (N - 1);
+const STOPS = () => [R_END + 2, A_END + fAt(205), A_END + fAt(352), N - 1];   // holds of −45, −30, −20 and the final photo
 const atTop = () => scrollY <= ringTop() + 2;
 const easeOut = t => 1 - Math.pow(1 - t, 2.2);
-function autoRewind() {
-  if (!AUTO.armed || AUTO.run) return;
-  AUTO.armed = false; AUTO.run = true;
-  // react on the very first frame: skip the photo hold, start moving at full speed, slow down only at the landing
-  const span = ring.offsetHeight - stage.clientHeight, y0 = Math.max(scrollY, ringTop() + span * HOLD / (N - 1)), y1 = autoTarget(), full = y1 - ringTop();
-  const T = (matchMedia('(prefers-reduced-motion: reduce)').matches ? 800 : 2800) * Math.max(.35, (y1 - y0) / full), t0 = performance.now();
-  scrollTo({ top: y0, behavior: 'instant' }); onScroll();
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function goStop(i) {
+  const stops = STOPS();
+  if (i >= stops.length) { AUTO.armed = false; return false; }   // past the last stop: normal page scrolling
+  AUTO.run = true; AUTO.idx = i;
+  let y0 = scrollY;
+  if (i === 0) { y0 = Math.max(y0, ringTop() + ringSpan() * HOLD / (N - 1)); scrollTo({ top: y0, behavior: 'instant' }); onScroll(); }
+  const y1 = yOf(stops[i]), steps = Math.abs(y1 - y0) / ringSpan() * (N - 1);
+  const T = reducedMotion ? 700 : Math.min(3000, Math.max(1800, steps * 60)), t0 = performance.now();
   (function f(now) {
+    if (!AUTO.run) return;
     const t = Math.min(1, (now - t0) / T);
     scrollTo({ top: y0 + (y1 - y0) * easeOut(t), behavior: 'instant' });
-    if (t < 1) requestAnimationFrame(f); else { AUTO.run = false; AUTO.until = performance.now() + 600; }
+    if (t < 1) AUTO.raf = requestAnimationFrame(f); else { AUTO.run = false; AUTO.until = performance.now() + 600; }
   })(t0);
+  return true;
 }
+const nextStop = () => (!AUTO.armed || AUTO.run) ? false : goStop(AUTO.idx + 1);
+function freeScroll() { if (AUTO.run) { AUTO.run = false; cancelAnimationFrame(AUTO.raf); } AUTO.armed = false; AUTO.until = 0; }
 const blocking = () => AUTO.run || performance.now() < AUTO.until;
 addEventListener('wheel', e => {
-  if (blocking()) { e.preventDefault(); return; }
-  if (AUTO.armed && atTop() && e.deltaY > 0) { e.preventDefault(); autoRewind(); }
+  if (!AUTO.armed && !AUTO.run) return;                  // free scrolling
+  if (e.deltaY < 0) { freeScroll(); return; }             // backwards: free from now on
+  if (blocking()) { e.preventDefault(); return; }         // ignore the rest of the same push (trackpad inertia)
+  if (e.deltaY > 0 && nextStop()) e.preventDefault();
 }, { passive: false });
 let touchY = null;
 addEventListener('touchstart', e => { touchY = e.touches[0].clientY; }, { passive: true });
 addEventListener('touchmove', e => {
-  if (AUTO.run) { e.preventDefault(); return; }
-  if (AUTO.armed && atTop() && touchY !== null && e.touches[0].clientY < touchY) { e.preventDefault(); autoRewind(); }
+  if ((!AUTO.armed && !AUTO.run) || touchY === null) return;
+  const dy = e.touches[0].clientY - touchY;
+  if (dy > 6) { freeScroll(); return; }                   // finger down = scrolling back
+  if (blocking()) { e.preventDefault(); return; }
+  if (dy < 0 && nextStop()) e.preventDefault();
 }, { passive: false });
 addEventListener('keydown', e => {
   if (e.target.closest && e.target.closest('input,textarea,dialog')) return;
-  if (blocking() && ['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', ' ', 'End', 'Home'].includes(e.key)) { e.preventDefault(); return; }
-  if (AUTO.armed && atTop() && ['ArrowDown', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); autoRewind(); }
+  if (!AUTO.armed && !AUTO.run) return;
+  if (['ArrowUp', 'PageUp', 'Home'].includes(e.key)) { freeScroll(); return; }
+  if (['ArrowDown', 'PageDown', ' ', 'End'].includes(e.key)) {
+    if (blocking()) { e.preventDefault(); return; }
+    if (nextStop()) e.preventDefault();
+  }
 });
-// jumps by link, rail or scale go where they were sent, without the auto rewind
-addEventListener('click', e => { if (e.target.closest && e.target.closest('a[href^="#"], #rail button, .sc-m')) AUTO.armed = false; }, true);
+// jumps by link, rail or scale go where they were sent and switch to free scrolling
+addEventListener('click', e => { if (e.target.closest && e.target.closest('a[href^="#"], #rail button, .sc-m')) freeScroll(); }, true);
 addEventListener('scroll', () => {
   if (AUTO.run) return;
-  if (atTop()) { AUTO.armed = true; return; }
-  // scrollbar drag or anything else that moved the page a little from the top
-  if (AUTO.armed && scrollY < autoTarget() - 40) autoRewind(); else AUTO.armed = false;
+  if (atTop()) { AUTO.armed = true; AUTO.idx = -1; return; }
+  if (!AUTO.armed) return;
+  // moved by something else (scrollbar drag): back = free scrolling, forward = go on to the next stop
+  const here = AUTO.idx >= 0 ? yOf(STOPS()[AUTO.idx]) : ringTop();
+  if (scrollY < here - 40) freeScroll();
+  else if (scrollY > here + 40 && !blocking()) nextStop();
 }, { passive: true });
 
 // centre counter: follows the real download but never faster than 100 % in ~1.8 s, so it can be read
