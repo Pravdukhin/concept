@@ -88,9 +88,10 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .rail button.on::before{background:var(--amber)}
 .btn{pointer-events:auto;display:inline-block;margin-top:14px;padding:11px 18px;border:1px solid var(--amber);color:var(--ink);text-decoration:none;font-size:15px;font-weight:400;border-radius:999px;background:rgba(8,20,36,.35)}
 .btn:hover{background:var(--amber);color:var(--night)}
-.mode{pointer-events:auto;flex:none;display:inline-flex;align-items:center;gap:2px;background:rgba(8,20,36,.7);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:3px;font:inherit;font-size:13px;font-variant-numeric:tabular-nums;letter-spacing:.02em;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.mode span{padding:5px 11px;border-radius:999px;color:var(--dim);transition:color .25s,background-color .25s}
-.mode span.on{color:var(--ink);background:rgba(232,236,241,.14)}
+.mode{pointer-events:auto;flex:none;display:inline-flex;align-items:center;gap:9px;background:rgba(8,20,36,.7);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:8px 14px 8px 13px;font:inherit;font-size:13px;font-variant-numeric:tabular-nums;letter-spacing:.02em;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.mode .fr{display:block;box-sizing:border-box;width:10px;height:16px;margin:0 3px;border:1.4px solid currentColor;border-radius:2.5px;transition:width .35s cubic-bezier(.3,.7,.3,1),height .35s cubic-bezier(.3,.7,.3,1),margin .35s cubic-bezier(.3,.7,.3,1)}
+.mode.band .fr{width:17px;height:10px;margin:0}
+.mode .fl{min-width:2.6em}
 
 /* loader: big percentage in the middle of the first screen */
 .loader{position:absolute;left:50%;top:calc(44% - 120px);transform:translateX(-50%);text-align:center;pointer-events:none;transition:opacity .5s ease;text-shadow:0 1px 18px rgba(8,20,36,.75);width:min(90vw,560px);padding:28px 12px;background:radial-gradient(closest-side,rgba(8,20,36,.78),rgba(8,20,36,.35) 70%,rgba(8,20,36,0))}
@@ -299,7 +300,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
           </div>
           <div class="rail" id="rail" aria-label="Stages"><button type="button" aria-label="Show day"></button><button type="button" aria-label="Laser scan"></button><button type="button" aria-label="3D model"></button><button type="button" aria-label="Render"></button><button type="button" aria-label="Built"></button></div>
         </div>
-        <button class="mode" id="mode" hidden type="button" aria-label="9:16 / 16:9"><span data-m="full">9:16</span><span data-m="band">16:9</span></button>
+        <button class="mode" id="mode" hidden type="button"><span class="fr" aria-hidden="true"></span><span class="fl">9:16</span></button>
       </div>
     </div>
   </div>
@@ -733,10 +734,10 @@ function preloadBand() {
   if (main && main.done) loadSet('l'); else wantBand = true;
 }
 function setMode(m) {
-  mode = m; el('mode').hidden = !portrait(); el('mode').querySelectorAll('[data-m]').forEach(x => x.classList.toggle('on', x.dataset.m === mode));
+  mode = m; el('mode').hidden = !portrait(); el('mode').classList.toggle('band', mode === 'band'); el('mode').querySelector('.fl').textContent = mode === 'band' ? '16:9' : '9:16'; el('mode').setAttribute('aria-label', mode === 'band' ? '16:9 → 9:16' : '9:16 → 16:9');
   cache.forEach(b => { if (b !== lastBm) b.close?.(); }); cache.clear(); curKey = setKey(); if (!FIRST_KEY) FIRST_KEY = curKey; loadSet(curKey); progress(); placeLoader(); draw();
 }
-el('mode').addEventListener('click', e => { const h = e.target.closest && e.target.closest('[data-m]'), m = h ? h.dataset.m : (mode === 'band' ? 'full' : 'band'); if (m !== mode) setMode(m); });
+el('mode').addEventListener('click', () => setMode(mode === 'band' ? 'full' : 'band'));
 applyLang(); setMode(mode); size(); onScroll();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(size);
 // ---------- v3.8: auto steps ----------
