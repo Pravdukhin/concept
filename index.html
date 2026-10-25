@@ -603,7 +603,7 @@ function decode(k, kind, i) {
   const s = sets[k]; const [o, l] = IDX[k][kind][i];
   pending.set(key, toBitmap(new Blob([s.buf.slice(o, o + l)], { type: 'image/webp' })).then(bm => {
     pending.delete(key); cache.set(key, bm); decOK++;
-    while (cache.size > LIMIT) { const first = cache.keys().next().value; cache.get(first).close?.(); cache.delete(first); }
+    while (cache.size > LIMIT) { const first = cache.keys().next().value, b = cache.get(first); cache.delete(first); if (b !== lastBm) b.close?.(); }
     draw();
   }).catch(e => { pending.delete(key); decErr++; lastErr = String(e && e.message || e); }));
 }
@@ -612,10 +612,11 @@ function get(k, kind, i) { const key = k + kind + i, bm = cache.get(key); if (bm
 let step = 0, lastBm = null, dir = 1;
 const poster = new Image(); poster.src = portrait() ? 'poster_p.webp' : 'poster_l.webp'; poster.onload = () => draw();
 function size() { if (typeof declutterScale === 'function') declutterScale(); placeLoader(); const dpr = Math.min(devicePixelRatio || 1, 2); cv.width = Math.round(stage.clientWidth * dpr); cv.height = Math.round(stage.clientHeight * dpr); draw(); }
-function blit(img) {
+let lastFit = 'full';
+function blit(img, fit = mode) {
   const W = cv.width, H = cv.height, iw = img.width, ih = img.height;
   ctx.fillStyle = '#081424'; ctx.fillRect(0, 0, W, H);
-  const sc = mode === 'band' ? Math.min(W / iw, H / ih) : Math.max(W / iw, H / ih);
+  const sc = fit === 'band' ? Math.min(W / iw, H / ih) : Math.max(W / iw, H / ih);
   ctx.drawImage(img, (W - iw * sc) / 2, (H - ih * sc) / 2, iw * sc, ih * sc);
 }
 let raf = 0;
@@ -626,7 +627,7 @@ function paint() {
   for (let d = 1; d <= 5; d++) { const s2 = SEQ[step + d * dir]; if (s2) decode(k, s2[0], s2[1]); }
   let bm = get(k, kind, i);
   if (!bm) for (let d = 1; d < 12 && !bm; d++) for (const sg of [-1, 1]) { const s2 = SEQ[step + d * sg]; if (s2 && cache.has(k + s2[0] + s2[1])) { bm = cache.get(k + s2[0] + s2[1]); break; } }
-  if (bm) { blit(bm); lastBm = bm; } else if (lastBm) blit(lastBm); else if (poster.complete && poster.naturalWidth) blit(poster);
+  if (bm) { if (lastBm && lastBm !== bm && ![...cache.values()].includes(lastBm)) lastBm.close?.(); blit(bm); lastBm = bm; lastFit = mode; } else if (lastBm) blit(lastBm, lastFit); else if (poster.complete && poster.naturalWidth) blit(poster);
   ui();
 }
 // ---------- the day scale: show day on top, first call at the bottom ----------
@@ -721,7 +722,7 @@ addEventListener('scroll', onScroll, { passive: true });
 addEventListener('resize', () => { const m = portrait() ? (mode === 'land' ? 'full' : mode) : 'land'; if (m !== mode || setKey() !== curKey) setMode(m); size(); onScroll(); });
 function setMode(m) {
   mode = m; el('mode').hidden = !portrait(); el('mode').textContent = mode === 'band' ? 'Frame: 16:9' : 'Frame: full';
-  cache.forEach(b => b.close?.()); cache.clear(); lastBm = null; curKey = setKey(); loadSet(curKey); progress(); placeLoader(); draw();
+  cache.forEach(b => { if (b !== lastBm) b.close?.(); }); cache.clear(); curKey = setKey(); loadSet(curKey); progress(); placeLoader(); draw();
 }
 el('mode').addEventListener('click', () => setMode(mode === 'band' ? 'full' : 'band'));
 applyLang(); setMode(mode); size(); onScroll();
