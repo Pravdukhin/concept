@@ -744,18 +744,20 @@ function goStop(i) {
   if (i >= stops.length) { AUTO.armed = false; return false; }   // past the last stop: normal page scrolling
   if (AUTO.run) cancelAnimationFrame(AUTO.raf);
   AUTO.run = true; AUTO.idx = i; AUTO.hopG = AUTO.gid;
-  let y0 = scrollY;
-  if (i === 0) { y0 = Math.max(y0, ringTop() + ringSpan() * HOLD / (N - 1)); scrollTo({ top: y0, behavior: 'instant' }); onScroll(); }
-  const y1 = yOf(stops[i]), steps = Math.abs(y1 - y0) / ringSpan() * (N - 1);
-  const T = reducedMotion ? 700 : Math.min(3000, Math.max(1500, steps * 60)), t0 = performance.now();
+  hopSteps(i === 0 ? Math.max(stepAt(), HOLD) : stepAt(), stops[i]);
+  return true;
+}
+// position in frame steps (not pixels): stays right when the viewport and the page height change during a hop
+const stepAt = () => (scrollY - ringTop()) / ringSpan() * (N - 1);
+function hopSteps(s0, s1) {
+  const T = reducedMotion ? 700 : Math.min(3000, Math.max(1500, Math.abs(s1 - s0) * 60)), t0 = performance.now();
   AUTO.t0 = t0; AUTO.T = T;
   (function f(now) {
     if (!AUTO.run) return;
     const t = Math.min(1, (now - t0) / T);
-    scrollTo({ top: y0 + (y1 - y0) * easeOut(t), behavior: 'instant' });
+    scrollTo({ top: ringTop() + ringSpan() * (s0 + (s1 - s0) * easeOut(t)) / (N - 1), behavior: 'instant' });
     if (t < 1) AUTO.raf = requestAnimationFrame(f); else AUTO.run = false;
   })(t0);
-  return true;
 }
 const hopDone = () => !AUTO.run || (performance.now() - AUTO.t0) / AUTO.T > .5;   // second half of a hop: a new push may go on
 function freeScroll() { if (AUTO.run) { AUTO.run = false; cancelAnimationFrame(AUTO.raf); } AUTO.armed = false; }
@@ -810,14 +812,21 @@ function jumpStage(j) {
   if (j > 0) { goStop(j - 1); return; }
   if (AUTO.run) cancelAnimationFrame(AUTO.raf);
   AUTO.run = true; AUTO.idx = -1; AUTO.hopG = AUTO.gid;
-  const y0 = scrollY, y1 = ringTop(), T = reducedMotion ? 700 : Math.min(3000, Math.max(1500, Math.abs(y1 - y0) / ringSpan() * (N - 1) * 60)), t0 = performance.now();
-  AUTO.t0 = t0; AUTO.T = T;
-  (function f(now) { if (!AUTO.run) return; const t = Math.min(1, (now - t0) / T); scrollTo({ top: y0 + (y1 - y0) * easeOut(t), behavior: 'instant' }); if (t < 1) AUTO.raf = requestAnimationFrame(f); else AUTO.run = false; })(t0);
+  hopSteps(Math.max(0, stepAt()), 0);
 }
 // moved by something else (scrollbar drag): back = free scrolling, forward = next stop.
 // Tolerance is a third of the screen, so the phone address bar showing/hiding never counts as a move.
 let resizedAt = 0;
-addEventListener('resize', () => { resizedAt = performance.now(); });
+let snapT = 0;
+addEventListener('resize', () => {
+  resizedAt = performance.now(); clearTimeout(snapT);
+  // resting on a stop while the viewport changed (toolbar shown/hidden): put the page back on that stop
+  snapT = setTimeout(() => {
+    if (!AUTO.armed || AUTO.run || AUTO.idx < 0) return;
+    const y = yOf(STOPS()[AUTO.idx]);
+    if (Math.abs(scrollY - y) > 1) { scrollTo({ top: y, behavior: 'instant' }); onScroll(); }
+  }, 120);
+});
 addEventListener('scroll', () => {
   if (AUTO.run) return;
   if (atTop()) { AUTO.armed = true; AUTO.idx = -1; return; }
