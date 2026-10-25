@@ -630,7 +630,7 @@ const sct = el('sct');
 MS.forEach(([d, name, st]) => {
   const b = document.createElement('button'); b.type = 'button'; b.className = 'sc-m' + (st < 0 ? ' ghost' : ''); b.style.top = (-d / SC_MAX * 100) + '%';
   b.innerHTML = `<b>${d === 0 ? '0' : '−' + (-d)}</b><span></span>`; b.dataset.st = st;
-  b.addEventListener('click', () => { if (st < 0) { el('brief').scrollIntoView({ behavior: 'smooth' }); return; } const span = ring.offsetHeight - stage.clientHeight; scrollTo({ top: ring.getBoundingClientRect().top + scrollY + span * STAGE_START[st] / (N - 1) + 2, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); });
+  b.addEventListener('click', () => { if (st < 0) { el('brief').scrollIntoView({ behavior: 'smooth' }); return; } jumpStage(st); });
   sct.appendChild(b);
 });
 // keep scale labels from overlapping: walk from the bottom (−60) up and push each label above the previous one
@@ -687,10 +687,7 @@ function ui() {
   if (el('caph').textContent !== h) { el('capn').textContent = n; el('caph').textContent = h; el('capp').textContent = p; }
   el('cta').hidden = st !== 4; cap.hidden = false;
 }
-[...el('rail').children].forEach((b, j) => b.addEventListener('click', () => {
-  const span = ring.offsetHeight - stage.clientHeight;
-  scrollTo({ top: ring.getBoundingClientRect().top + scrollY + span * STAGE_START[j] / (N - 1) + 2, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
-}));
+[...el('rail').children].forEach((b, j) => b.addEventListener('click', () => jumpStage(j)));
 function onScroll() {
   const r = ring.getBoundingClientRect(), span = r.height - stage.clientHeight;
   const p = Math.min(1, Math.max(0, -r.top / span)), s = Math.round(p * (N - 1));
@@ -783,7 +780,17 @@ addEventListener('keydown', e => {
   }
 });
 // jumps by link, rail or scale go where they were sent and switch to free scrolling
-addEventListener('click', e => { if (e.target.closest && e.target.closest('a[href^="#"], #rail button, .sc-m')) freeScroll(); }, true);
+addEventListener('click', e => { if (e.target.closest && e.target.closest('a[href^="#"], .sc-m.ghost')) freeScroll(); }, true);
+// rail and scale: stage j (0 = the show photo at the top, 1 = cloud −45, 2 = model −30, 3 = render −20, 4 = show day) → the same stop as the steps
+function jumpStage(j) {
+  AUTO.gid++; AUTO.armed = true;
+  if (j > 0) { goStop(j - 1); return; }
+  if (AUTO.run) cancelAnimationFrame(AUTO.raf);
+  AUTO.run = true; AUTO.idx = -1; AUTO.hopG = AUTO.gid;
+  const y0 = scrollY, y1 = ringTop(), T = reducedMotion ? 700 : Math.min(3000, Math.max(1500, Math.abs(y1 - y0) / ringSpan() * (N - 1) * 60)), t0 = performance.now();
+  AUTO.t0 = t0; AUTO.T = T;
+  (function f(now) { if (!AUTO.run) return; const t = Math.min(1, (now - t0) / T); scrollTo({ top: y0 + (y1 - y0) * easeOut(t), behavior: 'instant' }); if (t < 1) AUTO.raf = requestAnimationFrame(f); else AUTO.run = false; })(t0);
+}
 // moved by something else (scrollbar drag): back = free scrolling, forward = next stop.
 // Tolerance is a third of the screen, so the phone address bar showing/hiding never counts as a move.
 let resizedAt = 0;
