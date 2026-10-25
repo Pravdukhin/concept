@@ -575,13 +575,15 @@ async function loadSet(k) {
     } catch (e) { lastErr = 'net: ' + (e && e.name); await new Promise(r => setTimeout(r, 400 * s.tries)); }
     clearInterval(wd);
   }
-  s.done = s.got >= tot; progress(); draw(); return s;
+  s.done = s.got >= tot; progress(); draw();
+  if (wantBand && k === FIRST_KEY && s.done) { wantBand = false; preloadBand(); }
+  return s;
 }
 function progress() {
   const k = setKey(), s = sets[k], got = s ? s.got : 0, tot = IDX[k].total;
   const pc = Math.min(100, Math.floor(100 * got / tot));
   el('load').style.width = (100 * got / tot).toFixed(1) + '%';
-  el('load').style.opacity = got >= tot || stageOf(step) === 0 ? 0 : 1;
+  el('load').style.opacity = got >= tot || stageOf(step) === 0 || k !== FIRST_KEY ? 0 : 1;
   el('loader').classList.toggle('away', step > 1);
 }
 const cache = new Map(), pending = new Map(), LIMIT = 28;
@@ -684,6 +686,7 @@ const MODE_HINT = { used: false, was: -1, t: 0 };
 function modeHint(st) {
   if (st === MODE_HINT.was) return;
   MODE_HINT.was = st; clearTimeout(MODE_HINT.t);
+  if (st === 1) preloadBand();
   if (st !== 1 || MODE_HINT.used) return;
   const tryHop = () => {
     const b = el('mode');
@@ -720,9 +723,16 @@ function onScroll() {
 }
 addEventListener('scroll', onScroll, { passive: true });
 addEventListener('resize', () => { const m = portrait() ? (mode === 'land' ? 'full' : mode) : 'land'; if (m !== mode || setKey() !== curKey) setMode(m); size(); onScroll(); });
+let FIRST_KEY = null, wantBand = false;
+// phones: get the 16:9 pack ready in the background (after the main pack), so the frame button switches at once
+function preloadBand() {
+  if (!portrait() || sets.l) return;
+  const main = sets[FIRST_KEY];
+  if (main && main.done) loadSet('l'); else wantBand = true;
+}
 function setMode(m) {
   mode = m; el('mode').hidden = !portrait(); el('mode').textContent = mode === 'band' ? 'Frame: 16:9' : 'Frame: full';
-  cache.forEach(b => { if (b !== lastBm) b.close?.(); }); cache.clear(); curKey = setKey(); loadSet(curKey); progress(); placeLoader(); draw();
+  cache.forEach(b => { if (b !== lastBm) b.close?.(); }); cache.clear(); curKey = setKey(); if (!FIRST_KEY) FIRST_KEY = curKey; loadSet(curKey); progress(); placeLoader(); draw();
 }
 el('mode').addEventListener('click', () => setMode(mode === 'band' ? 'full' : 'band'));
 applyLang(); setMode(mode); size(); onScroll();
