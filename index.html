@@ -57,17 +57,18 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .sc-num span{position:absolute;right:0;top:0;white-space:nowrap;transition:transform .32s cubic-bezier(.2,.7,.2,1),opacity .32s}
 .sc-unit{font-size:13px;color:var(--sdim);transition:color .3s}
 .sc-unit.show{color:var(--amber)}
-.sc-track{position:relative;width:1px;margin-left:auto;margin-right:6px;height:clamp(150px,19svh,230px)}
+.sc-track{position:relative;width:1px;margin-left:auto;margin-right:6px;height:clamp(130px,17svh,230px)}
 @media (max-width:560px){.hero .sep{display:none}.hero .base{display:block}}
 @media (min-width:700px){.sc-track{height:clamp(150px,24vh,230px)}}
 .sc-line{position:absolute;left:0;top:0;width:1px;background:rgba(232,236,241,.42)}
 .sc-call{position:absolute;left:0;width:1px;bottom:0;background:repeating-linear-gradient(to bottom,rgba(232,236,241,.42) 0 3px,transparent 3px 6px)}
-.sc-minor{position:absolute;left:2px;top:0;bottom:0;width:4px;background:repeating-linear-gradient(to bottom,rgba(232,236,241,.32) 0 1px,transparent 1px calc(100% / 12));pointer-events:none}
+.sc-minor{position:absolute;left:2px;top:0;bottom:0;width:4px;pointer-events:none}
+.sc-minor i{position:absolute;left:0;width:4px;height:1px;background:rgba(232,236,241,.32)}
 .sc-left{position:absolute;left:0;top:0;width:1px;background:var(--amber);height:0}
 .sc-dot{position:absolute;left:-3.5px;top:0;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 3px rgba(8,20,36,.45),0 0 14px rgba(242,166,72,.55)}
 .sc-m{position:absolute;right:0;transform:translateY(-50%);display:flex;flex-direction:row-reverse;align-items:baseline;gap:9px;padding:5px 14px 5px 0;border:0;background:none;color:var(--sdim);font:inherit;font-size:12px;letter-spacing:.02em;white-space:nowrap;cursor:pointer;transition:color .3s}
 .sc-m{--dy:0px;margin-top:calc(-1 * var(--dy))}
-.sc-m::before{content:"";position:absolute;right:-4px;top:calc(50% + var(--dy));width:9px;height:1px;background:rgba(232,236,241,.6)}
+.sc-m::before{content:"";position:absolute;right:-4px;top:50%;width:9px;height:1px;background:rgba(232,236,241,.6)}
 .sc-m b{font-weight:400;min-width:2.3em;text-align:left;color:inherit}
 .sc-m.on{color:var(--ink)}
 .sc-m.ghost{opacity:.6}
@@ -641,34 +642,46 @@ const MS = [[0, '', 4], [-20, '', 3], [-30, '', 2], [-45, '', 1], [-58, '', -1],
 const sct = el('sct');
 MS.forEach(([d, name, st]) => {
   const b = document.createElement('button'); b.type = 'button'; b.className = 'sc-m' + (st < 0 ? ' ghost' : ''); b.style.top = (-d / SC_MAX * 100) + '%';
-  b.innerHTML = `<b>${d === 0 ? '0' : '−' + (-d)}</b><span></span>`; b.dataset.st = st;
+  b.innerHTML = `<b>${d === 0 ? '0' : '−' + (-d)}</b><span></span>`; b.dataset.st = st; b.dataset.d = d;
   b.addEventListener('click', () => { if (st < 0) { el('brief').scrollIntoView({ behavior: 'smooth' }); return; } jumpStage(st); });
   sct.appendChild(b);
 });
-// keep scale labels from overlapping: labels that would touch are spread evenly around the middle of their ticks,
-// so a lone label always sits exactly on its tick (cluster placement); --dy moves the label, the tick stays on its day
+// keep scale labels from overlapping: walk from the bottom (−60) up and push each label above the previous one
 function declutterScale() {
-  const ms = [...sct.querySelectorAll('.sc-m')];
+  const ms = [...sct.querySelectorAll('.sc-m')].reverse();   // bottom first
   ms.forEach(m => m.style.setProperty('--dy', '0px'));
-  const it = ms.map(m => {
+  let prevTop = Infinity;
+  for (const m of ms) {
     const r = m.querySelector('span').getBoundingClientRect(), rb = m.querySelector('b').getBoundingClientRect();
-    const top = Math.min(r.top, rb.top), bot = Math.max(r.bottom, rb.bottom);
-    return { m, c: (top + bot) / 2, h: bot - top + 3 };
-  }).sort((p, q) => p.c - q.c);
-  const cl = [];
-  for (const x of it) {
-    cl.push({ items: [x], h: x.h, sum: x.c });
-    while (cl.length > 1) {
-      const B = cl[cl.length - 1], A = cl[cl.length - 2];
-      const aC = A.sum / A.items.length, bC = B.sum / B.items.length;
-      if (aC + A.h / 2 <= bC - B.h / 2) break;
-      A.items.push(...B.items); A.h += B.h; A.sum += B.sum; cl.pop();
-    }
+    const bottom = Math.max(r.bottom, rb.bottom), top = Math.min(r.top, rb.top);
+    const dy = Math.max(0, bottom - (prevTop - 3));
+    if (dy > 0) m.style.setProperty('--dy', dy.toFixed(1) + 'px');
+    prevTop = top - dy;
   }
-  for (const k of cl) {
-    let y = k.sum / k.items.length - k.h / 2;
-    for (const x of k.items) { const dy = x.c - (y + x.h / 2); if (Math.abs(dy) > .5) x.m.style.setProperty('--dy', dy.toFixed(1) + 'px'); y += x.h; }
+  fitScale();
+}
+// the scale follows the labels: each tick is where its label is; days in between are interpolated between ticks
+let SC_PTS = [[0, 0], [-SC_MAX, 100]];
+function dayToY(day) {
+  const d = Math.max(-SC_MAX, Math.min(0, day));
+  for (let j = 1; j < SC_PTS.length; j++) {
+    const [d0, y0] = SC_PTS[j - 1], [d1, y1] = SC_PTS[j];
+    if (d >= d1) return y0 + (y1 - y0) * (d - d0) / (d1 - d0);
   }
+  return 100;
+}
+function fitScale() {
+  const H = sct.clientHeight; if (!H) return;
+  const pts = [...sct.querySelectorAll('.sc-m')].map(m => [+m.dataset.d, -m.dataset.d / SC_MAX * 100 - parseFloat(m.style.getPropertyValue('--dy') || 0) / H * 100]);
+  if (!pts.some(p => p[0] === 0)) pts.push([0, 0]);
+  if (!pts.some(p => p[0] === -SC_MAX)) pts.push([-SC_MAX, 100]);
+  SC_PTS = pts.sort((a, b) => b[0] - a[0]);
+  const y45 = dayToY(-45) + '%';
+  sct.querySelector('.sc-line').style.height = y45; sct.querySelector('.sc-call').style.top = y45;
+  const mn = sct.querySelector('.sc-minor'); let h = '';
+  for (let d = 0; d >= -SC_MAX; d -= 5) h += '<i style="top:' + dayToY(d).toFixed(2) + '%"></i>';
+  mn.innerHTML = h;
+  if (typeof shown !== 'undefined') draw();
 }
 function dayFloat(fi) {
   const f = MI[fi];
@@ -678,7 +691,7 @@ function dayFloat(fi) {
 }
 let shown = null, rollT = 0;
 function setScale(dayF2, stageNow) {
-  const y = Math.min(1, -dayF2 / SC_MAX) * 100;
+  const y = dayToY(dayF2);
   el('scd').style.top = y + '%'; el('scl').style.height = y + '%';
   [...sct.querySelectorAll('.sc-m')].forEach(b => b.classList.toggle('on', +b.dataset.st === stageNow));
   const day = Math.round(dayF2), txt = String(Math.abs(day));
