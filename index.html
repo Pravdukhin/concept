@@ -66,7 +66,8 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .sc-left{position:absolute;left:0;top:0;width:1px;background:var(--amber);height:0}
 .sc-dot{position:absolute;left:-3.5px;top:0;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 3px rgba(8,20,36,.45),0 0 14px rgba(242,166,72,.55)}
 .sc-m{position:absolute;right:0;transform:translateY(-50%);display:flex;flex-direction:row-reverse;align-items:baseline;gap:9px;padding:5px 14px 5px 0;border:0;background:none;color:var(--sdim);font:inherit;font-size:12px;letter-spacing:.02em;white-space:nowrap;cursor:pointer;transition:color .3s}
-.sc-m::before{content:"";position:absolute;right:-4px;top:50%;width:9px;height:1px;background:rgba(232,236,241,.6)}
+.sc-m{--dy:0px;margin-top:calc(-1 * var(--dy))}
+.sc-m::before{content:"";position:absolute;right:-4px;top:calc(50% + var(--dy));width:9px;height:1px;background:rgba(232,236,241,.6)}
 .sc-m b{font-weight:400;min-width:2.3em;text-align:left;color:inherit}
 .sc-m.on{color:var(--ink)}
 .sc-m.ghost{opacity:.6}
@@ -111,7 +112,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .loader.ready .pc{color:var(--amber)}
 @media (prefers-reduced-motion:reduce){.loader .lh .ar{animation:none}}
 .hero{min-width:0;flex:1 1 auto}
-@media (max-width:560px){.sc-read{white-space:normal}.sc-unit{max-width:7.2em;line-height:1.15;text-align:left}.sc-m span{white-space:normal;width:max-content;max-width:8.6em;text-align:right;line-height:1.15}}
+@media (max-width:560px){.sc-read{white-space:normal}.sc-unit{max-width:7.2em;line-height:1.15;text-align:left}.sc-m span{white-space:nowrap;text-align:right;line-height:1.15}}
 .lang{display:inline-flex;gap:2px;margin-top:10px;pointer-events:auto;font-size:12px}
 .lang button{appearance:none;background:rgba(8,20,36,.45);border:1px solid transparent;color:#c3ccd7;font:inherit;padding:3px 7px;border-radius:999px;cursor:pointer;letter-spacing:.04em}
 .lang button[aria-pressed="true"]{border-color:var(--line);color:var(--ink)}
@@ -403,7 +404,7 @@ const T = {
    ['Day −30', 'Technical design, true to size', 'Stage, screens, lighting, sound, décor and seating in a single 3D model of the real venue. Designed on BIM principles: every supplier works in one shared environment, and clashes are resolved on screen, not on site.'],
    ['Day −20', 'Visuals for the client', 'Photorealistic renders show the event long before load-in. We build them from the same model our suppliers work from. The client sees not a sketch, but what will actually be built, and knows what they are paying for.'],
    ['Show day', 'Delivered as designed', 'Delivery follows the approved design to the letter. To begin, answer 8 questions about your event. Within two working days I will prepare a preliminary budget and propose the next steps. If the figures work for you, we move on to the project.']],
-  scale: ['Show day', 'Render', '3D model', 'Digital venue copy', 'First call'],
+  scale: ['Show day', 'Render', '3D model', 'Digital venue copy', 'Preliminary budget', 'First call'],
   unit: d => d === 0 ? 'Show day' : (d === 1 ? 'day to show' : 'days to show'),
   wa: 'Hello Yuriy, I’d like to discuss a project. Please send me the 8 questions for a preliminary budget.',
   dlg: ['Year', 'Venue', 'Location', 'Agency', 'Credits', 'Services', 'Venues', 'Full story, render-to-reality pairs and credits coming.'],
@@ -436,7 +437,7 @@ const T = {
    ['День −30', 'Технический проект в точных размерах', 'Вся застройка (сцена, экраны, свет, звук, декор и рассадка) собрана в единой 3D-модели реальной площадки. Проектируем по принципам BIM: все подрядчики работают в одной среде, а пересечения конструкций находятся и решаются на экране, а не на монтаже.'],
    ['День −20', 'Визуализация для клиента', 'Фотореалистичные рендеры показывают мероприятие задолго до монтажа. Мы строим их по той же модели, по которой работают подрядчики. Клиент видит не эскиз, а то, что действительно будет построено, и понимает, за что платит.'],
    ['День мероприятия', 'Построено так, как спроектировано', 'Реализация идёт строго по утверждённому проекту. Чтобы начать, ответьте на 8 вопросов о мероприятии. Через два рабочих дня я подготовлю предварительный бюджет и предложу план дальнейших действий. Если цифры вас устроят, переходим к работе над проектом.']],
-  scale: ['Мероприятие', 'Рендер', '3D-модель', 'Цифровая копия площадки', 'Первый звонок'],
+  scale: ['Мероприятие', 'Рендер', '3D-модель', 'Цифровая копия площадки', 'Предварительный бюджет', 'Первый звонок'],
   unit: d => d === 0 ? 'День мероприятия' : ((d % 10 === 1 && d % 100 !== 11) ? 'день до мероприятия' : ([2,3,4].includes(d % 10) && ![12,13,14].includes(d % 100)) ? 'дня до мероприятия' : 'дней до мероприятия'),
   wa: 'Здравствуйте, Юрий! Хочу обсудить проект. Пришлите, пожалуйста, 8 вопросов для предварительного бюджета.',
   dlg: ['Год', 'Площадка', 'Место', 'Агентство', 'Команда', 'Услуги', 'Площадок', 'Подробная история проекта, сравнение рендеров с реальностью и команда скоро появятся.'],
@@ -604,7 +605,7 @@ function get(k, kind, i) { const key = k + kind + i, bm = cache.get(key); if (bm
 // ---------- draw ----------
 let step = 0, lastBm = null, dir = 1;
 const poster = new Image(); poster.src = portrait() ? 'poster_p.webp' : 'poster_l.webp'; poster.onload = () => draw();
-function size() { placeLoader(); const dpr = Math.min(devicePixelRatio || 1, 2); cv.width = Math.round(stage.clientWidth * dpr); cv.height = Math.round(stage.clientHeight * dpr); draw(); }
+function size() { if (typeof declutterScale === 'function') declutterScale(); placeLoader(); const dpr = Math.min(devicePixelRatio || 1, 2); cv.width = Math.round(stage.clientWidth * dpr); cv.height = Math.round(stage.clientHeight * dpr); draw(); }
 function blit(img) {
   const W = cv.width, H = cv.height, iw = img.width, ih = img.height;
   ctx.fillStyle = '#081424'; ctx.fillRect(0, 0, W, H);
@@ -624,7 +625,7 @@ function paint() {
 }
 // ---------- the day scale: show day on top, first call at the bottom ----------
 const SC_MAX = 60;
-const MS = [[0, '', 4], [-20, '', 3], [-30, '', 2], [-45, '', 1], [-60, '', -1]];
+const MS = [[0, '', 4], [-20, '', 3], [-30, '', 2], [-45, '', 1], [-58, '', -1], [-60, '', -1]];
 const sct = el('sct');
 MS.forEach(([d, name, st]) => {
   const b = document.createElement('button'); b.type = 'button'; b.className = 'sc-m' + (st < 0 ? ' ghost' : ''); b.style.top = (-d / SC_MAX * 100) + '%';
@@ -632,6 +633,19 @@ MS.forEach(([d, name, st]) => {
   b.addEventListener('click', () => { if (st < 0) { el('brief').scrollIntoView({ behavior: 'smooth' }); return; } const span = ring.offsetHeight - stage.clientHeight; scrollTo({ top: ring.getBoundingClientRect().top + scrollY + span * STAGE_START[st] / (N - 1) + 2, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); });
   sct.appendChild(b);
 });
+// keep scale labels from overlapping: walk from the bottom (−60) up and push each label above the previous one
+function declutterScale() {
+  const ms = [...sct.querySelectorAll('.sc-m')].reverse();   // bottom first
+  ms.forEach(m => m.style.setProperty('--dy', '0px'));
+  let prevTop = Infinity;
+  for (const m of ms) {
+    const r = m.querySelector('span').getBoundingClientRect(), rb = m.querySelector('b').getBoundingClientRect();
+    const bottom = Math.max(r.bottom, rb.bottom), top = Math.min(r.top, rb.top);
+    const dy = Math.max(0, bottom - (prevTop - 3));
+    if (dy > 0) m.style.setProperty('--dy', dy.toFixed(1) + 'px');
+    prevTop = top - dy;
+  }
+}
 function dayFloat(fi) {
   const f = MI[fi];
   if (f <= KEY[0][0]) return KEY[0][1];
