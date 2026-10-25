@@ -57,7 +57,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .sc-num span{position:absolute;right:0;top:0;white-space:nowrap;transition:transform .32s cubic-bezier(.2,.7,.2,1),opacity .32s}
 .sc-unit{font-size:13px;color:var(--sdim);transition:color .3s}
 .sc-unit.show{color:var(--amber)}
-.sc-track{position:relative;width:1px;margin-left:auto;margin-right:6px;height:clamp(130px,17svh,230px)}
+.sc-track{position:relative;width:1px;margin-left:auto;margin-right:6px;height:clamp(150px,19svh,230px)}
 @media (max-width:560px){.hero .sep{display:none}.hero .base{display:block}}
 @media (min-width:700px){.sc-track{height:clamp(150px,24vh,230px)}}
 .sc-line{position:absolute;left:0;top:0;width:1px;background:rgba(232,236,241,.42)}
@@ -645,17 +645,29 @@ MS.forEach(([d, name, st]) => {
   b.addEventListener('click', () => { if (st < 0) { el('brief').scrollIntoView({ behavior: 'smooth' }); return; } jumpStage(st); });
   sct.appendChild(b);
 });
-// keep scale labels from overlapping: walk from the bottom (−60) up and push each label above the previous one
+// keep scale labels from overlapping: labels that would touch are spread evenly around the middle of their ticks,
+// so a lone label always sits exactly on its tick (cluster placement); --dy moves the label, the tick stays on its day
 function declutterScale() {
-  const ms = [...sct.querySelectorAll('.sc-m')].reverse();   // bottom first
+  const ms = [...sct.querySelectorAll('.sc-m')];
   ms.forEach(m => m.style.setProperty('--dy', '0px'));
-  let prevTop = Infinity;
-  for (const m of ms) {
+  const it = ms.map(m => {
     const r = m.querySelector('span').getBoundingClientRect(), rb = m.querySelector('b').getBoundingClientRect();
-    const bottom = Math.max(r.bottom, rb.bottom), top = Math.min(r.top, rb.top);
-    const dy = Math.max(0, bottom - (prevTop - 3));
-    if (dy > 0) m.style.setProperty('--dy', dy.toFixed(1) + 'px');
-    prevTop = top - dy;
+    const top = Math.min(r.top, rb.top), bot = Math.max(r.bottom, rb.bottom);
+    return { m, c: (top + bot) / 2, h: bot - top + 3 };
+  }).sort((p, q) => p.c - q.c);
+  const cl = [];
+  for (const x of it) {
+    cl.push({ items: [x], h: x.h, sum: x.c });
+    while (cl.length > 1) {
+      const B = cl[cl.length - 1], A = cl[cl.length - 2];
+      const aC = A.sum / A.items.length, bC = B.sum / B.items.length;
+      if (aC + A.h / 2 <= bC - B.h / 2) break;
+      A.items.push(...B.items); A.h += B.h; A.sum += B.sum; cl.pop();
+    }
+  }
+  for (const k of cl) {
+    let y = k.sum / k.items.length - k.h / 2;
+    for (const x of k.items) { const dy = x.c - (y + x.h / 2); if (Math.abs(dy) > .5) x.m.style.setProperty('--dy', dy.toFixed(1) + 'px'); y += x.h; }
   }
 }
 function dayFloat(fi) {
