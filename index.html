@@ -327,6 +327,36 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 .dlg-head .r{display:flex;align-items:center;gap:10px}
 .dlg-title{grid-column:1/-1;margin:0;font-weight:300;font-size:clamp(26px,3.6vw,44px);letter-spacing:-.015em;line-height:1.1}
 </style>
+
+<style>
+/* v4.7: stages and pricing */
+.s > .lead2{margin-top:-24px;color:var(--ink)}
+.steps li{display:flex;flex-direction:column}
+.steps .bot{margin-top:auto;padding-top:22px}
+.steps .pr{display:flex;flex-direction:column;gap:3px}
+.steps .pr b{font-weight:400;color:var(--amber);font-size:17px;font-variant-numeric:tabular-nums}
+.steps .pr span{color:var(--dim);font-size:14px;line-height:1.4}
+.steps .bot .btn{display:table;margin-top:14px}
+.steps .first .btn{margin-top:14px}
+.steps .pair{grid-column:span 2}
+.steps .pair .two{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+/* one price for two stages: a bracket over the price, under both stages */
+.steps .pr2{position:relative}
+.steps .pr2::before{content:"";position:absolute;left:0;right:0;top:-17px;height:9px;border:1px solid rgba(242,166,72,.55);border-top:0}
+.steps .pair .bot{padding-top:34px}
+/* desktop: all prices on one line */
+@media (min-width:901px){.steps .bot{min-height:138px;padding-top:0;margin-top:auto}.steps li{padding-bottom:0}.steps .pair .bot{padding-top:0}.steps{row-gap:20px}.steps li > p:last-of-type, .steps .pair .two p{margin-bottom:34px}}
+.prnote{margin:28px 0 0;color:var(--dim);font-size:14px}
+#pfBtn{display:table;margin-top:clamp(12px,1.8vh,18px);letter-spacing:0;text-shadow:none}
+/* phones: a small pill at the end of the countries line, so the first screen does not grow */
+@media (max-width:560px){#pfBtn{display:inline-block;margin:6px 0 0;padding:4px 12px;font-size:13px;line-height:1.3;vertical-align:baseline}}
+@media (max-width:900px){.steps .pair{grid-column:1 / -1}}
+@media (max-width:560px){
+  .steps .pair .two{grid-template-columns:1fr;gap:18px}
+  .steps .pair .two > div + div{border-top:1px solid var(--line);padding-top:18px}
+  .s > .lead2{margin-top:-28px}
+}
+</style>
 </head>
 <body>
 
@@ -361,7 +391,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
         <div>
           <div id="intro">
             <p class="motto" data-i="h0">Technical design and production for events worldwide</p>
-            <div class="geo"><b data-i="geoH">Experience and trusted technical partners in:</b><span id="geo"></span></div>
+            <div class="geo"><b data-i="geoH">Experience and trusted technical partners in:</b><span id="geo"></span> <a class="btn" id="pfBtn" href="#work" data-i="pfBtn">Portfolio</a></div>
             
           </div>
           <div class="cap" id="cap" hidden>
@@ -369,6 +399,8 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
             <h2 id="caph"></h2>
             <p id="capp"></p>
             <a class="btn" id="scanBtn" hidden href="3d-venue-scanning/" data-i="scanBtn">About scanning</a>
+            <a class="btn wa" id="briefBtn" hidden href="https://wa.me/393498929736" target="_blank" rel="noopener" data-i="briefBtn">Request a brief</a>
+            <a class="btn" id="costBtn" hidden href="#how" data-i="costBtn">What it costs</a>
             <a class="btn wa" id="cta" hidden href="https://wa.me/393498929736" target="_blank" rel="noopener" data-i="cta">Discuss your project</a>
           </div>
           <div class="rail" id="rail" aria-label="Stages"><button type="button" aria-label="Show day"></button><button type="button" aria-label="Laser scan"></button><button type="button" aria-label="3D model"></button><button type="button" aria-label="Render"></button><button type="button" aria-label="Built"></button></div>
@@ -424,13 +456,14 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 <section class="s" id="how">
   <h2 data-i="hH">How we work</h2>
   <p class="lead" data-i="hP">First the project is designed, then it is built. The client sees what they pay for, and the budget is agreed faster.</p>
+  <p class="lead lead2" data-i="hP2"></p>
   <ol class="steps">
-    <li id="brief" class="first"><span class="d" data-i="bK">Day −60 · First call</span><h3 data-i="bH">A preliminary budget in two working days</h3><p data-i="bP">8 questions about your event. Free, with no obligation.</p><p class="sm" data-i="bS">Preparation usually takes 30 to 60 days. If your date is sooner, get in touch.</p><a class="btn wa" href="https://wa.me/393498929736" target="_blank" rel="noopener" data-i="cta">Discuss your project</a></li>
-    <li><span class="d" data-capn="0">Day −45</span><h3 data-i="s1h">A digital copy of the venue</h3><p data-i="s1p"></p><a class="btn scb" href="3d-venue-scanning/" data-i="scanBtn">About scanning</a></li>
-    <li><span class="d" data-capn="1">Day −30</span><h3 data-i="s2h">Technical design, true to size</h3><p data-i="s2p"></p></li>
-    <li><span class="d" data-capn="2">Day −20</span><h3 data-i="s3h">Visuals for the client</h3><p data-i="s3p"></p></li>
-    <li><span class="d" data-capn="3">Show day</span><h3 data-i="s4h">Delivered as designed</h3><p data-i="s4p"></p></li>
+    <li id="brief" class="first"><span class="d" data-i="bK">Day −60 · First call</span><h3 data-i="bH">A preliminary budget in two working days</h3><p data-i="bP">8 questions about your event. Free, with no obligation.</p><p class="sm" data-i="bS">Preparation usually takes 30 to 60 days. If your date is sooner, get in touch.</p><div class="bot"><div class="pr"><b data-i="p0">Free</b></div><a class="btn wa" href="https://wa.me/393498929736" target="_blank" rel="noopener" data-i="briefBtn">Request a brief</a></div></li>
+    <li><span class="d" data-capn="0">Day −45</span><h3 data-i="s1h">A digital copy of the venue</h3><p data-i="s1p"></p><div class="bot"><div class="pr"><b data-i="p1"></b><span data-i="p1s"></span></div><a class="btn scb" href="3d-venue-scanning/" data-i="scanBtn">About scanning</a></div></li>
+    <li class="pair"><div class="two"><div><span class="d" data-capn="1">Day −30</span><h3 data-i="s2h">Technical design, true to size</h3><p data-i="s2p"></p></div><div><span class="d" data-capn="2">Day −20</span><h3 data-i="s3h">Visuals for the client</h3><p data-i="s3p"></p></div></div><div class="bot"><div class="pr pr2"><b data-i="p2"></b><span data-i="p2s"></span></div></div></li>
+    <li><span class="d" data-capn="3">Show day</span><h3 data-i="s4h">Delivered as designed</h3><p data-i="s4p"></p><div class="bot"><div class="pr"><b data-i="p3"></b><span data-i="p3s"></span></div></div></li>
   </ol>
+  <p class="prnote" data-i="pN"></p>
 </section>
 
 <section class="s sp spB" id="scanning">
@@ -496,9 +529,9 @@ const T = {
   bK: 'Day −60 · First call', bH: 'A preliminary budget in two working days',
   bP: '8 questions about your event. Free, with no obligation.',
   bS: 'Preparation usually takes 30 to 60 days. If your date is sooner, get in touch.',
-  nWork: 'Work', nHow: 'How we work', nAbout: 'About', nWhere: 'Where', nContact: 'Contact',
+  nWork: 'Work', nHow: 'Stages and pricing', nAbout: 'About', nWhere: 'Where', nContact: 'Contact',
   wH: 'Selected work', wAll: 'All projects', wLess: 'Show less', back: 'Back', wP: 'Weddings, galas and conferences in palaces, castles, stadiums and a Byzantine cistern. Every one of them was modelled before it was built.',
-  hH: 'How we work', hP: 'First the project is designed, then it is built. The client sees what they pay for, and the budget is agreed faster.',
+  hH: 'Stages and pricing', hP: 'First the project is designed, then it is built. The client sees what they pay for, and the budget is agreed faster.', hP2: 'A technical director’s fee depends on the brief and is usually between €2,000 and €10,000 per project. Each stage can be ordered on its own, but only in order: every stage is built on the result of the one before.', p0: 'Free', p1: 'From €1,000 per day on site', p1s: 'Can be ordered on its own', p2: 'From €2,000 for both stages', p2s: 'Built on the digital copy of the venue', p3: 'Delivery from €5,000', p3s: 'To the approved technical design', pN: 'Travel and accommodation are billed separately.', pfBtn: 'Portfolio', briefBtn: 'Request a brief', costBtn: 'What it costs',
   s1h: 'A digital copy of the venue', s1p: 'We walk the venue with a handheld SLAM scanner and have an accurate 3D copy in a few hours. Our own equipment in Italy and the UAE.',
   s2h: 'Technical design, true to size', s2p: 'The entire build in a single 3D model of the real venue. Designed on BIM principles, so clashes are found on screen, not on site.',
   s3h: 'Visuals for the client', s3p: 'Renders are built from the same model our suppliers work from. The client sees not a sketch, but what will actually be built.',
@@ -527,9 +560,9 @@ const T = {
   bK: 'День −60 · Первый звонок', bH: 'Предварительный бюджет за два рабочих дня',
   bP: '8 вопросов о вашем мероприятии. Бесплатно и без обязательств.',
   bS: 'Подготовка обычно занимает от 30 до 60 дней. Если времени меньше, напишите, обсудим.',
-  nWork: 'Проекты', nHow: 'Как мы работаем', nAbout: 'Обо мне', nWhere: 'География', nContact: 'Контакты',
+  nWork: 'Проекты', nHow: 'Этапы и стоимость', nAbout: 'Обо мне', nWhere: 'География', nContact: 'Контакты',
   wH: 'Избранные проекты', wAll: 'Все проекты', wLess: 'Свернуть', back: 'Назад', wP: 'Свадьбы, гала-ужины и конференции во дворцах, замках, на стадионах и в византийской цистерне. Каждый из них сначала был смоделирован, а потом построен.',
-  hH: 'Как мы работаем', hP: 'Сначала проект, потом застройка. Клиент видит, за что платит, и бюджет согласовывается легче.',
+  hH: 'Этапы и стоимость', hP: 'Сначала проект, потом застройка. Клиент видит, за что платит, и бюджет согласовывается легче.', hP2: 'Гонорар технического директора зависит от брифа и обычно составляет от 2 000 до 10 000 € за проект. Каждый этап можно заказать отдельно, но только по порядку: следующий строится на результате предыдущего.', p0: 'Бесплатно', p1: 'От 1 000 € за день на площадке', p1s: 'Можно заказать отдельно', p2: 'От 2 000 € за оба этапа', p2s: 'Делаем по цифровой копии площадки', p3: 'Реализация от 5 000 €', p3s: 'По утверждённому техническому проекту', pN: 'Дорога и проживание оплачиваются отдельно.', pfBtn: 'Портфолио', briefBtn: 'Запросить бриф', costBtn: 'Сколько это стоит',
   s1h: 'Цифровая копия площадки', s1p: 'Обходим площадку с ручным SLAM-сканером и за несколько часов получаем её точную 3D-копию. Собственное оборудование в Италии и ОАЭ.',
   s2h: 'Технический проект в точных размерах', s2p: 'Вся застройка в единой 3D-модели реальной площадки. Проектируем по принципам BIM, поэтому пересечения находятся на экране, а не на монтаже.',
   s3h: 'Визуализация для клиента', s3p: 'Рендеры строим по той же модели, по которой работают подрядчики. Клиент видит не эскиз, а то, что действительно будет построено.',
@@ -837,7 +870,7 @@ function ui() {
   if (st === 0) { cap.hidden = true; return; }
   const [n, h, p] = CAPS()[st - 1];
   if (el('caph').textContent !== h) { el('capn').textContent = n; el('caph').textContent = h; el('capp').textContent = p; }
-  el('cta').hidden = st !== 4; el('scanBtn').hidden = !(SCAN_PAGE && st === 1); cap.hidden = false;
+  el('cta').hidden = st !== 4; el('scanBtn').hidden = !(SCAN_PAGE && st === 1); el('briefBtn').hidden = st !== 2; el('costBtn').hidden = st !== 3; cap.hidden = false;
 }
 [...el('rail').children].forEach((b, j) => b.addEventListener('click', () => jumpStage(j)));
 function onScroll() {
@@ -1043,6 +1076,6 @@ if (location.hash && PROJECTS.some(p => '#' + p.slug === location.hash)) openPro
   document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-l]')) setTimeout(label, 0); });
 })();
 </script>
-<script src="/nav.js?v=6" data-v="D" data-page="main" data-main="/" data-scan="/3d-venue-scanning/"></script>
+<script src="/nav.js?v=7" data-v="D" data-page="main" data-main="/" data-scan="/3d-venue-scanning/"></script>
 </body>
 </html>

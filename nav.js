@@ -6,9 +6,9 @@
 const S = document.currentScript, V = S.dataset.v, PAGE = S.dataset.page; // 'main' | 'scan'
 const MAIN = S.dataset.main || '/nav/' + V.toLowerCase() + '.html', SCAN = S.dataset.scan || '/nav/' + V.toLowerCase() + '-scan.html';
 const TXT = {
-  en: { items: ['Brief', 'Digital copy', '3D model', 'Render', 'Show day', 'Portfolio', 'About', 'How we work', 'Scanning', 'Contact'],
+  en: { items: ['Brief', 'Digital copy', '3D model', 'Render', 'Show day', 'Portfolio', 'About', 'Stages and pricing', 'Scanning', 'Contact'],
         name: 'Yuriy Pravdukhin', kick: 'One project, 60 days', cta: 'Discuss your project', page: 'Full scanning page', allp: 'All projects', all: 'All sections', menu: 'Contents', close: 'Close' },
-  ru: { items: ['Бриф', 'Цифровая копия', '3D-модель', 'Рендер', 'Мероприятие', 'Портфолио', 'Обо мне', 'Как мы работаем', 'Сканирование', 'Контакты'],
+  ru: { items: ['Бриф', 'Цифровая копия', '3D-модель', 'Рендер', 'Мероприятие', 'Портфолио', 'Обо мне', 'Этапы и стоимость', 'Сканирование', 'Контакты'],
         name: 'Юрий Правдухин', kick: 'Один проект, 60 дней', cta: 'Обсудить проект', page: 'Отдельная страница', allp: 'Все проекты', all: 'Все разделы', menu: 'Содержание', close: 'Закрыть' }
 };
 const DAYS = ['−60', '−45', '−30', '−20', '0'];
@@ -34,6 +34,15 @@ header.bar{display:none!important}
   border-bottom:1px solid rgba(34,50,74,.7);transform:translateY(-100%);transition:transform .35s ease;font-family:var(--font)}
 .nb.on{transform:none}
 .nb .me{font-weight:400;font-size:15px;text-decoration:none;white-space:nowrap;color:var(--ink)}
+.nb .l{display:flex;align-items:center;gap:10px;min-width:0}
+/* back to where the visitor left the first block: only after one of its buttons was used */
+.nb .ret{appearance:none;flex:none;width:34px;height:34px;border-radius:50%;border:1px solid var(--amber);background:rgba(242,166,72,.12);color:var(--amber);font:inherit;font-size:17px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;-webkit-tap-highlight-color:transparent;animation:retPulse 1.8s ease-in-out infinite}
+.nb .ret[hidden]{display:none}
+.nb .ret span{display:block;animation:retBob 1.8s ease-in-out infinite}
+@keyframes retBob{0%,100%{transform:translateY(1px)}50%{transform:translateY(-3px)}}
+@keyframes retPulse{0%,100%{box-shadow:0 0 0 0 rgba(242,166,72,.0)}50%{box-shadow:0 0 0 5px rgba(242,166,72,.18),0 0 16px rgba(242,166,72,.35)}}
+@media (prefers-reduced-motion:reduce){.nb .ret,.nb .ret span{animation:none}}
+@media (max-width:440px){.nb.hasret .me{display:none}}
 .nb .r{display:flex;align-items:center;gap:10px}
 .nb .lang{margin:0}
 /* the rail */
@@ -184,7 +193,35 @@ function labelHtml(a) { return `${a < 5 && DAYS[a] !== '0' ? `<b>${DAYS[a]}</b>`
 
 let bar = null, nr = null, sheet = null, pill = null;
 // unified bar (all variants)
-bar = $(`<header class="nb" aria-label="Site"><a class="me" href="${PAGE === 'scan' ? MAIN : '#top'}"></a><div class="r"><div class="lang" data-lang></div></div></header>`);
+bar = $(`<header class="nb" aria-label="Site"><div class="l"><button type="button" class="ret" hidden><span>↑</span></button><a class="me" href="${PAGE === 'scan' ? MAIN : '#top'}"></a></div><div class="r"><div class="lang" data-lang></div></div></header>`);
+// ---------- the way back up: first-block buttons remember the stage they were pressed on ----------
+const RET_KEY = 'navRet';
+let retSetAt = -1e9;   // just pressed: the page may still be on the ring for a moment (e.g. before leaving for the scanning page)
+const getRet = () => { try { const v = sessionStorage.getItem(RET_KEY); return v === null ? null : +v; } catch (e) { return null; } };
+const setRet = v => { try { if (v === null) sessionStorage.removeItem(RET_KEY); else sessionStorage.setItem(RET_KEY, String(v)); } catch (e) {} };
+document.addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('#pfBtn, #scanBtn, #costBtn');
+  if (b && typeof stageOf === 'function' && typeof step !== 'undefined') { setRet(stageOf(step)); retSetAt = performance.now(); }
+}, true);
+function returnTo(j) {
+  if (typeof freeScroll === 'function') freeScroll();
+  const y = j > 0 && typeof yOf === 'function' ? yOf(STOPS()[j - 1]) : (typeof ringTop === 'function' ? ringTop() : 0);
+  scrollTo({ top: y, behavior: 'instant' });
+  if (typeof AUTO !== 'undefined') { AUTO.armed = true; AUTO.idx = j - 1; }
+}
+bar.querySelector('.ret').addEventListener('click', () => {
+  const j = getRet(); setRet(null); syncRet();
+  if (j === null) return;
+  if (PAGE === 'scan') { location.href = MAIN + '#s' + j; return; }
+  if (dlgOpen()) dlg.close();
+  closeSheet(); returnTo(j);
+});
+function syncRet() {
+  if (PAGE === 'main' && onRing() && getRet() !== null && performance.now() - retSetAt > 3000) setRet(null);   // back in the first block by any way: nothing to return to
+  const show = getRet() !== null && (PAGE === 'scan' || !onRing());
+  const r = bar.querySelector('.ret');
+  if (r.hidden === show) { r.hidden = !show; bar.classList.toggle('hasret', show); r.setAttribute('aria-label', lang() === 'ru' ? 'Вернуться наверх, туда, откуда пришли' : 'Back up to where you were'); }
+}
 document.body.appendChild(bar);
 if (V === 'C' || V === 'D') { pill = $(`<button type="button" class="pill" aria-haspopup="dialog"></button>`); bar.querySelector('.r').prepend(pill); pill.addEventListener('click', openSheet); }
 let pill2 = null, lang2 = null;
@@ -323,6 +360,7 @@ function sync() {
   let on = PAGE === 'scan' || !r;
   if (dp && PAGE === 'main') { const al = dp.querySelector('.all'); if (al) on = al.getBoundingClientRect().bottom <= bar.offsetHeight; }
   bar.classList.toggle('on', on);
+  syncRet();
   bar.querySelector('.me').textContent = X().name;
   const lb = bar.querySelector('.lang'); if (!lb.children.length || lb.dataset.k !== L) { lb.innerHTML = langBtns(); lb.dataset.k = L; }
   const key = a + '|' + r + '|' + L + '|' + dlgSlug();
@@ -362,7 +400,7 @@ if (PAGE === 'main' && location.hash) {
     // a project link (#slug): the page already opened it; put the landing at the portfolio behind it
     if (projs().some(p => p[0] === h)) { const w = document.getElementById('work'); if (w) { if (typeof freeScroll === 'function') freeScroll(); scrollTo({ top: w.getBoundingClientRect().top + scrollY - 56, behavior: 'instant' }); } return; }
     history.replaceState(null, '', location.pathname);
-    if (/^s[0-4]$/.test(h)) { const j = +h[1]; if (j > 0) { const t = setInterval(() => { if (typeof LREADY !== 'undefined' && LREADY) { clearInterval(t); jumpStage(j); } }, 150); } }
+    if (/^s[0-4]$/.test(h)) { const j = +h[1]; if (j > 0) { const t = setInterval(() => { if (typeof LREADY !== 'undefined' && LREADY) { clearInterval(t); returnTo(j); } }, 150); } }
     else if (SEC.includes(h)) setTimeout(() => go(5 + SEC.indexOf(h)), 50);
   };
   if (document.readyState === 'complete') setTimeout(run, 300); else addEventListener('load', () => setTimeout(run, 300));
