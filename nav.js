@@ -12,6 +12,12 @@ const TXT = {
         name: 'Юрий Правдухин', kick: 'Один проект, 60 дней', cta: 'Обсудить проект', page: 'Отдельная страница', all: 'Все разделы', menu: 'Содержание', close: 'Закрыть' }
 };
 const DAYS = ['−60', '−45', '−30', '−20', '0'];
+// portfolio in the site map: the landing's PROJECTS when present, else this copy (update it when projects change)
+const PROJ_COPY = [["tuscany-2026", "Italy Event", 2026], ["istanbul-2026", "Istanbul Event", 2026], ["amway-kuala-lumpur-2026", "Amway LTS Malaysia", 2026], ["iba-dubai-2025", "IBA Dubai", 2025], ["amway-shanghai-2025", "Amway LTS Shanghai", 2025], ["belgrade-2024", "Belgrade Conference", 2024], ["bvlgari-dubai-2024", "Bvlgari Dubai", 2024], ["istanbul-cistern-2024", "Istanbul Conference", 2024], ["amway-abu-dhabi-2024", "Amway Conference", 2024], ["emirates-palace-2024", "Amway Gala Dinner", 2024], ["villette-2024", "France Wedding", 2024], ["challain-2023", "France Wedding", 2023], ["amway-thailand-2023", "Amway Conference", 2023], ["tiktok-cyprus-2022", "TikTok", 2022]];
+const projs = () => (typeof PROJECTS !== 'undefined' ? PROJECTS.map(p => [p.slug, p.title, p.year]) : PROJ_COPY);
+const dlg = document.getElementById('dlg');
+const dlgOpen = () => !!(dlg && dlg.open);
+const dlgSlug = () => (dlgOpen() && location.hash.length > 1 ? location.hash.slice(1) : '');
 const SEC = ['work', 'about', 'how', 'scanning', 'contact']; // 8 = scanning section on the landing (the page itself is a sub-row in the sheet)
 const lang = () => (document.documentElement.lang === 'ru' ? 'ru' : 'en');
 const X = () => TXT[lang()];
@@ -86,6 +92,8 @@ header.bar{display:none!important}
 .sh li.sub a .t{padding-left:44px;position:relative}
 .sh li.sub a .t::before{content:"";position:absolute;left:28px;top:-6px;width:8px;height:12px;border-left:1px solid rgba(232,236,241,.35);border-bottom:1px solid rgba(232,236,241,.35)}
 .sh li.sub a i{font-style:normal;color:var(--amber);margin-left:6px}
+.sh li.pj a{font-size:15px;padding:3px 0 5px}
+.sh li.pj a em{font-style:normal;color:rgba(141,154,174,.7);font-size:13px;font-variant-numeric:tabular-nums;margin-left:4px}
 .sh li.sub a::before{display:none}
 .sh li.sub.on a{color:var(--ink)}
 .sh li.sub a:hover{color:var(--ink)}
@@ -122,6 +130,7 @@ const ring = document.getElementById('ring');
 function onRing() { if (PAGE !== 'main' || !ring) return false; return ring.getBoundingClientRect().bottom >= innerHeight * .5; }
 function current() {
   if (PAGE === 'scan') return 8;
+  if (dlgOpen()) return 5;
   if (onRing()) return (typeof stageOf === 'function' && typeof step !== 'undefined') ? stageOf(step) : 0;
   let k = 5;
   SEC.forEach((id, j) => { if (!id) return; const e = document.getElementById(id); if (e && e.getBoundingClientRect().top < innerHeight * .45) k = 5 + j; });
@@ -133,6 +142,7 @@ const cls = (i, a) => (i === a ? 'on' : (i < a ? 'p' : '')) + (i >= 5 ? ' sec' :
 // ---------- going places ----------
 function go(i) {
   closeSheet();
+  if (dlgOpen()) dlg.close();
   if (PAGE === 'scan') { location.href = MAIN + (i < 5 ? '#s' + i : '#' + SEC[i - 5]); return; }
   if (i === 8 && !document.getElementById('scanning')) { location.href = SCAN; return; }
   if (i < 5) {
@@ -146,6 +156,15 @@ function go(i) {
   scrollTo({ top: e.getBoundingClientRect().top + scrollY - 56, behavior: far ? 'instant' : 'smooth' });
 }
 
+function goProject(slug) {
+  closeSheet();
+  if (PAGE === 'scan' || typeof openProject !== 'function') { location.href = MAIN + '#' + slug; return; }
+  if (!dlgOpen()) { // behind the project page the landing waits at the portfolio, so "Back" lands there
+    const w = document.getElementById('work');
+    if (w) { if (typeof freeScroll === 'function') freeScroll(); scrollTo({ top: w.getBoundingClientRect().top + scrollY - 56, behavior: 'instant' }); }
+  }
+  openProject(slug);
+}
 // ---------- build ----------
 const items = () => X().items;
 function dashes(a) {
@@ -158,6 +177,14 @@ let bar = null, nr = null, sheet = null, pill = null;
 bar = $(`<header class="nb" aria-label="Site"><a class="me" href="${PAGE === 'scan' ? MAIN : '#top'}"></a><div class="r"><div class="lang" data-lang></div></div></header>`);
 document.body.appendChild(bar);
 if (V === 'C' || V === 'D') { pill = $(`<button type="button" class="pill" aria-haspopup="dialog"></button>`); bar.querySelector('.r').prepend(pill); pill.addEventListener('click', openSheet); }
+let pill2 = null, lang2 = null;
+const dlgN = document.getElementById('dlgn');
+if (pill && dlgN) {
+  pill2 = $(`<button type="button" class="pill" aria-haspopup="dialog"></button>`); lang2 = $(`<div class="lang" data-lang></div>`);
+  dlgN.append(pill2, lang2); pill2.addEventListener('click', openSheet);
+  // language switch inside a project page: draw the page again in the new language
+  document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-l]') && dlgOpen()) { const sl = dlgSlug(); setTimeout(() => { if (sl && typeof openProject === 'function') { const y = dlg.querySelector('.dlg').scrollTop; openProject(sl); dlg.querySelector('.dlg').scrollTop = y; } }, 0); } });
+}
 
 if (V === 'A' || V === 'B') {
   nr = $(`<div class="nr" role="navigation" aria-label="Site"><span class="tip"></span><div class="nd"></div><button type="button" class="nl ${V === 'B' ? 'btn2' : 'plain'}"></button></div>`);
@@ -172,21 +199,29 @@ if (V === 'B' || V === 'C' || V === 'D') {
   sheet = $(`<div class="sh" role="dialog" aria-modal="true"><div class="bg"></div><div class="pn"></div></div>`);
   document.body.appendChild(sheet);
   sheet.querySelector('.bg').addEventListener('click', closeSheet);
-  sheet.addEventListener('click', e => { const a = e.target.closest('[data-go]'); if (a) { e.preventDefault(); go(+a.dataset.go); } if (e.target.closest('.x')) closeSheet(); });
+  sheet.addEventListener('click', e => {
+    const pj = e.target.closest('[data-pj]'); if (pj) { e.preventDefault(); goProject(pj.dataset.pj); return; }
+    const a = e.target.closest('[data-go]'); if (a) { e.preventDefault(); go(+a.dataset.go); } if (e.target.closest('.x')) closeSheet();
+  });
   addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+  if (dlg) {
+    dlg.addEventListener('cancel', e => { if (sheet.classList.contains('open')) { e.preventDefault(); closeSheet(); } });
+    dlg.addEventListener('close', () => { if (sheet.classList.contains('open')) closeSheet(); if (sheet.parentNode === dlg) document.body.appendChild(sheet); });
+  }
   const rd = document.querySelector('.scale .sc-read'); if (rd) rd.addEventListener('click', openSheet);
 }
 function renderSheet() {
   if (!sheet) return;
   const a = current(), it = items();
-  const row = i => `<li class="${PAGE === 'scan' && i === 8 ? 'p sec' : cls(i, a)}"><a href="#" data-go="${i}"><span class="d">${i < 5 ? DAYS[i] : ''}</span><span class="t">${it[i]}</span></a></li>`
-    + (i === 8 ? `<li class="sub${PAGE === 'scan' ? ' on' : ''}"><a href="${SCAN}"><span class="d"></span><span class="t">${X().page}<i>↗</i></span></a></li>` : '');
+  const row = i => `<li class="${(PAGE === 'scan' && i === 8) || (i === 5 && dlgSlug()) ? 'p sec' : cls(i, a)}"><a href="#" data-go="${i}"><span class="d">${i < 5 ? DAYS[i] : ''}</span><span class="t">${it[i]}</span></a></li>`
+    + (i === 8 ? `<li class="sub${PAGE === 'scan' ? ' on' : ''}"><a href="${SCAN}"><span class="d"></span><span class="t">${X().page}<i>↗</i></span></a></li>` : '')
+    + (i === 5 ? projs().map(([sl, t, y]) => `<li class="sub pj${sl === dlgSlug() ? ' on' : ''}"><a href="${PAGE === 'scan' ? MAIN + '#' + sl : '#' + sl}" data-pj="${sl}"><span class="d"></span><span class="t">${t} <em>${y}</em></span></a></li>`).join('') : '');
   sheet.querySelector('.pn').innerHTML = `<div class="hd"><a class="me" href="${PAGE === 'scan' ? MAIN : '#top'}">${X().name}</a><button type="button" class="x" aria-label="${X().close}">×</button></div>
     <p class="k">${X().kick}</p><ol>${[0, 1, 2, 3, 4].map(row).join('')}</ol><div class="sp"></div><ol>${[5, 6, 7, 8, 9].map(row).join('')}</ol>
     <div class="ft"><a class="btn wa" href="https://wa.me/393498929736" target="_blank" rel="noopener">${X().cta}</a><div class="lang" data-lang>${langBtns()}</div></div>`;
 }
 const langBtns = () => ['en', 'ru'].map(l => `<button type="button" data-l="${l}" aria-pressed="${l === lang()}">${l.toUpperCase()}</button>`).join('');
-function openSheet() { if (!sheet) return; renderSheet(); sheet.classList.add('open'); document.documentElement.style.overflow = 'hidden'; }
+function openSheet() { if (!sheet) return; const host = dlgOpen() ? dlg : document.body; if (sheet.parentNode !== host) host.appendChild(sheet); renderSheet(); sheet.classList.add('open'); document.documentElement.style.overflow = 'hidden'; }
 function closeSheet() { if (!sheet || !sheet.classList.contains('open')) return; sheet.classList.remove('open'); document.documentElement.style.overflow = ''; }
 
 
@@ -279,7 +314,7 @@ function sync() {
   bar.classList.toggle('on', on);
   bar.querySelector('.me').textContent = X().name;
   const lb = bar.querySelector('.lang'); if (!lb.children.length || lb.dataset.k !== L) { lb.innerHTML = langBtns(); lb.dataset.k = L; }
-  const key = a + '|' + r + '|' + L;
+  const key = a + '|' + r + '|' + L + '|' + dlgSlug();
   if (key === last) return; last = key;
   if (nr) {
     nr.querySelector('.nd').innerHTML = dashes(a);
@@ -288,7 +323,9 @@ function sync() {
     // on the ring the B label hides on phones (frame button lives there); the day scale opens the sheet instead
     nr.querySelector('.nl').style.display = r ? 'none' : '';
   }
+  if (lang2 && (!lang2.children.length || lang2.dataset.k !== L)) { lang2.innerHTML = langBtns(); lang2.dataset.k = L; }
   if (pill) pill.innerHTML = `<span class="mini">${items().map((t, i) => `${i === 5 ? '<span class="g"></span>' : ''}<i class="${cls(i, a)}"></i>`).join('')}</span><span>${labelHtml(a)}</span><span class="ic" style="display:none"></span>`;
+  if (pill2) pill2.innerHTML = pill.innerHTML;
   if (sheet && sheet.classList.contains('open')) renderSheet();
 }
 // the old rail/scale keep working; we only listen
@@ -311,6 +348,8 @@ document.addEventListener('click', e => {
 if (PAGE === 'main' && location.hash) {
   const h = location.hash.slice(1);
   const run = () => {
+    // a project link (#slug): the page already opened it; put the landing at the portfolio behind it
+    if (projs().some(p => p[0] === h)) { const w = document.getElementById('work'); if (w) { if (typeof freeScroll === 'function') freeScroll(); scrollTo({ top: w.getBoundingClientRect().top + scrollY - 56, behavior: 'instant' }); } return; }
     history.replaceState(null, '', location.pathname);
     if (/^s[0-4]$/.test(h)) { const j = +h[1]; if (j > 0) { const t = setInterval(() => { if (typeof LREADY !== 'undefined' && LREADY) { clearInterval(t); jumpStage(j); } }, 150); } }
     else if (SEC.includes(h)) setTimeout(() => go(5 + SEC.indexOf(h)), 50);

@@ -308,6 +308,25 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
   .spB .tiles > div{flex:0 0 62%;scroll-snap-align:start}
 }
 </style>
+
+<style>
+/* portfolio: the first projects, the rest open in place */
+.grid.cut > .card:nth-child(n+7){display:none}
+@media (max-width:560px){.grid.cut > .card:nth-child(n+4){display:none}}
+.grid > .card.in{animation:cardIn .5s ease both}
+@keyframes cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.wmore{display:flex;justify-content:flex-start;margin-top:32px}
+.wmore button{appearance:none;font:inherit;font-size:15px;color:var(--ink);background:none;border:1px solid var(--line);border-radius:999px;padding:11px 18px;cursor:pointer}
+.wmore button::after{content:" ↓";color:var(--amber)}
+.wmore.open button::after{content:" ↑"}
+.wmore button:hover{border-color:rgba(242,166,72,.6)}
+/* project page head: back on the left, site map on the right */
+.dlg-head{justify-content:space-between}
+.dlg-head .back{appearance:none;background:none;border:0;color:var(--ink);font:inherit;font-size:15px;font-weight:400;padding:6px 0;cursor:pointer;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.dlg-head .back span{color:var(--amber)}
+.dlg-head .r{display:flex;align-items:center;gap:10px}
+.dlg-title{grid-column:1/-1;margin:0;font-weight:300;font-size:clamp(26px,3.6vw,44px);letter-spacing:-.015em;line-height:1.1}
+</style>
 </head>
 <body>
 
@@ -363,7 +382,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 <section class="s" id="work">
   <h2 data-i="wH">Selected work</h2>
   <p class="lead" data-i="wP">Weddings, galas and conferences in palaces, castles, stadiums and a Byzantine cistern. Every one of them was modelled before it was built.</p>
-  <div class="grid">
+  <div class="grid cut" id="wgrid">
     <button class="card" type="button" data-slug="tuscany-2026"><div class="ph"><img src="w/tuscany-2026-c.webp" width="1200" height="675" alt="Italy Event, Borgo di Castelfalfi, Tuscany, Italy" loading="lazy"></div><h3>Italy Event</h3><p>Borgo di Castelfalfi, Tuscany, Italy · <span class="y">2026</span></p></button>
     <button class="card" type="button" data-slug="istanbul-2026"><div class="ph"><img src="w/istanbul-2026.webp" width="1200" height="675" alt="Istanbul Event, Four Seasons Hotel at the Bosphorus, Istanbul, Turkey" loading="lazy"></div><h3>Istanbul Event</h3><p>Four Seasons Hotel at the Bosphorus, Istanbul, Turkey · <span class="y">2026</span></p></button>
     <button class="card" type="button" data-slug="amway-kuala-lumpur-2026"><div class="ph"><img src="w/amway-kuala-lumpur-2026.webp" width="1200" height="675" alt="Amway LTS Malaysia, Kuala Lumpur, Malaysia" loading="lazy"></div><h3>Amway LTS Malaysia</h3><p>Kuala Lumpur, Malaysia · <span class="y">2026</span></p></button>
@@ -379,6 +398,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
     <button class="card" type="button" data-slug="amway-thailand-2023"><div class="ph"><img src="w/amway-thailand-2023.webp" width="1200" height="675" alt="Amway Conference, Thailand" loading="lazy"></div><h3>Amway Conference</h3><p>Thailand · <span class="y">2023</span></p></button>
     <button class="card" type="button" data-slug="tiktok-cyprus-2022"><div class="ph"><img src="w/tiktok-cyprus-2022.webp" width="1200" height="675" alt="TikTok, Limassol, Cyprus" loading="lazy"></div><h3>TikTok</h3><p>Limassol, Cyprus · <span class="y">2022</span></p></button>
   </div>
+  <div class="wmore" id="wmore"><button type="button" data-i="wAll" aria-expanded="false" aria-controls="wgrid">All projects</button></div>
 </section>
 
 <section class="s" id="about">
@@ -454,8 +474,8 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <dialog id="dlg" aria-labelledby="dlgt">
   <div class="dlg">
-    <div class="dlg-head"><h2 id="dlgt"></h2><button class="x" id="dlgx" type="button" data-i="close">Close</button></div>
-    <div class="dlg-body"><dl class="meta" id="dlgm"></dl><div class="pics" id="dlgp"></div></div>
+    <div class="dlg-head"><button class="back" id="dlgb" type="button"><span>←</span><b data-i="back" style="font-weight:inherit">Back</b></button><div class="r" id="dlgn"></div></div>
+    <div class="dlg-body"><h2 class="dlg-title" id="dlgt"></h2><dl class="meta" id="dlgm"></dl><div class="pics" id="dlgp"></div></div>
   </div>
 </dialog>
 
@@ -475,7 +495,7 @@ const T = {
   bP: '8 questions about your event. Free, with no obligation.',
   bS: 'Preparation usually takes 30 to 60 days. If your date is sooner, get in touch.',
   nWork: 'Work', nHow: 'How we work', nAbout: 'About', nWhere: 'Where', nContact: 'Contact',
-  wH: 'Selected work', wP: 'Weddings, galas and conferences in palaces, castles, stadiums and a Byzantine cistern. Every one of them was modelled before it was built.',
+  wH: 'Selected work', wAll: 'All projects', wLess: 'Show less', back: 'Back', wP: 'Weddings, galas and conferences in palaces, castles, stadiums and a Byzantine cistern. Every one of them was modelled before it was built.',
   hH: 'How we work', hP: 'First the project is designed, then it is built. The client sees what they pay for, and the budget is agreed faster.',
   s1h: 'A digital copy of the venue', s1p: 'We walk the venue with a handheld SLAM scanner and have an accurate 3D copy in a few hours. Our own equipment in Italy and the UAE.',
   s2h: 'Technical design, true to size', s2p: 'The entire build in a single 3D model of the real venue. Designed on BIM principles, so clashes are found on screen, not on site.',
@@ -508,7 +528,7 @@ const T = {
   bP: '8 вопросов о вашем мероприятии. Бесплатно и без обязательств.',
   bS: 'Подготовка обычно занимает от 30 до 60 дней. Если времени меньше, напишите, обсудим.',
   nWork: 'Проекты', nHow: 'Как мы работаем', nAbout: 'Обо мне', nWhere: 'География', nContact: 'Контакты',
-  wH: 'Избранные проекты', wP: 'Свадьбы, гала-ужины и конференции во дворцах, замках, на стадионах и в византийской цистерне. Каждый из них сначала был смоделирован, а потом построен.',
+  wH: 'Избранные проекты', wAll: 'Все проекты', wLess: 'Свернуть', back: 'Назад', wP: 'Свадьбы, гала-ужины и конференции во дворцах, замках, на стадионах и в византийской цистерне. Каждый из них сначала был смоделирован, а потом построен.',
   hH: 'Как мы работаем', hP: 'Сначала проект, потом застройка. Клиент видит, за что платит, и бюджет согласовывается легче.',
   s1h: 'Цифровая копия площадки', s1p: 'Обходим площадку с ручным SLAM-сканером и за несколько часов получаем её точную 3D-копию. Собственное оборудование в Италии и ОАЭ.',
   s2h: 'Технический проект в точных размерах', s2p: 'Вся застройка в единой 3D-модели реальной площадки. Проектируем по принципам BIM, поэтому пересечения находятся на экране, а не на монтаже.',
@@ -985,7 +1005,7 @@ function openProject(slug) {
   history.replaceState(null, '', '#' + slug);
 }
 document.querySelectorAll('.card').forEach(c => c.addEventListener('click', () => openProject(c.dataset.slug)));
-el('dlgx').addEventListener('click', () => dlg.close());
+el('dlgb').addEventListener('click', () => dlg.close());
 dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
 dlg.addEventListener('close', () => history.replaceState(null, '', location.pathname));
 if (location.hash && PROJECTS.some(p => '#' + p.slug === location.hash)) openProject(location.hash.slice(1));
@@ -1011,6 +1031,20 @@ if (location.hash && PROJECTS.some(p => '#' + p.slug === location.hash)) openPro
   }
 })();
 </script>
-<script src="/nav.js?v=4" data-v="D" data-page="main" data-main="/" data-scan="/3d-venue-scanning/"></script>
+<script>
+// portfolio: open the rest in place; closing goes back to the top of the section
+(() => {
+  const g = document.getElementById('wgrid'), w = document.getElementById('wmore'), b = w.querySelector('button');
+  const label = () => { b.textContent = L()[g.classList.contains('cut') ? 'wAll' : 'wLess']; };
+  b.addEventListener('click', () => {
+    const shown = [...g.children].filter(c => c.offsetParent !== null);
+    const cut = g.classList.toggle('cut'); w.classList.toggle('open', !cut); b.setAttribute('aria-expanded', !cut); label();
+    if (!cut) [...g.children].forEach(c => { if (!shown.includes(c)) { c.classList.remove('in'); void c.offsetWidth; c.classList.add('in'); } });
+    else { if (typeof freeScroll === 'function') freeScroll(); document.getElementById('work').scrollIntoView({ behavior: 'smooth' }); }
+  });
+  document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-l]')) setTimeout(label, 0); });
+})();
+</script>
+<script src="/nav.js?v=5" data-v="D" data-page="main" data-main="/" data-scan="/3d-venue-scanning/"></script>
 </body>
 </html>
