@@ -297,6 +297,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
             <div class="n" id="capn"></div>
             <h2 id="caph"></h2>
             <p id="capp"></p>
+            <a class="btn" id="scanBtn" hidden href="3d-venue-scanning/" data-i="scanBtn">About scanning</a>
             <a class="btn wa" id="cta" hidden href="https://wa.me/393498929736" target="_blank" rel="noopener" data-i="cta">Discuss your project</a>
           </div>
           <div class="rail" id="rail" aria-label="Stages"><button type="button" aria-label="Show day"></button><button type="button" aria-label="Laser scan"></button><button type="button" aria-label="3D model"></button><button type="button" aria-label="Render"></button><button type="button" aria-label="Built"></button></div>
@@ -392,14 +393,14 @@ const T = {
   h0: 'Technical design and production for events worldwide',
   loading: 'Loading 60 days of work before show day', loaded: 'Loaded: 60 days of work before show day',
   hint: 'Scroll back in time — this is how we’ll build yours',
-  cta: 'Discuss your project', bAlt: 'or write directly ↓',
+  cta: 'Discuss your project', scanBtn: 'About scanning', bAlt: 'or write directly ↓',
   bK: 'Day −60 · First call', bH: 'A preliminary budget in two working days',
   bP: '8 questions about your event. Free, with no obligation.',
   bS: 'Preparation usually takes 30 to 60 days. If your date is sooner, get in touch.',
   nWork: 'Work', nHow: 'How we work', nAbout: 'About', nWhere: 'Where', nContact: 'Contact',
   wH: 'Selected work', wP: 'Weddings, galas and conferences in palaces, castles, stadiums and a Byzantine cistern. Every one of them was modelled before it was built.',
   hH: 'How we work', hP: 'First the project is designed, then it is built. The client sees what they pay for, and the budget is agreed faster.',
-  s1h: 'A digital copy of the venue', s1p: 'We walk the venue with a handheld SLAM scanner and have an accurate 3D copy in a few hours. Our own equipment in Milan and Dubai.',
+  s1h: 'A digital copy of the venue', s1p: 'We walk the venue with a handheld SLAM scanner and have an accurate 3D copy in a few hours. Our own equipment in Italy and the UAE.',
   s2h: 'Technical design, true to size', s2p: 'The entire build in a single 3D model of the real venue. Designed on BIM principles, so clashes are found on screen, not on site.',
   s3h: 'Visuals for the client', s3p: 'Renders are built from the same model our suppliers work from. The client sees not a sketch, but what will actually be built.',
   s4h: 'Delivered as designed', s4p: 'Delivery follows the approved design to the letter. To begin, answer 8 questions about your event. Within two working days I will prepare a preliminary budget and propose the next steps. If the figures work for you, we move on to the project.',
@@ -410,7 +411,7 @@ const T = {
   mail: 'Email', close: 'Close', foot1: 'Yuriy Pravdukhin · Technical design and production for events', foot2: 'Milan, Italy · Dubai, UAE',
   countries: ['Italy','France','Spain','Greece','Cyprus','Montenegro','Turkey','Georgia','Serbia','Bulgaria','UAE','Maldives','Kazakhstan','China','Singapore','Thailand','Malaysia'],
   caps: [
-   ['Day −45', 'A digital copy of the venue', 'We inspect the venue and walk it with a handheld SLAM scanner. In a few hours we have an accurate 3D copy: every wall, tree and step. Our own equipment in Milan and Dubai, delivered projects in 17 countries.'],
+   ['Day −45', 'A digital copy of the venue', 'We inspect the venue and walk it with a handheld SLAM scanner. In a few hours we have a point cloud, an accurate 3D copy of the venue: every wall, tree and step. Our own equipment in Italy and the UAE.'],
    ['Day −30', 'Technical design, true to size', 'Stage, screens, lighting, sound, décor and seating in a single 3D model of the real venue. Designed on BIM principles: every supplier works in one shared environment, and clashes are resolved on screen, not on site.'],
    ['Day −20', 'Visuals for the client', 'Photorealistic renders show the event long before load-in. We build them from the same model our suppliers work from. The client sees not a sketch, but what will actually be built, and knows what they are paying for.'],
    ['Show day', 'Delivered as designed', 'Delivery follows the approved design to the letter. To begin, answer 8 questions about your event. Within two working days I will prepare a preliminary budget and propose the next steps. If the figures work for you, we move on to the project.']],
@@ -425,14 +426,14 @@ const T = {
   h0: 'Технический дизайн и продакшн мероприятий по всему миру',
   loading: 'Загружаем 60 дней работы до дня мероприятия', loaded: 'Загружено: 60 дней работы до дня мероприятия',
   hint: 'Листайте назад во времени — так мы будем готовить и ваш проект',
-  cta: 'Обсудить проект', bAlt: 'или напишите напрямую ↓',
+  cta: 'Обсудить проект', scanBtn: 'О сканировании', bAlt: 'или напишите напрямую ↓',
   bK: 'День −60 · Первый звонок', bH: 'Предварительный бюджет за два рабочих дня',
   bP: '8 вопросов о вашем мероприятии. Бесплатно и без обязательств.',
   bS: 'Подготовка обычно занимает от 30 до 60 дней. Если времени меньше, напишите, обсудим.',
   nWork: 'Проекты', nHow: 'Как мы работаем', nAbout: 'Обо мне', nWhere: 'География', nContact: 'Контакты',
   wH: 'Избранные проекты', wP: 'Свадьбы, гала-ужины и конференции во дворцах, замках, на стадионах и в византийской цистерне. Каждый из них сначала был смоделирован, а потом построен.',
   hH: 'Как мы работаем', hP: 'Сначала проект, потом застройка. Клиент видит, за что платит, и бюджет согласовывается легче.',
-  s1h: 'Цифровая копия площадки', s1p: 'Обходим площадку с ручным SLAM-сканером и за несколько часов получаем её точную 3D-копию. Собственное оборудование в Милане и Дубае.',
+  s1h: 'Цифровая копия площадки', s1p: 'Обходим площадку с ручным SLAM-сканером и за несколько часов получаем её точную 3D-копию. Собственное оборудование в Италии и ОАЭ.',
   s2h: 'Технический проект в точных размерах', s2p: 'Вся застройка в единой 3D-модели реальной площадки. Проектируем по принципам BIM, поэтому пересечения находятся на экране, а не на монтаже.',
   s3h: 'Визуализация для клиента', s3p: 'Рендеры строим по той же модели, по которой работают подрядчики. Клиент видит не эскиз, а то, что действительно будет построено.',
   s4h: 'Построено так, как спроектировано', s4p: 'Реализация идёт строго по утверждённому проекту. Чтобы начать, ответьте на 8 вопросов о мероприятии. Через два рабочих дня я подготовлю предварительный бюджет и предложу план дальнейших действий. Если цифры вас устроят, переходим к работе над проектом.',
@@ -443,7 +444,7 @@ const T = {
   mail: 'Почта', close: 'Закрыть', foot1: 'Юрий Правдухин · Технический дизайн и продакшн мероприятий', foot2: 'Милан, Италия · Дубай, ОАЭ',
   countries: ['Италия','Франция','Испания','Греция','Кипр','Черногория','Турция','Грузия','Сербия','Болгария','ОАЭ','Мальдивы','Казахстан','Китай','Сингапур','Таиланд','Малайзия'],
   caps: [
-   ['День −45', 'Цифровая копия площадки', 'Выезжаем на инспекцию и обходим площадку с ручным SLAM-сканером. За несколько часов получаем точную 3D-копию: каждую стену, дерево и ступеньку. Собственное оборудование в Милане и Дубае, реализованные проекты в 17 странах.'],
+   ['День −45', 'Цифровая копия площадки', 'Выезжаем на инспекцию и обходим площадку с ручным SLAM-сканером. За несколько часов получаем облако точек, точную 3D-копию площадки: каждую стену, дерево и ступеньку. Собственное оборудование в Италии и ОАЭ.'],
    ['День −30', 'Технический проект в точных размерах', 'Вся застройка (сцена, экраны, свет, звук, декор и рассадка) собрана в единой 3D-модели реальной площадки. Проектируем по принципам BIM: все подрядчики работают в одной среде, а пересечения конструкций находятся и решаются на экране, а не на монтаже.'],
    ['День −20', 'Визуализация для клиента', 'Фотореалистичные рендеры показывают мероприятие задолго до монтажа. Мы строим их по той же модели, по которой работают подрядчики. Клиент видит не эскиз, а то, что действительно будет построено, и понимает, за что платит.'],
    ['День мероприятия', 'Построено так, как спроектировано', 'Реализация идёт строго по утверждённому проекту. Чтобы начать, ответьте на 8 вопросов о мероприятии. Через два рабочих дня я подготовлю предварительный бюджет и предложу план дальнейших действий. Если цифры вас устроят, переходим к работе над проектом.']],
@@ -638,6 +639,7 @@ function paint() {
 }
 // ---------- the day scale: show day on top, first call at the bottom ----------
 const SC_MAX = 60;
+const SCAN_PAGE = /scanpreview/.test(location.search);   // the /3d-venue-scanning/ page is not built yet: button hidden (?scanpreview shows it)
 const MS = [[0, '', 4], [-20, '', 3], [-30, '', 2], [-45, '', 1], [-58, '', -1], [-60, '', -1]];
 const sct = el('sct');
 MS.forEach(([d, name, st]) => {
@@ -740,7 +742,7 @@ function ui() {
   if (st === 0) { cap.hidden = true; return; }
   const [n, h, p] = CAPS()[st - 1];
   if (el('caph').textContent !== h) { el('capn').textContent = n; el('caph').textContent = h; el('capp').textContent = p; }
-  el('cta').hidden = st !== 4; cap.hidden = false;
+  el('cta').hidden = st !== 4; el('scanBtn').hidden = !(SCAN_PAGE && st === 1); cap.hidden = false;
 }
 [...el('rail').children].forEach((b, j) => b.addEventListener('click', () => jumpStage(j)));
 function onScroll() {
