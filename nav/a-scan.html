@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<base href="/3d-venue-scanning/">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>3D venue scanning: digital copy and point cloud · Italy, France, UAE · Yuriy Pravdukhin</title>
+<meta name="description" content="3D scanning of event venues: a digital copy of the venue as a point cloud in one site visit, about 1 cm accuracy, then a 3D model for event design. Villas, châteaux, palazzi, hotels. Italy, France, UAE and worldwide.">
+<link rel="canonical" href="https://concept.pravdukhin.com/3d-venue-scanning/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23081424'/%3E%3Ctext x='16' y='23' font-family='Helvetica,Arial' font-size='20' font-weight='300' fill='%23e8ecf1' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
+<link rel="preload" href="../fonts/geist-300-latin.woff2" as="font" type="font/woff2" crossorigin>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Service","serviceType":"3D laser scanning of event venues",
+ "name":"3D venue scanning: digital copy of the venue and point cloud",
+ "provider":{"@type":"Person","name":"Yuriy Pravdukhin","jobTitle":"Technical director for events","url":"https://concept.pravdukhin.com/"},
+ "areaServed":["Italy","France","United Arab Emirates","Worldwide"],
+ "description":"Handheld SLAM scanning of event venues. A digital copy of the venue as a point cloud, about 1 cm relative accuracy, and a 3D model built from it."}
+</script>
+<style>
+@font-face{font-family:Geist;font-weight:300;font-display:swap;src:url(../fonts/geist-300-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2212,U+20AC,U+2122,U+2190-2199}
+@font-face{font-family:Geist;font-weight:300;font-display:swap;src:url(../fonts/geist-300-cyrl.woff2) format("woff2");unicode-range:U+0400-04FF}
+@font-face{font-family:Geist;font-weight:400 600;font-display:swap;src:url(../fonts/geist-400-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2212,U+20AC,U+2122,U+2190-2199}
+@font-face{font-family:Geist;font-weight:400 600;font-display:swap;src:url(../fonts/geist-400-cyrl.woff2) format("woff2");unicode-range:U+0400-04FF}
+:root{
+  --night:#081424;--night2:#0c1b2f;--ink:#e8ecf1;--dim:#8d9aae;--line:#22324a;--amber:#f2a648;
+  --font:Geist,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --pad:max(20px,env(safe-area-inset-left,0px));
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--night);color:var(--ink);font-family:var(--font);font-weight:300;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+video{display:block;width:100%;height:100%;object-fit:cover;background:var(--night2)}
+
+.bar{position:fixed;inset:0 0 auto 0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:calc(10px + env(safe-area-inset-top,0px)) var(--pad) 10px;background:rgba(8,20,36,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid rgba(34,50,74,.7)}
+.bar .me{font-weight:400;text-decoration:none;white-space:nowrap}
+.bar .me small{color:var(--dim);font-weight:300;font-size:13px;margin-left:8px}
+.lang{display:inline-flex;gap:2px;font-size:12px}
+.lang button{appearance:none;background:rgba(8,20,36,.45);border:1px solid transparent;color:#c3ccd7;font:inherit;padding:3px 7px;border-radius:999px;cursor:pointer;letter-spacing:.04em}
+.lang button[aria-pressed="true"]{border-color:var(--line);color:var(--ink)}
+
+.btn{display:inline-block;padding:11px 18px;border:1px solid var(--amber);color:var(--ink);text-decoration:none;font-size:15px;font-weight:400;border-radius:999px;background:rgba(8,20,36,.35)}
+.btn:hover{background:rgba(242,166,72,.12)}
+.k{color:var(--amber);font-size:13px;font-weight:500;letter-spacing:.04em}
+
+/* hero */
+.hero{position:relative;max-width:1240px;margin:0 auto;padding:calc(84px + env(safe-area-inset-top,0px)) var(--pad) 32px;display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;min-height:92svh}
+.hero h1{font-weight:300;font-size:clamp(38px,5.2vw,64px);letter-spacing:-.025em;line-height:1.04;margin:.2em 0 .35em;text-wrap:balance}
+.hero .sub{font-size:clamp(17px,1.6vw,20px);line-height:1.45;margin:0 0 10px;max-width:34ch}
+.hero .geo{color:#c3ccd7;font-size:15px;margin:0 0 18px}
+.tags{display:flex;flex-wrap:wrap;gap:6px 8px;margin:0 0 26px;padding:0;list-style:none;font-size:13px;color:#c3ccd7}
+.tags li{border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+.hero .vid{aspect-ratio:3/4;max-height:76svh;justify-self:end;width:100%;border-radius:4px;overflow:hidden}
+
+/* blocks */
+section.s{padding:56px var(--pad) 8px;max-width:1240px;margin:0 auto}
+.s h2{font-weight:300;font-size:clamp(28px,3.6vw,44px);letter-spacing:-.02em;margin:0 0 24px;line-height:1.08}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:0;padding:0}
+.facts div{border-top:1px solid var(--line);padding-top:14px}
+.facts dt{font-size:clamp(30px,3.4vw,42px);font-weight:300;letter-spacing:-.02em}
+.facts dd{margin:4px 0 0;color:var(--dim);font-size:15px;line-height:1.4}
+
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.tiles .vid{aspect-ratio:3/4;overflow:hidden;border-radius:4px}
+.tiles p{margin:10px 0 0;color:var(--dim);font-size:14px;line-height:1.45}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:28px 24px}
+.item .vid{aspect-ratio:16/9;overflow:hidden;border-radius:4px}
+.item .vid.white{background:#fff}
+.item h3{margin:14px 0 6px;font-weight:400;font-size:20px}
+.item p{margin:0;color:var(--dim);font-size:15px;line-height:1.5}
+.opts{list-style:none;margin:10px 0 0;padding:0;font-size:15px;line-height:1.5}
+.opts li{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.opts b{font-weight:400}
+.opts span{color:var(--dim)}
+
+.why{display:grid;grid-template-columns:1fr 1.15fr;gap:32px;align-items:start}
+.pts{list-style:none;margin:0;padding:0}
+.pts li{border-top:1px solid var(--line);padding:14px 0;font-size:clamp(17px,1.6vw,20px);line-height:1.4}
+.pts li span{display:block;color:var(--dim);font-size:15px;margin-top:4px}
+.why .vid{aspect-ratio:16/9;overflow:hidden;border-radius:4px}
+.why figcaption{margin:10px 0 0;color:var(--dim);font-size:14px}
+figure{margin:0}
+
+.end{border-top:1px solid var(--line);margin-top:24px;padding-top:28px;display:grid;grid-template-columns:1fr auto;gap:20px 32px;align-items:center}
+.end p{margin:0;font-size:clamp(17px,1.6vw,20px);line-height:1.45;max-width:48ch}
+.end p span{display:block;color:var(--dim);font-size:15px;margin-top:6px}
+.acts{display:flex;flex-wrap:wrap;gap:12px 22px;align-items:center}
+.acts a.alt{color:var(--dim);font-size:15px;text-decoration:none}
+.acts a.alt:hover{color:var(--ink)}
+
+footer{border-top:1px solid var(--line);margin:56px auto 0;padding:22px var(--pad) calc(28px + env(safe-area-inset-bottom,0px));color:var(--dim);font-size:13px;display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between;max-width:1240px}
+
+@media (max-width:760px){
+  .bar .me small{display:none}
+  .hero{display:block;min-height:0;padding:0}
+  .hero .vid{position:relative;max-height:none;height:100svh;aspect-ratio:auto;border-radius:0}
+  .hero .vid::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(8,20,36,.55) 0,rgba(8,20,36,0) 20%,rgba(8,20,36,0) 34%,rgba(8,20,36,.78) 58%,rgba(8,20,36,.96) 100%)}
+  .hero .txt{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:0 var(--pad) calc(26px + env(safe-area-inset-bottom,0px))}
+  .hero h1{font-size:38px}
+  .hero .sub{font-size:17px;text-shadow:0 1px 12px rgba(8,20,36,.9)}
+  .tags{margin-bottom:18px}
+  .tags li{background:rgba(8,20,36,.5)}
+  section.s{padding-top:44px}
+  .facts{grid-template-columns:1fr;gap:0}
+  .facts div{display:grid;grid-template-columns:138px 1fr;align-items:baseline;gap:10px;padding:12px 0}
+  .facts dt{font-size:24px;white-space:nowrap}
+  .facts dd{margin:0;font-size:14px}
+  /* on site: a row of three smaller cards that scrolls sideways; the first card keeps the page margin */
+  .tiles{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:var(--pad);margin:0 calc(-1 * var(--pad));padding:0 var(--pad);scrollbar-width:none;gap:12px}
+  .tiles::-webkit-scrollbar{display:none}
+  .tiles > div{flex:0 0 58%;scroll-snap-align:start}
+  .tiles > div:last-child{margin-right:var(--pad)}
+  .tiles p{font-size:13px}
+  .two,.why{grid-template-columns:1fr}
+  .end{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header class="bar">
+  <a class="me" href="../" data-i="name">Yuriy Pravdukhin<small data-i="role">Technical director for events</small></a>
+  <div class="lang" data-lang></div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="txt">
+    <span class="k" data-i="kick">Digital copy of the venue</span>
+    <h1 data-i="h1">3D venue scanning</h1>
+    <p class="sub" data-i="sub">A point cloud in one site visit: an exact digital copy with every wall and step. From it we build the 3D model and design the event.</p>
+    <p class="geo" data-i="geo">Italy, France, UAE and worldwide</p>
+    <ul class="tags"><li data-i="t0">Digital copy</li><li data-i="t1">Point cloud</li><li data-i="t2">3D model</li><li data-i="t3">≈1 cm</li></ul>
+    <a class="btn wa" href="https://wa.me/393498929736" target="_blank" rel="noopener" data-i="cta">Discuss your project</a>
+  </div>
+  <div class="vid"><video src="m/walk.mp4" poster="m/walk.jpg" muted loop playsinline autoplay preload="auto"></video></div>
+</section>
+
+<section class="s">
+  <dl class="facts">
+    <div><dt>≈1&nbsp;<span data-i="cm">cm</span></dt><dd data-i="f1">accuracy inside the cloud</dd></div>
+    <div><dt data-i="f2h">1 hour</dt><dd data-i="f2">to walk a whole hotel in Georgia</dd></div>
+    <div><dt data-i="f3h">1 backpack</dt><dd data-i="f3">the scanner fits in a backpack and flies with me to any country</dd></div>
+  </dl>
+</section>
+
+<section class="s">
+  <h2 data-i="vH">On site</h2>
+  <div class="tiles">
+    <div><div class="vid"><video data-src="m/me_far.mp4" poster="m/me_far.jpg" muted loop playsinline preload="none"></video></div><p data-i="v1">Gardens, terraces and courtyards</p></div>
+    <div><div class="vid"><video data-src="m/interior.mp4" poster="m/interior.jpg" muted loop playsinline preload="none"></video></div><p data-i="v2">Halls, stairs, corridors and complex spaces in one pass</p></div>
+    <div><div class="vid"><video data-src="m/app34.mp4" poster="m/app34.jpg" muted loop playsinline preload="none"></video></div><p data-i="v3">The cloud grows live on screen: nothing is missed</p></div>
+  </div>
+</section>
+
+<section class="s">
+  <h2 data-i="gH">What you get</h2>
+  <div class="two">
+    <div class="item">
+      <div class="vid"><video data-src="m/cloud.mp4" poster="m/cloud.jpg" muted loop playsinline preload="none"></video></div>
+      <h3 data-i="g1h">Point cloud</h3>
+      <p data-i="g1p">A digital copy of the venue in colour and true scale. LAS, E57 and other formats for CAD and 3D.</p>
+    </div>
+    <div class="item">
+      <div class="vid white"><video data-src="m/model_lr.mp4" poster="m/model_lr.jpg" muted loop playsinline preload="none"></video></div>
+      <h3 data-i="g2h">3D model</h3>
+      <p data-i="g2p">Built from the point cloud, layer by layer, for stage, rigging and layout design.</p>
+      <ul class="opts">
+        <li><b data-i="o1h">By an engineer</b><span data-i="o1p">precise, for technical design</span></li>
+        <li><b data-i="o2h">By AI</b><span data-i="o2p">faster and cheaper, for concept and tenders</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="s">
+  <h2 data-i="wH">Why scan</h2>
+  <div class="why">
+    <ul class="pts">
+      <li data-i="w1">No drawings? Not a problem<span data-i="w1s">Villas, châteaux, palazzi, castles, hotels</span></li>
+      <li data-i="w2">The venue’s floor plan is almost always fiction<span data-i="w2s">The scanner captures the venue as it is</span></li>
+      <li data-i="w3">The scan cancels the second site visit, not the first<span data-i="w3s">Whatever you forgot to measure is already in the cloud</span></li>
+    </ul>
+    <figure>
+      <div class="vid"><video data-src="m/hotel.mp4" poster="m/hotel.jpg" muted loop playsinline preload="none"></video></div>
+      <figcaption data-i="hc">A hotel in Georgia, scanned in one hour</figcaption>
+    </figure>
+  </div>
+  <div class="end">
+    <p data-i="e1">Ideal for destination events<span data-i="e1s">One site visit brings the venue into the cloud. From there, you work with it from anywhere in the world. To arrange a scan, fill in a brief of 8 questions.</span></p>
+    <div class="acts">
+      <a class="btn wa" href="https://wa.me/393498929736" target="_blank" rel="noopener" data-i="ctaE">Get in touch</a>
+      <a class="alt" href="mailto:2331313@gmail.com">2331313@gmail.com</a>
+      <a class="alt" href="https://t.me/Iurii_Pravdukhin" target="_blank" rel="noopener">Telegram</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <span><a href="../" style="color:inherit" data-i="back">← Main site</a></span>
+  <span><span data-i="eq">Equipment: XGRIDS Lixel K1 and K2 handheld SLAM scanners</span> · P.IVA 12554630967</span>
+</footer>
+
+<script>
+const T = {
+  en: {
+    title: '3D venue scanning: digital copy and point cloud · Italy, France, UAE · Yuriy Pravdukhin',
+    name: 'Yuriy Pravdukhin', role: 'Technical director for events',
+    kick: 'Digital copy of the venue', h1: '3D venue scanning',
+    sub: 'A point cloud in one site visit: an exact digital copy with every wall and step. From it we build the 3D model and design the event.',
+    geo: 'Italy, France, UAE and worldwide',
+    t0: 'Digital copy', t1: 'Point cloud', t2: '3D model', t3: '≈1 cm', cta: 'Discuss your project', cm: 'cm',
+    f1: 'accuracy inside the cloud', f2h: '1 hour', f2: 'to walk a whole hotel in Georgia', f3h: '1 backpack', f3: 'the scanner fits in a backpack and flies with me to any country',
+    vH: 'On site', v1: 'Gardens, terraces and courtyards', v2: 'Halls, stairs, corridors and complex spaces in one pass', v3: 'The cloud grows live on screen: nothing is missed',
+    gH: 'What you get',
+    g1h: 'Point cloud', g1p: 'A digital copy of the venue in colour and true scale. LAS, E57 and other formats for CAD and 3D.',
+    g2h: '3D model', g2p: 'Built from the point cloud, layer by layer, for stage, rigging and layout design.',
+    o1h: 'By an engineer', o1p: 'precise, for technical design', o2h: 'By AI', o2p: 'faster and cheaper, for concept and tenders',
+    wH: 'Why scan',
+    w1: 'No drawings? Not a problem', w1s: 'Villas, châteaux, palazzi, castles, hotels',
+    w2: 'The venue’s floor plan is almost always fiction', w2s: 'The scanner captures the venue as it is',
+    w3: 'The scan cancels the second site visit, not the first', w3s: 'Whatever you forgot to measure is already in the cloud',
+    hc: 'A hotel in Georgia, scanned in one hour',
+    e1: 'Ideal for destination events', e1s: 'One site visit brings the venue into the cloud. From there, you work with it from anywhere in the world. To arrange a scan, fill in a brief of 8 questions.', ctaE: 'Get in touch',
+    back: '← Main site', eq: 'Equipment: XGRIDS Lixel K1 and K2 handheld SLAM scanners',
+    wa: 'Hello Yuriy, I’d like to arrange a 3D scan of a venue. Please send me the 8 questions of the brief.'
+  },
+  ru: {
+    title: '3D-сканирование площадок: цифровая копия и облако точек · Италия, Франция, ОАЭ · Юрий Правдухин',
+    name: 'Юрий Правдухин', role: 'Технический директор мероприятий',
+    kick: 'Цифровая копия площадки', h1: '3D-сканирование площадок',
+    sub: 'Облако точек за один выезд: точная цифровая копия площадки с каждой стеной и ступенькой. По нему собираем 3D-модель и проектируем мероприятие.',
+    geo: 'Италия, Франция, ОАЭ и весь мир',
+    t0: 'Цифровая копия', t1: 'Облако точек', t2: '3D-модель', t3: '≈1 см', cta: 'Обсудить проект', cm: 'см',
+    f1: 'точность внутри облака', f2h: '1 час', f2: 'на целый отель в Грузии', f3h: '1 рюкзак', f3: 'сканер умещается в рюкзак и летит со мной в любую страну',
+    vH: 'На площадке', v1: 'Сады, террасы и дворы', v2: 'Залы, лестницы, коридоры и помещения сложной формы за один проход', v3: 'Облако растёт на экране: на месте видно, что ничего не пропущено',
+    gH: 'Что вы получаете',
+    g1h: 'Облако точек', g1p: 'Цифровая копия площадки в цвете и в реальном масштабе. LAS, E57 и другие форматы для CAD и 3D.',
+    g2h: '3D-модель', g2p: 'Собирается по облаку точек, послойно, для проектирования сцены, подвеса и расстановки.',
+    o1h: 'Инженер', o1p: 'точно, для технического проекта', o2h: 'Нейросеть', o2p: 'быстрее и дешевле, для концепции и тендеров',
+    wH: 'Зачем сканировать',
+    w1: 'Нет чертежей? Не проблема', w1s: 'Виллы, шато, палаццо, замки, отели',
+    w2: 'Планировка от площадки это почти всегда художественная литература', w2s: 'Сканер фиксирует площадку как есть',
+    w3: 'Скан отменяет не выезд, а второй выезд', w3s: 'Всё, что забыли измерить, уже есть в облаке',
+    hc: 'Отель в Грузии, отсканирован за час',
+    e1: 'Идеально для выездных мероприятий', e1s: 'Один выезд переносит площадку в облако. Дальнейшая работа с ней из любой точки мира. Чтобы организовать сканирование, нужно заполнить бриф из 8 вопросов.', ctaE: 'Связаться',
+    back: '← Основной сайт', eq: 'Оборудование: ручные SLAM-сканеры XGRIDS Lixel K1 и K2',
+    wa: 'Здравствуйте, Юрий! Хочу организовать 3D-сканирование площадки. Пришлите, пожалуйста, 8 вопросов брифа.'
+  }
+};
+// alternative first screens to compare: ?hero=b or ?hero=c
+const HERO = {
+  b: { en: { h1: 'The venue’s floor plan is almost always fiction', sub: 'The scanner captures the venue as it is. A digital copy of the venue as a point cloud in one site visit, about 1 cm accuracy. From it we build the 3D model and design the event.' },
+       ru: { h1: 'Планировка от площадки это почти всегда художественная литература', sub: 'Сканер фиксирует площадку как есть. Цифровая копия площадки, облако точек, за один выезд с точностью около сантиметра. По нему собираем 3D-модель и проектируем мероприятие.' } },
+  c: { en: { h1: 'The scan cancels the second site visit', sub: 'One visit and the venue is in the cloud: a digital copy with every dimension, about 1 cm accuracy. From it we build the 3D model and design the event.' },
+       ru: { h1: 'Скан отменяет второй выезд', sub: 'Один выезд, и площадка в облаке точек: цифровая копия со всеми размерами, точность около сантиметра. По нему собираем 3D-модель и проектируем мероприятие.' } }
+};
+const hv = new URLSearchParams(location.search).get('hero');
+if (HERO[hv]) ['en', 'ru'].forEach(l => Object.assign(T[l], HERO[hv][l]));
+let LANG = (() => {
+  const q = new URLSearchParams(location.search).get('lang'); if (q === 'ru' || q === 'en') return q;
+  try { const v = localStorage.getItem('lang'); if (v === 'ru' || v === 'en') return v; } catch (e) {}
+  return /^ru\b/i.test(navigator.language || '') ? 'ru' : 'en';
+})();
+const L = () => T[LANG];
+function applyLang() {
+  document.documentElement.lang = LANG; document.title = L().title;
+  document.querySelectorAll('[data-i]').forEach(n => {
+    const v = L()[n.dataset.i]; if (typeof v !== 'string') return;
+    const tail = n.querySelector('small, span');
+    if (tail && n.firstChild && n.firstChild.nodeType === 3) n.firstChild.nodeValue = v; else n.textContent = v;
+  });
+  document.querySelectorAll('a.wa').forEach(a => a.href = 'https://wa.me/393498929736?text=' + encodeURIComponent(L().wa));
+  document.querySelectorAll('[data-lang]').forEach(box => {
+    box.innerHTML = ['en', 'ru'].map(l => `<button type="button" data-l="${l}" aria-pressed="${l === LANG}">${l.toUpperCase()}</button>`).join('');
+  });
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('[data-l]'); if (!b) return;
+  LANG = b.dataset.l; try { localStorage.setItem('lang', LANG); } catch (e) {}
+  applyLang();
+});
+applyLang();
+
+// videos below the first screen: load when close, play only while visible
+const io = new IntersectionObserver(es => es.forEach(en => {
+  const v = en.target;
+  if (en.isIntersecting) { if (v.dataset.src && !v.src) v.src = v.dataset.src; v.play().catch(() => {}); }
+  else v.pause();
+}), { rootMargin: '200px 0px', threshold: 0.15 });
+document.querySelectorAll('video').forEach(v => io.observe(v));
+</script>
+<script src="/nav/nav.js" data-v="A" data-page="scan"></script>
+</body>
+</html>
