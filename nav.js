@@ -35,14 +35,18 @@ header.bar{display:none!important}
 .nb.on{transform:none}
 .nb .me{font-weight:400;font-size:15px;text-decoration:none;white-space:nowrap;color:var(--ink)}
 .nb .l{display:flex;align-items:center;gap:10px;min-width:0}
-/* back to where the visitor left the first block: only after one of its buttons was used */
-.nb .ret{appearance:none;flex:none;width:34px;height:34px;border-radius:50%;border:1px solid var(--amber);background:rgba(242,166,72,.12);color:var(--amber);font:inherit;font-size:17px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;-webkit-tap-highlight-color:transparent;animation:retPulse 1.8s ease-in-out infinite}
-.nb .ret[hidden]{display:none}
-.nb .ret span{display:block;animation:retBob 1.8s ease-in-out infinite}
-@keyframes retBob{0%,100%{transform:translateY(1px)}50%{transform:translateY(-3px)}}
-@keyframes retPulse{0%,100%{box-shadow:0 0 0 0 rgba(242,166,72,.0)}50%{box-shadow:0 0 0 5px rgba(242,166,72,.18),0 0 16px rgba(242,166,72,.35)}}
-@media (prefers-reduced-motion:reduce){.nb .ret,.nb .ret span{animation:none}}
-@media (max-width:440px){.nb.hasret .me{display:none}}
+/* back to where the visitor left the first block: the same amber arrow as on the first screen, pointing up,
+   above the heading of the section the visitor landed on; only after one of the first-block buttons was used */
+.retA{appearance:none;background:none;border:0;padding:6px 14px 6px 0;margin:0;color:var(--amber);font:inherit;font-size:clamp(24px,2.2vw,30px);line-height:1;cursor:pointer;display:flex;align-items:center;gap:10px;-webkit-tap-highlight-color:transparent}
+.retA[hidden]{display:none}
+.retA span{display:block;animation:retUp 1.6s ease-in-out infinite}
+.retA small{font-size:clamp(13px,1.1vw,15px);color:var(--dim);letter-spacing:.02em}
+.retA:hover small{color:var(--ink)}
+@keyframes retUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@media (prefers-reduced-motion:reduce){.retA span{animation:none}}
+section.s.hasRetA{position:relative}
+section.s > .retA{position:absolute;left:var(--pad);top:40px}
+.hero .retA{margin:0 0 10px}
 .nb .r{display:flex;align-items:center;gap:10px}
 .nb .lang{margin:0}
 /* the rail */
@@ -193,15 +197,16 @@ function labelHtml(a) { return `${a < 5 && DAYS[a] !== '0' ? `<b>${DAYS[a]}</b>`
 
 let bar = null, nr = null, sheet = null, pill = null;
 // unified bar (all variants)
-bar = $(`<header class="nb" aria-label="Site"><div class="l"><button type="button" class="ret" hidden><span>↑</span></button><a class="me" href="${PAGE === 'scan' ? MAIN : '#top'}"></a></div><div class="r"><div class="lang" data-lang></div></div></header>`);
+bar = $(`<header class="nb" aria-label="Site"><div class="l"><a class="me" href="${PAGE === 'scan' ? MAIN : '#top'}"></a></div><div class="r"><div class="lang" data-lang></div></div></header>`);
 // ---------- the way back up: first-block buttons remember the stage they were pressed on ----------
 const RET_KEY = 'navRet';
 let retSetAt = -1e9;   // just pressed: the page may still be on the ring for a moment (e.g. before leaving for the scanning page)
-const getRet = () => { try { const v = sessionStorage.getItem(RET_KEY); return v === null ? null : +v; } catch (e) { return null; } };
-const setRet = v => { try { if (v === null) sessionStorage.removeItem(RET_KEY); else sessionStorage.setItem(RET_KEY, String(v)); } catch (e) {} };
+const getRet = () => { try { const v = JSON.parse(sessionStorage.getItem(RET_KEY)); return v && typeof v.j === 'number' ? v : null; } catch (e) { return null; } };
+const setRet = v => { try { if (v === null) sessionStorage.removeItem(RET_KEY); else sessionStorage.setItem(RET_KEY, JSON.stringify(v)); } catch (e) {} };
+const RET_T = { pfBtn: 'work', costBtn: 'how', scanBtn: 'scan' };
 document.addEventListener('click', e => {
   const b = e.target.closest && e.target.closest('#pfBtn, #scanBtn, #costBtn');
-  if (b && typeof stageOf === 'function' && typeof step !== 'undefined') { setRet(stageOf(step)); retSetAt = performance.now(); }
+  if (b && typeof stageOf === 'function' && typeof step !== 'undefined') { setRet({ j: stageOf(step), t: RET_T[b.id] }); retSetAt = performance.now(); }
 }, true);
 function returnTo(j) {
   if (typeof freeScroll === 'function') freeScroll();
@@ -209,19 +214,32 @@ function returnTo(j) {
   scrollTo({ top: y, behavior: 'instant' });
   if (typeof AUTO !== 'undefined') { AUTO.armed = true; AUTO.idx = j - 1; }
 }
-bar.querySelector('.ret').addEventListener('click', () => {
-  const j = getRet(); setRet(null); syncRet();
-  if (j === null) return;
-  if (PAGE === 'scan') { location.href = MAIN + '#s' + j; return; }
+// one arrow per page, moved into the section the visitor landed on
+const retA = $(`<button type="button" class="retA" hidden><span>↑</span><small></small></button>`);
+retA.addEventListener('click', () => {
+  const r = getRet(); setRet(null); syncRet();
+  if (!r) return;
+  if (PAGE === 'scan') { location.href = MAIN + '#s' + r.j; return; }
   if (dlgOpen()) dlg.close();
-  closeSheet(); returnTo(j);
+  closeSheet(); returnTo(r.j);
 });
+function retHost(t) {
+  if (PAGE === 'scan') return document.querySelector('main .hero .txt') || document.querySelector('main');
+  return t ? document.getElementById(t) : null;
+}
 function syncRet() {
   if (PAGE === 'main' && onRing() && getRet() !== null && performance.now() - retSetAt > 3000) setRet(null);   // back in the first block by any way: nothing to return to
-  const show = getRet() !== null && (PAGE === 'scan' || !onRing());
-  const r = bar.querySelector('.ret');
-  if (r.hidden === show) { r.hidden = !show; bar.classList.toggle('hasret', show); r.setAttribute('aria-label', lang() === 'ru' ? 'Вернуться наверх, туда, откуда пришли' : 'Back up to where you were'); }
+  const r = getRet(), show = !!r && (PAGE === 'scan' || !onRing());
+  if (show) {
+    const host = retHost(r.t);
+    if (host && retA.parentNode !== host) { if (retA.parentNode && retA.parentNode.classList) retA.parentNode.classList.remove('hasRetA'); host.prepend(retA); host.classList.add('hasRetA'); }
+    const L = lang() === 'ru';
+    retA.querySelector('small').textContent = L ? 'Вернуться' : 'Back up';
+    retA.setAttribute('aria-label', L ? 'Вернуться туда, откуда пришли' : 'Back up to where you were');
+  }
+  if (retA.hidden === show) retA.hidden = !show;
 }
+
 document.body.appendChild(bar);
 if (V === 'C' || V === 'D') { pill = $(`<button type="button" class="pill" aria-haspopup="dialog"></button>`); bar.querySelector('.r').prepend(pill); pill.addEventListener('click', openSheet); }
 let pill2 = null, lang2 = null;
