@@ -4,14 +4,14 @@
 // C: the ring untouched; after the ring a top bar with a compact pill that opens the same sheet
 (() => {
 const S = document.currentScript, V = S.dataset.v, PAGE = S.dataset.page; // 'main' | 'scan'
-const MAIN = '/nav/' + V.toLowerCase() + '.html', SCAN = '/nav/' + V.toLowerCase() + '-scan.html';
+const MAIN = S.dataset.main || '/nav/' + V.toLowerCase() + '.html', SCAN = S.dataset.scan || '/nav/' + V.toLowerCase() + '-scan.html';
 const TXT = {
-  en: { items: ['Show day', 'Digital copy', '3D model', 'Render', 'Built', 'Work', 'About', 'How we work', 'Scanning', 'Contact'],
+  en: { items: ['Brief', 'Digital copy', '3D model', 'Render', 'Show day', 'Portfolio', 'About', 'How we work', 'Scanning', 'Contact'],
         name: 'Yuriy Pravdukhin', kick: 'One project, 60 days', cta: 'Discuss your project', all: 'All sections', menu: 'Contents', close: 'Close' },
-  ru: { items: ['Мероприятие', 'Цифровая копия', '3D-модель', 'Рендер', 'Построено', 'Проекты', 'Обо мне', 'Как мы работаем', 'Сканирование', 'Контакты'],
+  ru: { items: ['Бриф', 'Цифровая копия', '3D-модель', 'Рендер', 'Мероприятие', 'Портфолио', 'Обо мне', 'Как мы работаем', 'Сканирование', 'Контакты'],
         name: 'Юрий Правдухин', kick: 'Один проект, 60 дней', cta: 'Обсудить проект', all: 'Все разделы', menu: 'Содержание', close: 'Закрыть' }
 };
-const DAYS = ['0', '−45', '−30', '−20', '0'];
+const DAYS = ['−60', '−45', '−30', '−20', '0'];
 const SEC = ['work', 'about', 'how', null, 'contact']; // 8 = scanning page
 const lang = () => (document.documentElement.lang === 'ru' ? 'ru' : 'en');
 const X = () => TXT[lang()];
@@ -100,10 +100,11 @@ body.navpad{padding-bottom:64px}
 .dp button.pas{color:rgba(185,195,207,.75)}
 .dp button:hover span{text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(232,236,241,.4)}
 .dp button.all{margin-top:10px;color:var(--ink)}
+@media (max-width:560px){.dp button.all{margin-top:4px}.scale:has(.dp) .sc-read{margin-bottom:12px}}
 .dp button.all .ic{display:inline-block;width:12px;height:8px;border-top:1.2px solid currentColor;border-bottom:1.2px solid currentColor;position:relative;order:2;margin-right:calc(2.3em - 12px)}
 .dp button.all .ic::after{content:"";position:absolute;left:0;right:0;top:50%;height:1.2px;margin-top:-.6px;background:currentColor}
 .dp button.all::before{display:none}
-:root{--dph:26px}@media (max-width:560px){:root{--dph:23px}}
+:root{--dph:26px}@media (max-width:560px){:root{--dph:21px}}
 
 @media (max-width:560px){body.navscan .hero{padding-bottom:96px}}
 `;
@@ -227,7 +228,9 @@ if (V === 'D') requestAnimationFrame(dpFrame);
 let last = '';
 function sync() {
   const a = current(), r = onRing(), L = lang();
-  bar.classList.toggle('on', PAGE === 'scan' || !r);
+  let on = PAGE === 'scan' || !r;
+  if (dp && PAGE === 'main') { const al = dp.querySelector('.all'); if (al) on = al.getBoundingClientRect().bottom <= bar.offsetHeight; }
+  bar.classList.toggle('on', on);
   bar.querySelector('.me').textContent = X().name;
   const lb = bar.querySelector('.lang'); if (!lb.children.length || lb.dataset.k !== L) { lb.innerHTML = langBtns(); lb.dataset.k = L; }
   const key = a + '|' + r + '|' + L;
