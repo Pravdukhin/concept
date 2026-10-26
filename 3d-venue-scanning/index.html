@@ -105,12 +105,16 @@ footer{border-top:1px solid var(--line);margin:56px auto 0;padding:22px var(--pa
   .tags{margin-bottom:18px}
   .tags li{background:rgba(8,20,36,.5)}
   section.s{padding-top:44px}
-  .facts{gap:12px}
-  .facts dt{font-size:26px}
-  .facts dd{font-size:13px}
-  .tiles{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:76%;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 calc(-1 * var(--pad));padding:0 var(--pad);scrollbar-width:none;gap:14px}
+  .facts{grid-template-columns:1fr;gap:0}
+  .facts div{display:grid;grid-template-columns:138px 1fr;align-items:baseline;gap:10px;padding:12px 0}
+  .facts dt{font-size:24px;white-space:nowrap}
+  .facts dd{margin:0;font-size:14px}
+  /* on site: a row of three smaller cards that scrolls sideways; the first card keeps the page margin */
+  .tiles{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:var(--pad);margin:0 calc(-1 * var(--pad));padding:0 var(--pad);scrollbar-width:none;gap:12px}
   .tiles::-webkit-scrollbar{display:none}
-  .tiles > div{scroll-snap-align:start}
+  .tiles > div{flex:0 0 58%;scroll-snap-align:start}
+  .tiles > div:last-child{margin-right:var(--pad)}
+  .tiles p{font-size:13px}
   .two,.why{grid-template-columns:1fr}
   .end{grid-template-columns:1fr}
 }
@@ -139,7 +143,7 @@ footer{border-top:1px solid var(--line);margin:56px auto 0;padding:22px var(--pa
   <dl class="facts">
     <div><dt>≈1&nbsp;<span data-i="cm">cm</span></dt><dd data-i="f1">accuracy inside the cloud</dd></div>
     <div><dt data-i="f2h">1 hour</dt><dd data-i="f2">to walk a whole hotel in Georgia</dd></div>
-    <div><dt data-i="f3h">Backpack</dt><dd data-i="f3">the scanner flies with me anywhere</dd></div>
+    <div><dt data-i="f3h">1 backpack</dt><dd data-i="f3">the scanner fits in a backpack and flies with me to any country</dd></div>
   </dl>
 </section>
 
@@ -147,7 +151,7 @@ footer{border-top:1px solid var(--line);margin:56px auto 0;padding:22px var(--pa
   <h2 data-i="vH">On site</h2>
   <div class="tiles">
     <div><div class="vid"><video data-src="m/me_far.mp4" poster="m/me_far.jpg" muted loop playsinline preload="none"></video></div><p data-i="v1">Gardens, terraces and courtyards</p></div>
-    <div><div class="vid"><video data-src="m/interior.mp4" poster="m/interior.jpg" muted loop playsinline preload="none"></video></div><p data-i="v2">Halls, stairs and corridors in one pass</p></div>
+    <div><div class="vid"><video data-src="m/interior.mp4" poster="m/interior.jpg" muted loop playsinline preload="none"></video></div><p data-i="v2">Halls, stairs, corridors and complex spaces in one pass</p></div>
     <div><div class="vid"><video data-src="m/app34.mp4" poster="m/app34.jpg" muted loop playsinline preload="none"></video></div><p data-i="v3">The cloud grows live on screen: nothing is missed</p></div>
   </div>
 </section>
@@ -166,7 +170,7 @@ footer{border-top:1px solid var(--line);margin:56px auto 0;padding:22px var(--pa
       <p data-i="g2p">Built from the point cloud, layer by layer, for stage, rigging and layout design.</p>
       <ul class="opts">
         <li><b data-i="o1h">By an engineer</b><span data-i="o1p">precise, for technical design</span></li>
-        <li><b data-i="o2h">By AI</b><span data-i="o2p">faster and cheaper, for concept and renders</span></li>
+        <li><b data-i="o2h">By AI</b><span data-i="o2p">faster and cheaper, for concept and tenders</span></li>
       </ul>
     </div>
   </div>
@@ -177,7 +181,7 @@ footer{border-top:1px solid var(--line);margin:56px auto 0;padding:22px var(--pa
   <div class="why">
     <ul class="pts">
       <li data-i="w1">No drawings? Not a problem<span data-i="w1s">Villas, châteaux, palazzi, castles, hotels</span></li>
-      <li data-i="w2">The venue’s floor plan is fiction<span data-i="w2s">Almost always. The scan shows the venue as it is</span></li>
+      <li data-i="w2">The venue’s floor plan is almost always fiction<span data-i="w2s">The scanner captures the venue as it is</span></li>
       <li data-i="w3">The scan cancels the second site visit, not the first<span data-i="w3s">Whatever you forgot to measure is already in the cloud</span></li>
     </ul>
     <figure>
@@ -186,9 +190,9 @@ footer{border-top:1px solid var(--line);margin:56px auto 0;padding:22px var(--pa
     </figure>
   </div>
   <div class="end">
-    <p data-i="e1">For agencies, organisers and technical production companies<span data-i="e1s">The scan can be ordered on its own. As for any project: a brief of 8 questions.</span></p>
+    <p data-i="e1">For destination events: we work on the project remotely, wherever the venue is<span data-i="e1s">To arrange a scan, fill in a brief of 8 questions.</span></p>
     <div class="acts">
-      <a class="btn wa" href="https://wa.me/393498929736" target="_blank" rel="noopener" data-i="cta">Discuss your project</a>
+      <a class="btn wa" href="https://wa.me/393498929736" target="_blank" rel="noopener" data-i="ctaE">Get in touch</a>
       <a class="alt" href="mailto:2331313@gmail.com">2331313@gmail.com</a>
       <a class="alt" href="https://t.me/Iurii_Pravdukhin" target="_blank" rel="noopener">Telegram</a>
     </div>
@@ -210,20 +214,20 @@ const T = {
     sub: 'A point cloud in one site visit: an exact digital copy with every wall and step. From it we build the 3D model and design the event.',
     geo: 'Italy, France, UAE and worldwide',
     t0: 'Digital copy', t1: 'Point cloud', t2: '3D model', t3: '≈1 cm', cta: 'Discuss your project', cm: 'cm',
-    f1: 'accuracy inside the cloud', f2h: '1 hour', f2: 'to walk a whole hotel in Georgia', f3h: 'Backpack', f3: 'the scanner flies with me anywhere',
-    vH: 'On site', v1: 'Gardens, terraces and courtyards', v2: 'Halls, stairs and corridors in one pass', v3: 'The cloud grows live on screen: nothing is missed',
+    f1: 'accuracy inside the cloud', f2h: '1 hour', f2: 'to walk a whole hotel in Georgia', f3h: '1 backpack', f3: 'the scanner fits in a backpack and flies with me to any country',
+    vH: 'On site', v1: 'Gardens, terraces and courtyards', v2: 'Halls, stairs, corridors and complex spaces in one pass', v3: 'The cloud grows live on screen: nothing is missed',
     gH: 'What you get',
     g1h: 'Point cloud', g1p: 'A digital copy of the venue in colour and true scale. LAS, E57 and other formats for CAD and 3D.',
     g2h: '3D model', g2p: 'Built from the point cloud, layer by layer, for stage, rigging and layout design.',
-    o1h: 'By an engineer', o1p: 'precise, for technical design', o2h: 'By AI', o2p: 'faster and cheaper, for concept and renders',
+    o1h: 'By an engineer', o1p: 'precise, for technical design', o2h: 'By AI', o2p: 'faster and cheaper, for concept and tenders',
     wH: 'Why scan',
     w1: 'No drawings? Not a problem', w1s: 'Villas, châteaux, palazzi, castles, hotels',
-    w2: 'The venue’s floor plan is fiction', w2s: 'Almost always. The scan shows the venue as it is',
+    w2: 'The venue’s floor plan is almost always fiction', w2s: 'The scanner captures the venue as it is',
     w3: 'The scan cancels the second site visit, not the first', w3s: 'Whatever you forgot to measure is already in the cloud',
     hc: 'A hotel in Georgia, scanned in one hour',
-    e1: 'For agencies, organisers and technical production companies', e1s: 'The scan can be ordered on its own. As for any project: a brief of 8 questions.',
+    e1: 'For destination events: we work on the project remotely, wherever the venue is', e1s: 'To arrange a scan, fill in a brief of 8 questions.', ctaE: 'Get in touch',
     back: '← Main site', eq: 'Equipment: XGRIDS Lixel K1 and K2 handheld SLAM scanners',
-    wa: 'Hello Yuriy, I need a 3D scan of a venue. Venue and city: … Date: … What the scan is for: …'
+    wa: 'Hello Yuriy, I’d like to arrange a 3D scan of a venue. Please send me the 8 questions of the brief.'
   },
   ru: {
     title: '3D-сканирование площадок: цифровая копия и облако точек · Италия, Франция, ОАЭ · Юрий Правдухин',
@@ -232,26 +236,26 @@ const T = {
     sub: 'Облако точек за один выезд: точная цифровая копия площадки с каждой стеной и ступенькой. По нему собираем 3D-модель и проектируем мероприятие.',
     geo: 'Италия, Франция, ОАЭ и весь мир',
     t0: 'Цифровая копия', t1: 'Облако точек', t2: '3D-модель', t3: '≈1 см', cta: 'Обсудить проект', cm: 'см',
-    f1: 'точность внутри облака', f2h: '1 час', f2: 'на целый отель в Грузии', f3h: 'Рюкзак', f3: 'сканер летит со мной в любую страну',
-    vH: 'На площадке', v1: 'Сады, террасы и дворы', v2: 'Залы, лестницы и коридоры за один проход', v3: 'Облако растёт на экране: на месте видно, что ничего не пропущено',
+    f1: 'точность внутри облака', f2h: '1 час', f2: 'на целый отель в Грузии', f3h: '1 рюкзак', f3: 'сканер умещается в рюкзак и летит со мной в любую страну',
+    vH: 'На площадке', v1: 'Сады, террасы и дворы', v2: 'Залы, лестницы, коридоры и помещения сложной формы за один проход', v3: 'Облако растёт на экране: на месте видно, что ничего не пропущено',
     gH: 'Что вы получаете',
     g1h: 'Облако точек', g1p: 'Цифровая копия площадки в цвете и в реальном масштабе. LAS, E57 и другие форматы для CAD и 3D.',
     g2h: '3D-модель', g2p: 'Собирается по облаку точек, послойно, для проектирования сцены, подвеса и расстановки.',
-    o1h: 'Инженер', o1p: 'точно, для технического проекта', o2h: 'Нейросеть', o2p: 'быстрее и дешевле, для концепции и рендеров',
+    o1h: 'Инженер', o1p: 'точно, для технического проекта', o2h: 'Нейросеть', o2p: 'быстрее и дешевле, для концепции и тендеров',
     wH: 'Зачем сканировать',
     w1: 'Нет чертежей? Не проблема', w1s: 'Виллы, шато, палаццо, замки, отели',
-    w2: 'Планировка от площадки это художественная литература', w2s: 'Почти всегда. Скан показывает площадку как есть',
+    w2: 'Планировка от площадки это почти всегда художественная литература', w2s: 'Сканер фиксирует площадку как есть',
     w3: 'Скан отменяет не выезд, а второй выезд', w3s: 'Всё, что забыли измерить, уже есть в облаке',
     hc: 'Отель в Грузии, отсканирован за час',
-    e1: 'Для агентств, организаторов и технических продакшнов', e1s: 'Скан можно заказать отдельно. Как и для любого проекта: бриф из 8 вопросов.',
+    e1: 'Для выездных мероприятий (destination planning): работаем над проектом удалённо, где бы ни находилась площадка', e1s: 'Чтобы организовать сканирование, нужно заполнить бриф из 8 вопросов.', ctaE: 'Связаться',
     back: '← Основной сайт', eq: 'Оборудование: ручные SLAM-сканеры XGRIDS Lixel K1 и K2',
-    wa: 'Здравствуйте, Юрий! Нужно 3D-сканирование площадки. Площадка и город: … Дата: … Для чего скан: …'
+    wa: 'Здравствуйте, Юрий! Хочу организовать 3D-сканирование площадки. Пришлите, пожалуйста, 8 вопросов брифа.'
   }
 };
 // alternative first screens to compare: ?hero=b or ?hero=c
 const HERO = {
-  b: { en: { h1: 'The venue’s floor plan is fiction', sub: 'The scan shows the venue as it is. A digital copy of the venue as a point cloud in one site visit, about 1 cm accuracy. From it we build the 3D model and design the event.' },
-       ru: { h1: 'Планировка от площадки это художественная литература', sub: 'Скан показывает площадку как есть. Цифровая копия площадки, облако точек, за один выезд с точностью около сантиметра. По нему собираем 3D-модель и проектируем мероприятие.' } },
+  b: { en: { h1: 'The venue’s floor plan is almost always fiction', sub: 'The scanner captures the venue as it is. A digital copy of the venue as a point cloud in one site visit, about 1 cm accuracy. From it we build the 3D model and design the event.' },
+       ru: { h1: 'Планировка от площадки это почти всегда художественная литература', sub: 'Сканер фиксирует площадку как есть. Цифровая копия площадки, облако точек, за один выезд с точностью около сантиметра. По нему собираем 3D-модель и проектируем мероприятие.' } },
   c: { en: { h1: 'The scan cancels the second site visit', sub: 'One visit and the venue is in the cloud: a digital copy with every dimension, about 1 cm accuracy. From it we build the 3D model and design the event.' },
        ru: { h1: 'Скан отменяет второй выезд', sub: 'Один выезд, и площадка в облаке точек: цифровая копия со всеми размерами, точность около сантиметра. По нему собираем 3D-модель и проектируем мероприятие.' } }
 };
