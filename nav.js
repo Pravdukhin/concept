@@ -224,6 +224,31 @@ function dpFrame() {
 }
 if (V === 'D') requestAnimationFrame(dpFrame);
 
+// ---------- after the last stage: the same bobbing arrow as on the first screen, under the rail ----------
+let more = null;
+if (PAGE === 'main' && document.getElementById('rail')) {
+  const st = document.createElement('style');
+  st.textContent = `.more{position:fixed;z-index:24;appearance:none;border:0;background:none;padding:4px 10px;margin:0;color:var(--amber);font:inherit;font-size:20px;line-height:1;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .5s;transform:translateX(-50%);-webkit-tap-highlight-color:transparent}
+.more.on{opacity:1;pointer-events:auto}
+.more span{display:block;animation:bob 1.6s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.more span{animation:none}}`;
+  document.head.appendChild(st);
+  more = $(`<button type="button" class="more" aria-label="Portfolio"><span>↓</span></button>`);
+  document.body.appendChild(more);
+  more.addEventListener('click', () => go(5));
+}
+function moreFrame() {
+  if (more) {
+    const rl = document.getElementById('rail'), r = rl.getBoundingClientRect();
+    const show = onRing() && typeof step !== 'undefined' && typeof stageOf === 'function' && stageOf(step) === 4 && step >= N - 3
+      && !(typeof AUTO !== 'undefined' && AUTO.run) && r.bottom <= innerHeight + 1;
+    if (show) { const f = rl.firstElementChild.getBoundingClientRect(), l = rl.lastElementChild.getBoundingClientRect(); more.style.left = ((f.left + l.right) / 2) + 'px'; more.style.top = (r.bottom - 10) + 'px'; }
+    more.classList.toggle('on', show);
+  }
+  requestAnimationFrame(moreFrame);
+}
+if (more) requestAnimationFrame(moreFrame);
+
 // ---------- keep in sync ----------
 let last = '';
 function sync() {
