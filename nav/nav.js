@@ -7,9 +7,9 @@ const S = document.currentScript, V = S.dataset.v, PAGE = S.dataset.page; // 'ma
 const MAIN = '/nav/' + V.toLowerCase() + '.html', SCAN = '/nav/' + V.toLowerCase() + '-scan.html';
 const TXT = {
   en: { items: ['Show day', 'Digital copy', '3D model', 'Render', 'Built', 'Work', 'About', 'How we work', 'Scanning', 'Contact'],
-        name: 'Yuriy Pravdukhin', kick: 'One project, 60 days', cta: 'Discuss your project', menu: 'Contents', close: 'Close' },
+        name: 'Yuriy Pravdukhin', kick: 'One project, 60 days', cta: 'Discuss your project', all: 'All sections', menu: 'Contents', close: 'Close' },
   ru: { items: ['Мероприятие', 'Цифровая копия', '3D-модель', 'Рендер', 'Построено', 'Проекты', 'Обо мне', 'Как мы работаем', 'Сканирование', 'Контакты'],
-        name: 'Юрий Правдухин', kick: 'Один проект, 60 дней', cta: 'Обсудить проект', menu: 'Содержание', close: 'Закрыть' }
+        name: 'Юрий Правдухин', kick: 'Один проект, 60 дней', cta: 'Обсудить проект', all: 'Все разделы', menu: 'Содержание', close: 'Закрыть' }
 };
 const DAYS = ['0', '−45', '−30', '−20', '0'];
 const SEC = ['work', 'about', 'how', null, 'contact']; // 8 = scanning page
@@ -86,6 +86,25 @@ header.bar{display:none!important}
 .sh .ft .btn{margin:0}
 .scale .sc-read{cursor:pointer}
 body.navpad{padding-bottom:64px}
+/* D: the day scale becomes the path: rows in scroll order, the dot only goes down */
+.dp{position:relative;margin-left:auto;width:max-content;padding-right:6px}
+.dp .ln{position:absolute;right:6px;top:0;bottom:0;width:1px;background:rgba(232,236,241,.42)}
+.dp .ln2{position:absolute;right:6px;width:1px;background:repeating-linear-gradient(to bottom,rgba(232,236,241,.42) 0 3px,transparent 3px 6px)}
+.dp .fill{position:absolute;right:6px;top:0;width:1px;background:var(--amber)}
+.dp .dot{position:absolute;right:2.5px;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 3px rgba(8,20,36,.45),0 0 14px rgba(242,166,72,.55)}
+.dp button{position:relative;display:flex;justify-content:flex-end;align-items:baseline;gap:9px;width:100%;height:var(--dph);padding:0 16px 0 0;border:0;background:none;color:var(--sdim,#b9c3cf);font:inherit;font-size:12px;letter-spacing:.02em;white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .3s;align-items:center}
+.dp button::before{content:"";position:absolute;right:-4px;top:50%;width:9px;height:1px;background:rgba(232,236,241,.6)}
+.dp button b{font-weight:400;min-width:2.3em;text-align:left;color:inherit;order:2}
+.dp button span{order:1}
+.dp button.on{color:var(--ink)}
+.dp button.pas{color:rgba(185,195,207,.75)}
+.dp button:hover span{text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(232,236,241,.4)}
+.dp button.all{margin-top:10px;color:var(--ink)}
+.dp button.all .ic{display:inline-block;width:12px;height:8px;border-top:1.2px solid currentColor;border-bottom:1.2px solid currentColor;position:relative;order:2;margin-right:calc(2.3em - 12px)}
+.dp button.all .ic::after{content:"";position:absolute;left:0;right:0;top:50%;height:1.2px;margin-top:-.6px;background:currentColor}
+.dp button.all::before{display:none}
+:root{--dph:26px}@media (max-width:560px){:root{--dph:23px}}
+
 @media (max-width:560px){body.navscan .hero{padding-bottom:96px}}
 `;
 document.head.appendChild(css);
@@ -130,7 +149,7 @@ let bar = null, nr = null, sheet = null, pill = null;
 // unified bar (all variants)
 bar = $(`<header class="nb" aria-label="Site"><a class="me" href="${PAGE === 'scan' ? MAIN : '#top'}"></a><div class="r"><div class="lang" data-lang></div></div></header>`);
 document.body.appendChild(bar);
-if (V === 'C') { pill = $(`<button type="button" class="pill" aria-haspopup="dialog"></button>`); bar.querySelector('.r').prepend(pill); pill.addEventListener('click', openSheet); }
+if (V === 'C' || V === 'D') { pill = $(`<button type="button" class="pill" aria-haspopup="dialog"></button>`); bar.querySelector('.r').prepend(pill); pill.addEventListener('click', openSheet); }
 
 if (V === 'A' || V === 'B') {
   nr = $(`<div class="nr" role="navigation" aria-label="Site"><span class="tip"></span><div class="nd"></div><button type="button" class="nl ${V === 'B' ? 'btn2' : 'plain'}"></button></div>`);
@@ -141,7 +160,7 @@ if (V === 'A' || V === 'B') {
   nr.addEventListener('mouseover', e => { const b = e.target.closest('[data-go]'); const tip = nr.querySelector('.tip'); if (!b) return; tip.textContent = items()[+b.dataset.go]; tip.style.left = (b.offsetLeft + nr.querySelector('.nd').offsetLeft) + 'px'; tip.classList.add('on'); });
   nr.addEventListener('mouseleave', () => nr.querySelector('.tip').classList.remove('on'));
 }
-if (V === 'B' || V === 'C') {
+if (V === 'B' || V === 'C' || V === 'D') {
   sheet = $(`<div class="sh" role="dialog" aria-modal="true"><div class="bg"></div><div class="pn"></div></div>`);
   document.body.appendChild(sheet);
   sheet.querySelector('.bg').addEventListener('click', closeSheet);
@@ -160,6 +179,49 @@ function renderSheet() {
 const langBtns = () => ['en', 'ru'].map(l => `<button type="button" data-l="${l}" aria-pressed="${l === lang()}">${l.toUpperCase()}</button>`).join('');
 function openSheet() { if (!sheet) return; renderSheet(); sheet.classList.add('open'); document.documentElement.style.overflow = 'hidden'; }
 function closeSheet() { if (!sheet || !sheet.classList.contains('open')) return; sheet.classList.remove('open'); document.documentElement.style.overflow = ''; }
+
+
+// ---------- D: the scale as the path ----------
+let dp = null, dpRows = [];
+if (V === 'D') {
+  const sc = document.getElementById('scale'), tr = document.getElementById('sct');
+  if (sc && tr) {
+    tr.style.display = 'none';
+    dp = $(`<div class="dp"><span class="ln"></span><span class="ln2"></span><span class="fill"></span><span class="dot"></span></div>`);
+    sc.appendChild(dp);
+    dp.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; if (b.classList.contains('all')) openSheet(); else go(+b.dataset.go); });
+  }
+}
+function renderDp() {
+  if (!dp) return;
+  dp.querySelectorAll('button').forEach(b => b.remove());
+  const it = items();
+  [0, 1, 2, 3, 4].forEach(i => { const b = document.createElement('button'); b.type = 'button'; b.dataset.go = i; b.innerHTML = `<span>${it[i]}</span><b>${DAYS[i]}</b>`; dp.appendChild(b); });
+  const all = document.createElement('button'); all.type = 'button'; all.className = 'all'; all.innerHTML = `<span>${X().all}</span><i class="ic"></i>`; dp.appendChild(all);
+  dpRows = [...dp.querySelectorAll('button[data-go]')];
+  const y = b => b.offsetTop + b.offsetHeight / 2;
+  dp.querySelector('.ln').style.cssText = `top:${y(dpRows[0])}px;height:${y(dpRows[4]) - y(dpRows[0])}px;bottom:auto`;
+  dp.querySelector('.ln2').style.cssText = `top:${y(dpRows[4])}px;height:${y(all) - y(dpRows[4]) - 6}px`;
+}
+let dpLang = '';
+function dpFrame() {
+  if (dp && typeof step !== 'undefined' && typeof STOPS === 'function') {
+    if (dpLang !== lang()) { dpLang = lang(); renderDp(); }
+    const S = [0, ...STOPS()], ys = dpRows.map(b => b.offsetTop + b.offsetHeight / 2);
+    // smooth position from the real scroll, not the rounded step
+    const r = ring.getBoundingClientRect(), span = r.height - innerHeight;
+    const f = Math.min(1, Math.max(0, -r.top / span)) * (N - 1);
+    let k = 0; while (k < 3 && f > S[k + 1]) k++;
+    const t = Math.min(1, Math.max(0, (f - S[k]) / (S[k + 1] - S[k])));
+    const yy = ys[k] + t * (ys[k + 1] - ys[k]);
+    dp.querySelector('.dot').style.top = yy + 'px';
+    const fl = dp.querySelector('.fill'); fl.style.top = ys[0] + 'px'; fl.style.height = Math.max(0, yy - ys[0]) + 'px';
+    const st = Math.round(k + t);
+    dpRows.forEach((b, j) => { b.classList.toggle('on', j === st); b.classList.toggle('pas', j < st); });
+  }
+  requestAnimationFrame(dpFrame);
+}
+if (V === 'D') requestAnimationFrame(dpFrame);
 
 // ---------- keep in sync ----------
 let last = '';
