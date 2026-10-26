@@ -367,6 +367,13 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 /* short phone screens (Telegram, small iPhones): a smaller first-screen heading, so the loader above it has room */
 @media (max-width:560px) and (max-height:700px){.motto{font-size:22px;max-width:none}}
 </style>
+
+<style>
+/* v4.9 */
+.lead2 .fee{font-weight:400;color:var(--amber);white-space:nowrap}
+.prtime{margin:36px 0 0;max-width:56ch;font-size:clamp(16px,1.6vw,19px);line-height:1.5;color:var(--ink)}
+.prtime + .prnote{margin-top:10px}
+</style>
 </head>
 <body>
 
@@ -466,13 +473,14 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 <section class="s" id="how">
   <h2 data-i="hH">How we work</h2>
   <p class="lead" data-i="hP">First the project is designed, then it is built. The client sees what they pay for, and the budget is agreed faster.</p>
-  <p class="lead lead2" data-i="hP2"></p>
+  <p class="lead lead2"><span data-i="hP2a"></span><b class="fee" data-i="hP2b"></b><span data-i="hP2c"></span></p>
   <ol class="steps">
-    <li id="brief" class="first"><span class="d" data-i="bK">Day −60 · First call</span><h3 data-i="bH">A preliminary budget in two working days</h3><p data-i="bP">8 questions about your event. Free, with no obligation.</p><p class="sm" data-i="bS">Preparation usually takes 30 to 60 days. If your date is sooner, get in touch.</p><div class="bot"><div class="pr"><b data-i="p0">Free</b></div><a class="btn wa" href="https://wa.me/393498929736" target="_blank" rel="noopener" data-i="briefBtn">Request a brief</a></div></li>
+    <li id="brief" class="first"><span class="d" data-i="bK">Day −60 · First call</span><h3 data-i="bH">A preliminary budget in two working days</h3><p data-i="bP">8 questions about your event. Free, with no obligation.</p><div class="bot"><div class="pr"><b data-i="p0">Free</b></div><a class="btn wa" href="https://wa.me/393498929736" target="_blank" rel="noopener" data-i="briefBtn">Request a brief</a></div></li>
     <li><span class="d" data-capn="0">Day −45</span><h3 data-i="s1h">A digital copy of the venue</h3><p data-i="s1p"></p><div class="bot"><div class="pr"><b data-i="p1"></b><span data-i="p1s"></span></div><a class="btn scb" href="3d-venue-scanning/" data-i="scanBtn">About scanning</a></div></li>
     <li class="pair"><div class="two"><div><span class="d" data-capn="1">Day −30</span><h3 data-i="s2h">Technical design, true to size</h3><p data-i="s2p"></p></div><div><span class="d" data-capn="2">Day −20</span><h3 data-i="s3h">Visuals for the client</h3><p data-i="s3p"></p></div></div><div class="bot"><div class="pr pr2"><b data-i="p2"></b><span data-i="p2s"></span></div></div></li>
     <li><span class="d" data-capn="3">Show day</span><h3 data-i="s4h">Delivered as designed</h3><p data-i="s4p"></p><div class="bot"><div class="pr"><b data-i="p3"></b><span data-i="p3s"></span></div></div></li>
   </ol>
+  <p class="prtime" data-i="bS"></p>
   <p class="prnote" data-i="pN"></p>
 </section>
 
@@ -537,15 +545,15 @@ const T = {
   hint: 'Scroll back in time — this is how we’ll build yours',
   cta: 'Discuss your project', scanBtn: 'About scanning', spK: 'Digital copy of the venue', spH: '3D venue scanning', spP: 'A point cloud in one site visit: an exact digital copy of the venue with every wall and step. Italy, France, UAE and worldwide.', spF1: 'accuracy inside the cloud', spF2h: '1 hour', spF2: 'for a whole hotel in Georgia', spF3h: '1 backpack', spF3: 'the scanner flies with me to any country', spGo: 'About scanning', spMore: 'Show more', spLess: 'Show less', spHc: 'A hotel in Georgia, scanned in one hour', spV1: 'Gardens, terraces and courtyards', spV2: 'Halls, stairs, corridors and complex spaces in one pass', spV3: 'The cloud grows live on screen: nothing is missed', spCm: 'cm', bAlt: 'or write directly ↓',
   bK: 'Day −60 · First call', bH: 'A preliminary budget in two working days',
-  bP: '8 questions about your event. Free, with no obligation.',
-  bS: 'Preparation usually takes 30 to 60 days. If your date is sooner, get in touch.',
+  bP: 'To begin, answer 8 questions about your event. Within two working days I will prepare a preliminary budget and propose the next steps. If the figures work for you, we move on to the project.',
+  bS: 'The whole path from the first call to show day usually takes 30 to 60 days. If you have less time, get in touch and we’ll see what can be done.',
   nWork: 'Work', nHow: 'Stages and pricing', nAbout: 'About', nWhere: 'Where', nContact: 'Contact',
   wH: 'Selected work', wAll: 'All projects', wLess: 'Show less', back: 'Back', wP: 'Weddings, galas and conferences in palaces, castles, stadiums and a Byzantine cistern. Every one of them was modelled before it was built.',
-  hH: 'Stages and pricing', hP: 'First the project is designed, then it is built. The client sees what they pay for, and the budget is agreed faster.', hP2: 'A technical director’s fee depends on the brief and is usually between €2,000 and €10,000 per project. Each stage can be ordered on its own, but only in order: every stage is built on the result of the one before.', p0: 'Free', p1: 'From €1,000 per day on site', p1s: 'Can be ordered on its own', p2: 'From €2,000 for both stages', p2s: 'Built on the digital copy of the venue', p3: 'Delivery from €5,000', p3s: 'To the approved technical design', pN: 'Travel and accommodation are billed separately.', pfBtn: 'Portfolio', briefBtn: 'Request a brief', costBtn: 'What it costs',
+  hH: 'Stages and pricing', hP: 'First the project is designed, then it is built. The client sees what they pay for, and the budget is agreed faster.', hP2a: 'A technical director’s fee depends on the brief and is usually ', hP2b: 'between €2,000 and €10,000 per project', hP2c: '. Each stage can be ordered on its own, but only in order: every stage is built on the result of the one before.', p0: 'Free, with no obligation', p1: 'From €1,000 per day on site', p1s: 'Can be ordered on its own', p2: 'From €2,000 for both stages', p2s: 'Built on the digital copy of the venue', p3: 'Delivery from €5,000', p3s: 'To the approved technical design', pN: 'Travel and accommodation are billed separately.', pfBtn: 'Portfolio', briefBtn: 'Request a brief', costBtn: 'What it costs',
   s1h: 'A digital copy of the venue', s1p: 'We walk the venue with a handheld SLAM scanner and have an accurate 3D copy in a few hours. Our own equipment in Italy and the UAE.',
   s2h: 'Technical design, true to size', s2p: 'The entire build in a single 3D model of the real venue. Designed on BIM principles, so clashes are found on screen, not on site.',
   s3h: 'Visuals for the client', s3p: 'Renders are built from the same model our suppliers work from. The client sees not a sketch, but what will actually be built.',
-  s4h: 'Delivered as designed', s4p: 'Delivery follows the approved design to the letter. To begin, answer 8 questions about your event. Within two working days I will prepare a preliminary budget and propose the next steps. If the figures work for you, we move on to the project.',
+  s4h: 'Delivered as designed', s4p: 'Delivery follows the approved design to the letter. At this stage I prepare a detailed technical brief and work schedule for the suppliers, which are also agreed with the venue and other services. This keeps surprises on site to a minimum and the risks under control.',
   aH: 'About', a1: 'Hi! I’m Yuriy, and I’ve been in technical event production for over 20 years, in recent years more and more often around the world. That usually means 60 flights a year, and yes, I love planes too.', a2: 'I also love bringing structure to chaos and building a system in everything I take on.', a3: 'As a technical director, I specialise in conferences and high-end private events. As my portfolio shows, galas and stadium projects come my way too.', a4: 'In summer I live near Milan, in winter I’m often in Dubai. I work on projects in SketchUp and Vectorworks, and we use visualisation tools built on Unreal Engine. For each project I bring together a trusted team of specialists, and I’m personally accountable for the result.', a5: 'I work in English and Russian.', f1: 'years in event production', f2: 'projects', f3: 'countries',
   gH: 'Where', gP: 'Based in Milan and Dubai. Delivered projects in 18 countries.', geoH: 'Experience and trusted technical partners in:',
   mail: 'Email', close: 'Close', foot1: 'Yuriy Pravdukhin · Technical design and production for events', foot2: 'Milan, Italy · Dubai, UAE',
@@ -568,15 +576,15 @@ const T = {
   hint: 'Листайте назад во времени — так мы будем готовить и ваш проект',
   cta: 'Обсудить проект', scanBtn: 'О сканировании', spK: 'Цифровая копия площадки', spH: '3D-сканирование площадок', spP: 'Облако точек за один выезд: точная цифровая копия площадки с каждой стеной и ступенькой. Италия, Франция, ОАЭ и весь мир.', spF1: 'точность внутри облака', spF2h: '1 час', spF2: 'на целый отель в Грузии', spF3h: '1 рюкзак', spF3: 'сканер летит со мной в любую страну', spGo: 'О сканировании', spMore: 'Подробнее', spLess: 'Свернуть', spHc: 'Отель в Грузии, отсканирован за час', spV1: 'Сады, террасы и дворы', spV2: 'Залы, лестницы, коридоры и помещения сложной формы за один проход', spV3: 'Облако растёт на экране: на месте видно, что ничего не пропущено', spCm: 'см', bAlt: 'или напишите напрямую ↓',
   bK: 'День −60 · Первый звонок', bH: 'Предварительный бюджет за два рабочих дня',
-  bP: '8 вопросов о вашем мероприятии. Бесплатно и без обязательств.',
-  bS: 'Подготовка обычно занимает от 30 до 60 дней. Если времени меньше, напишите, обсудим.',
+  bP: 'Чтобы начать, ответьте на 8 вопросов о мероприятии. Через два рабочих дня я подготовлю предварительный бюджет и предложу план дальнейших действий. Если цифры вас устроят, переходим к работе над проектом.',
+  bS: 'Весь путь от первого звонка до дня мероприятия обычно занимает от 30 до 60 дней. Если времени меньше, напишите, обсудим, что успеем.',
   nWork: 'Проекты', nHow: 'Этапы и стоимость', nAbout: 'Обо мне', nWhere: 'География', nContact: 'Контакты',
   wH: 'Избранные проекты', wAll: 'Все проекты', wLess: 'Свернуть', back: 'Назад', wP: 'Свадьбы, гала-ужины и конференции во дворцах, замках, на стадионах и в византийской цистерне. Каждый из них сначала был смоделирован, а потом построен.',
-  hH: 'Этапы и стоимость', hP: 'Сначала проект, потом застройка. Клиент видит, за что платит, и бюджет согласовывается легче.', hP2: 'Гонорар технического директора зависит от брифа и обычно составляет от 2 000 до 10 000 € за проект. Каждый этап можно заказать отдельно, но только по порядку: следующий строится на результате предыдущего.', p0: 'Бесплатно', p1: 'От 1 000 € за день на площадке', p1s: 'Можно заказать отдельно', p2: 'От 2 000 € за оба этапа', p2s: 'Делаем по цифровой копии площадки', p3: 'Реализация от 5 000 €', p3s: 'По утверждённому техническому проекту', pN: 'Дорога и проживание оплачиваются отдельно.', pfBtn: 'Портфолио', briefBtn: 'Запросить бриф', costBtn: 'Сколько это стоит',
+  hH: 'Этапы и стоимость', hP: 'Сначала проект, потом застройка. Клиент видит, за что платит, и бюджет согласовывается легче.', hP2a: 'Гонорар технического директора зависит от брифа и обычно составляет ', hP2b: 'от 2 000 до 10 000 € за проект', hP2c: '. Каждый этап можно заказать отдельно, но только по порядку: следующий строится на результате предыдущего.', p0: 'Бесплатно и без обязательств', p1: 'От 1 000 € за день на площадке', p1s: 'Можно заказать отдельно', p2: 'От 2 000 € за оба этапа', p2s: 'Делаем по цифровой копии площадки', p3: 'Реализация от 5 000 €', p3s: 'По утверждённому техническому проекту', pN: 'Дорога и проживание оплачиваются отдельно.', pfBtn: 'Портфолио', briefBtn: 'Запросить бриф', costBtn: 'Сколько это стоит',
   s1h: 'Цифровая копия площадки', s1p: 'Обходим площадку с ручным SLAM-сканером и за несколько часов получаем её точную 3D-копию. Собственное оборудование в Италии и ОАЭ.',
   s2h: 'Технический проект в точных размерах', s2p: 'Вся застройка в единой 3D-модели реальной площадки. Проектируем по принципам BIM, поэтому пересечения находятся на экране, а не на монтаже.',
   s3h: 'Визуализация для клиента', s3p: 'Рендеры строим по той же модели, по которой работают подрядчики. Клиент видит не эскиз, а то, что действительно будет построено.',
-  s4h: 'Построено так, как спроектировано', s4p: 'Реализация идёт строго по утверждённому проекту. Чтобы начать, ответьте на 8 вопросов о мероприятии. Через два рабочих дня я подготовлю предварительный бюджет и предложу план дальнейших действий. Если цифры вас устроят, переходим к работе над проектом.',
+  s4h: 'Построено так, как спроектировано', s4p: 'Реализация идёт строго по утверждённому проекту. На этом этапе я готовлю для подрядчиков подробное техническое задание и график работ, они также согласовываются с площадкой и другими службами. Благодаря этому сюрпризов на площадке минимум, а риски управляемы.',
   aH: 'Обо мне', a1: 'Привет! Меня зовут Юрий, и я занимаюсь техническим продакшном мероприятий больше 20 лет. В последние годы всё чаще по миру. Обычно это 60 перелётов в год, и да, самолёты я тоже очень люблю.', a2: 'Ещё я люблю структурировать хаос и выстраивать систему в любом деле, за которое берусь.', a3: 'Как технический директор я специализируюсь на конференциях и премиальных частных мероприятиях. Как видно по портфолио, гала-ужины и проекты на стадионах у меня тоже случаются.', a4: 'Летом живу недалеко от Милана, зимой часто в Дубае. Работаю с проектами в SketchUp и Vectorworks, визуализаторы используем на базе Unreal Engine. Под задачи проекта собираю проверенную команду специалистов, а за результат отвечаю лично.', a5: 'Работаю на русском и английском.', f1: 'лет в продакшне мероприятий', f2: 'проектов', f3: 'стран',
   gH: 'География', gP: 'Базы в Милане и Дубае. Реализованные проекты в 18 странах.', geoH: 'Опыт работы и проверенные технические партнёры в странах:',
   mail: 'Почта', close: 'Закрыть', foot1: 'Юрий Правдухин · Технический дизайн и продакшн мероприятий', foot2: 'Милан, Италия · Дубай, ОАЭ',
