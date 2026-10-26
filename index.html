@@ -639,7 +639,7 @@ function paint() {
 }
 // ---------- the day scale: show day on top, first call at the bottom ----------
 const SC_MAX = 60;
-const SCAN_PAGE = /scanpreview/.test(location.search);   // the /3d-venue-scanning/ page is not built yet: button hidden (?scanpreview shows it)
+const SCAN_PAGE = true;   // button under the −45 text leads to /3d-venue-scanning/
 const MS = [[0, '', 4], [-20, '', 3], [-30, '', 2], [-45, '', 1], [-58, '', -1], [-60, '', -1]];
 const sct = el('sct');
 MS.forEach(([d, name, st]) => {
