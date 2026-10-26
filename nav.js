@@ -199,31 +199,17 @@ function renderDp() {
   const it = items();
   [0, 1, 2, 3, 4].forEach(i => { const b = document.createElement('button'); b.type = 'button'; b.dataset.go = i; b.innerHTML = `<span>${it[i]}</span><b>${DAYS[i]}</b>`; dp.appendChild(b); });
   const all = document.createElement('button'); all.type = 'button'; all.className = 'all'; all.innerHTML = `<span>${X().all}</span><i class="ic"></i>`; dp.appendChild(all);
-  dpRows = [...dp.querySelectorAll('button[data-go]')];
+  dpRows = [...dp.querySelectorAll('button[data-go]')]; dpSt = -1;
   const y = b => b.offsetTop + b.offsetHeight / 2;
   dp.querySelector('.ln').style.cssText = `top:${y(dpRows[0])}px;height:${y(dpRows[4]) - y(dpRows[0])}px;bottom:auto`;
   dp.querySelector('.ln2').style.cssText = `top:${y(dpRows[4])}px;height:${y(all) - y(dpRows[4]) - 6}px`;
 }
-let dpLang = '';
-function dpFrame() {
-  if (dp && typeof step !== 'undefined' && typeof STOPS === 'function') {
-    if (dpLang !== lang()) { dpLang = lang(); renderDp(); }
-    const S = [0, ...STOPS()], ys = dpRows.map(b => b.offsetTop + b.offsetHeight / 2);
-    // smooth position from the real scroll, not the rounded step
-    const r = ring.getBoundingClientRect(), span = r.height - innerHeight;
-    const f = Math.min(1, Math.max(0, -r.top / span)) * (N - 1);
-    let k = 0; while (k < 3 && f > S[k + 1]) k++;
-    const t = Math.min(1, Math.max(0, (f - S[k]) / (S[k + 1] - S[k])));
-    const yy = ys[k] + t * (ys[k + 1] - ys[k]);
-    dp.querySelector('.dot').style.top = yy + 'px';
-    const fl = dp.querySelector('.fill'); fl.style.top = ys[0] + 'px'; fl.style.height = Math.max(0, yy - ys[0]) + 'px';
-    const st = Math.round(k + t);
-    dpRows.forEach((b, j) => { b.classList.toggle('on', j === st); b.classList.toggle('pas', j < st); });
-  }
-  requestAnimationFrame(dpFrame);
+let dpLang = '', dpYs = null;
+function dpLayout() { // row centres inside .dp: they only change with language or size
+  if (!dp) return; dpYs = dpRows.map(b => b.offsetTop + b.offsetHeight / 2);
+  // the loader on the first screen is placed under the scale: the scale got taller, so place it again
+  if (typeof placeLoader === 'function' && typeof LKEY !== 'undefined') { try { LKEY = ''; placeLoader(); } catch (e) {} }
 }
-if (V === 'D') requestAnimationFrame(dpFrame);
-
 // ---------- after the last stage: the same bobbing arrow as on the first screen, under the rail ----------
 let more = null;
 if (PAGE === 'main' && document.getElementById('rail')) {
@@ -237,17 +223,44 @@ if (PAGE === 'main' && document.getElementById('rail')) {
   document.body.appendChild(more);
   more.addEventListener('click', () => go(5));
 }
-function moreFrame() {
-  if (more) {
-    const rl = document.getElementById('rail'), r = rl.getBoundingClientRect();
-    const show = onRing() && typeof step !== 'undefined' && typeof stageOf === 'function' && stageOf(step) === 4 && step >= N - 3
-      && !(typeof AUTO !== 'undefined' && AUTO.run) && r.bottom <= innerHeight + 1;
-    if (show) { const f = rl.firstElementChild.getBoundingClientRect(), l = rl.lastElementChild.getBoundingClientRect(); more.style.left = ((f.left + l.right) / 2) + 'px'; more.style.top = (r.bottom - 10) + 'px'; }
-    more.classList.toggle('on', show);
+let railX = null;
+function moreLayout() { if (!more) return; const rl = document.getElementById('rail'), f = rl.firstElementChild.getBoundingClientRect(), l = rl.lastElementChild.getBoundingClientRect(); railX = [(f.left + l.right) / 2, rl.getBoundingClientRect().bottom]; }
+addEventListener('resize', () => { dpYs = null; railX = null; });
+// one loop for the scale dot and the arrow; it does nothing when nothing moved
+let fKey = '';
+function frame() {
+  if (typeof step !== 'undefined' && typeof STOPS === 'function') {
+    if (dp && dpLang !== lang()) { dpLang = lang(); renderDp(); dpYs = null; }
+    const run = typeof AUTO !== 'undefined' && AUTO.run;
+    const key = scrollY + '|' + innerHeight + '|' + step + '|' + run + '|' + dpLang + '|' + (dpYs ? 1 : 0);
+    if (key !== fKey) {
+      fKey = key;
+      const r = ring.getBoundingClientRect(), span = r.height - innerHeight;
+      if (dp) {
+        if (!dpYs) dpLayout();
+        const S = [0, ...STOPS()], ys = dpYs;
+        const f = Math.min(1, Math.max(0, -r.top / span)) * (N - 1);   // smooth, from the real scroll
+        let k = 0; while (k < 3 && f > S[k + 1]) k++;
+        const t = Math.min(1, Math.max(0, (f - S[k]) / (S[k + 1] - S[k])));
+        const yy = ys[k] + t * (ys[k + 1] - ys[k]);
+        dpDot.style.transform = `translateY(${yy}px)`;
+        dpFill.style.top = ys[0] + 'px'; dpFill.style.height = Math.max(0, yy - ys[0]) + 'px';
+        const st = Math.round(k + t);
+        if (dpSt !== st) { dpSt = st; dpRows.forEach((b, j) => { b.classList.toggle('on', j === st); b.classList.toggle('pas', j < st); }); }
+      }
+      if (more) {
+        const onR = r.bottom >= innerHeight * .5;
+        const show = onR && stageOf(step) === 4 && step >= N - 3 && !run && r.bottom >= innerHeight - 1;
+        if (show) { if (!railX) moreLayout(); more.style.left = railX[0] + 'px'; more.style.top = (railX[1] - 10) + 'px'; }
+        if (more.classList.contains('on') !== show) more.classList.toggle('on', show);
+      }
+    }
   }
-  requestAnimationFrame(moreFrame);
+  requestAnimationFrame(frame);
 }
-if (more) requestAnimationFrame(moreFrame);
+let dpDot = null, dpFill = null, dpSt = -1;
+if (dp) { dpDot = dp.querySelector('.dot'); dpFill = dp.querySelector('.fill'); dpDot.style.top = '0'; }
+if (dp || more) requestAnimationFrame(frame);
 
 // ---------- keep in sync ----------
 let last = '';

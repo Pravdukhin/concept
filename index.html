@@ -825,7 +825,14 @@ addEventListener('wheel', e => {
 }, { passive: false });
 // ---- touch: every touch is one gesture ----
 let touchY = null, touchUsed = false;
-addEventListener('touchstart', e => { touchY = e.touches[0].clientY; touchUsed = false; AUTO.gid++; }, { passive: true });
+addEventListener('touchstart', e => {
+  touchY = e.touches[0].clientY; touchUsed = false; AUTO.gid++;
+  // on (or nearly on) the last stop: hand the page back to the finger right away
+  if (AUTO.armed && AUTO.idx === STOPS().length - 1 && hopDone()) {
+    if (AUTO.run) { AUTO.run = false; cancelAnimationFrame(AUTO.raf); scrollTo({ top: yOf(STOPS()[AUTO.idx]), behavior: 'instant' }); }
+    AUTO.armed = false;
+  }
+}, { passive: true });
 addEventListener('touchmove', e => {
   if (touchY === null) return;
   const ours = AUTO.gid === AUTO.hopG;
@@ -906,6 +913,6 @@ dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
 dlg.addEventListener('close', () => history.replaceState(null, '', location.pathname));
 if (location.hash && PROJECTS.some(p => '#' + p.slug === location.hash)) openProject(location.hash.slice(1));
 </script>
-<script src="/nav.js?v=2" data-v="D" data-page="main" data-main="/" data-scan="/3d-venue-scanning/"></script>
+<script src="/nav.js?v=3" data-v="D" data-page="main" data-main="/" data-scan="/3d-venue-scanning/"></script>
 </body>
 </html>
