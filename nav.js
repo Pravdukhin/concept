@@ -7,9 +7,9 @@ const S = document.currentScript, V = S.dataset.v, PAGE = S.dataset.page; // 'ma
 const MAIN = S.dataset.main || '/nav/' + V.toLowerCase() + '.html', SCAN = S.dataset.scan || '/nav/' + V.toLowerCase() + '-scan.html';
 const TXT = {
   en: { items: ['Brief', 'Digital copy', '3D model', 'Render', 'Show day', 'Portfolio', 'About', 'How we work', 'Scanning', 'Contact'],
-        name: 'Yuriy Pravdukhin', kick: 'One project, 60 days', cta: 'Discuss your project', page: 'Full scanning page', all: 'All sections', menu: 'Contents', close: 'Close' },
+        name: 'Yuriy Pravdukhin', kick: 'One project, 60 days', cta: 'Discuss your project', page: 'Full scanning page', allp: 'All projects', all: 'All sections', menu: 'Contents', close: 'Close' },
   ru: { items: ['Бриф', 'Цифровая копия', '3D-модель', 'Рендер', 'Мероприятие', 'Портфолио', 'Обо мне', 'Как мы работаем', 'Сканирование', 'Контакты'],
-        name: 'Юрий Правдухин', kick: 'Один проект, 60 дней', cta: 'Обсудить проект', page: 'Отдельная страница', all: 'Все разделы', menu: 'Содержание', close: 'Закрыть' }
+        name: 'Юрий Правдухин', kick: 'Один проект, 60 дней', cta: 'Обсудить проект', page: 'Отдельная страница', allp: 'Все проекты', all: 'Все разделы', menu: 'Содержание', close: 'Закрыть' }
 };
 const DAYS = ['−60', '−45', '−30', '−20', '0'];
 // portfolio in the site map: the landing's PROJECTS when present, else this copy (update it when projects change)
@@ -156,6 +156,16 @@ function go(i) {
   scrollTo({ top: e.getBoundingClientRect().top + scrollY - 56, behavior: far ? 'instant' : 'smooth' });
 }
 
+// projects in the map: only while in the portfolio (or on a project page); the same ones the landing shows (3 on phones, 6 wider),
+// all of them once "All projects" is open there
+function pjRows(a) {
+  if (PAGE !== 'main' || a !== 5) return '';
+  const g = document.getElementById('wgrid'), cut = !!(g && g.classList.contains('cut'));
+  const vis = new Set(g ? [...g.children].filter(c => c.offsetParent !== null).map(c => c.dataset.slug) : []);
+  const list = projs().filter(([sl]) => !cut || vis.has(sl) || sl === dlgSlug());
+  return list.map(([sl, t, y]) => `<li class="sub pj${sl === dlgSlug() ? ' on' : ''}"><a href="#${sl}" data-pj="${sl}"><span class="d"></span><span class="t">${t} <em>${y}</em></span></a></li>`).join('')
+    + (cut ? `<li class="sub pj pjall"><a href="#work" data-pjall="1"><span class="d"></span><span class="t">${X().allp} <em>${projs().length}</em><i>↓</i></span></a></li>` : '');
+}
 function goProject(slug) {
   closeSheet();
   if (PAGE === 'scan' || typeof openProject !== 'function') { location.href = MAIN + '#' + slug; return; }
@@ -201,6 +211,7 @@ if (V === 'B' || V === 'C' || V === 'D') {
   sheet.querySelector('.bg').addEventListener('click', closeSheet);
   sheet.addEventListener('click', e => {
     const pj = e.target.closest('[data-pj]'); if (pj) { e.preventDefault(); goProject(pj.dataset.pj); return; }
+    const pa = e.target.closest('[data-pjall]'); if (pa) { e.preventDefault(); const b = document.querySelector('#wmore button'); if (b) b.click(); renderSheet(); return; }
     const a = e.target.closest('[data-go]'); if (a) { e.preventDefault(); go(+a.dataset.go); } if (e.target.closest('.x')) closeSheet();
   });
   addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
@@ -215,7 +226,7 @@ function renderSheet() {
   const a = current(), it = items();
   const row = i => `<li class="${(PAGE === 'scan' && i === 8) || (i === 5 && dlgSlug()) ? 'p sec' : cls(i, a)}"><a href="#" data-go="${i}"><span class="d">${i < 5 ? DAYS[i] : ''}</span><span class="t">${it[i]}</span></a></li>`
     + (i === 8 ? `<li class="sub${PAGE === 'scan' ? ' on' : ''}"><a href="${SCAN}"><span class="d"></span><span class="t">${X().page}<i>↗</i></span></a></li>` : '')
-    + (i === 5 ? projs().map(([sl, t, y]) => `<li class="sub pj${sl === dlgSlug() ? ' on' : ''}"><a href="${PAGE === 'scan' ? MAIN + '#' + sl : '#' + sl}" data-pj="${sl}"><span class="d"></span><span class="t">${t} <em>${y}</em></span></a></li>`).join('') : '');
+    + (i === 5 ? pjRows(a) : '');
   sheet.querySelector('.pn').innerHTML = `<div class="hd"><a class="me" href="${PAGE === 'scan' ? MAIN : '#top'}">${X().name}</a><button type="button" class="x" aria-label="${X().close}">×</button></div>
     <p class="k">${X().kick}</p><ol>${[0, 1, 2, 3, 4].map(row).join('')}</ol><div class="sp"></div><ol>${[5, 6, 7, 8, 9].map(row).join('')}</ol>
     <div class="ft"><a class="btn wa" href="https://wa.me/393498929736" target="_blank" rel="noopener">${X().cta}</a><div class="lang" data-lang>${langBtns()}</div></div>`;
