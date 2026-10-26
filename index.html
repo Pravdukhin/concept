@@ -256,6 +256,58 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
+
+<style>
+/* scanning preview on the landing (test) */
+.sp{scroll-margin-top:56px}
+.sp .k{display:block;color:var(--amber);font-size:13px;font-weight:500;letter-spacing:.04em;margin-bottom:10px}
+.sp h2{font-weight:300;font-size:clamp(30px,4.4vw,52px);letter-spacing:-.02em;margin:0 0 14px;line-height:1.08}
+.sp .lead{color:var(--dim);max-width:46ch;font-size:clamp(16px,1.6vw,19px);line-height:1.5;margin:0 0 26px}
+.sp video{display:block;width:100%;height:100%;object-fit:cover;background:var(--night2)}
+.sp .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:0 0 28px;padding:0}
+.sp .facts div{border-top:1px solid var(--line);padding-top:12px}
+.sp .facts dt{font-size:clamp(22px,2.4vw,30px);font-weight:300;letter-spacing:-.01em;margin:0 0 4px;white-space:nowrap}
+.sp .facts dd{margin:0;color:var(--dim);font-size:14px;line-height:1.4}
+.sp .btn{margin-top:0}
+/* A: one card, all of it clickable */
+.spA{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(24px,4vw,56px);align-items:center;text-decoration:none;color:inherit;
+  border:1px solid var(--line);border-radius:18px;padding:clamp(14px,2vw,22px);background:linear-gradient(180deg,rgba(12,27,47,.6),rgba(8,20,36,.2));transition:border-color .3s}
+.spA:hover{border-color:rgba(242,166,72,.6)}
+.spA .vid{aspect-ratio:3/4;border-radius:12px;overflow:hidden;max-height:560px}
+.spA .txt{padding:8px 8px 8px 0}
+.spA .btn::after{content:" →"}
+.spA:hover .btn{background:var(--amber);color:var(--night)}
+/* B: section with a wide video, more opens in place */
+.spB .top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:clamp(24px,4vw,56px);align-items:end}
+.spB figure{margin:0}
+.spB .vid{aspect-ratio:16/9;border-radius:12px;overflow:hidden}
+.spB figcaption{color:var(--dim);font-size:14px;margin-top:10px}
+.spB .acts{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.spB .more2{appearance:none;font:inherit;font-size:15px;color:var(--ink);background:none;border:1px solid var(--line);border-radius:999px;padding:11px 18px;cursor:pointer}
+.spB .more2::after{content:" ↓";color:var(--amber)}
+.spB.open .more2::after{content:" ↑"}
+.spB .spx{display:grid;grid-template-rows:0fr;transition:grid-template-rows .6s cubic-bezier(.2,.7,.2,1)}
+.spB.open .spx{grid-template-rows:1fr}
+.spB .spx > div{overflow:hidden}
+.spB .xin{padding-top:40px;opacity:0;transition:opacity .5s .1s}
+.spB.open .xin{opacity:1}
+.spB .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:0 0 28px}
+.spB .tiles .vid{aspect-ratio:3/4;border-radius:12px;overflow:hidden}
+.spB .tiles p{color:var(--dim);font-size:14px;line-height:1.4;margin:10px 0 0}
+.spB .btn::after{content:" →"}
+.steps .scb{margin-top:14px;padding:8px 14px;font-size:14px}
+@media (max-width:760px){
+  .spA{grid-template-columns:1fr;gap:18px}
+  .spA .vid{aspect-ratio:4/5;max-height:none}
+  .spA .txt{padding:0 4px 6px}
+  .spB .top{grid-template-columns:1fr}
+  .sp .facts{grid-template-columns:1fr;gap:0;margin-bottom:24px}
+  .sp .facts div{display:grid;grid-template-columns:118px 1fr;align-items:baseline;gap:12px;padding:12px 0}
+  .sp .facts dt{font-size:22px}
+  .spB .tiles{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;margin:0 calc(-1 * var(--pad)) 24px;padding:0 var(--pad);scroll-padding-inline:var(--pad);scrollbar-width:none}
+  .spB .tiles > div{flex:0 0 62%;scroll-snap-align:start}
+}
+</style>
 </head>
 <body>
 
@@ -352,11 +404,36 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
   <p class="lead" data-i="hP">First the project is designed, then it is built. The client sees what they pay for, and the budget is agreed faster.</p>
   <ol class="steps">
     <li id="brief" class="first"><span class="d" data-i="bK">Day −60 · First call</span><h3 data-i="bH">A preliminary budget in two working days</h3><p data-i="bP">8 questions about your event. Free, with no obligation.</p><p class="sm" data-i="bS">Preparation usually takes 30 to 60 days. If your date is sooner, get in touch.</p><a class="btn wa" href="https://wa.me/393498929736" target="_blank" rel="noopener" data-i="cta">Discuss your project</a></li>
-    <li><span class="d" data-capn="0">Day −45</span><h3 data-i="s1h">A digital copy of the venue</h3><p data-i="s1p"></p></li>
+    <li><span class="d" data-capn="0">Day −45</span><h3 data-i="s1h">A digital copy of the venue</h3><p data-i="s1p"></p><a class="btn scb" href="3d-venue-scanning/" data-i="scanBtn">About scanning</a></li>
     <li><span class="d" data-capn="1">Day −30</span><h3 data-i="s2h">Technical design, true to size</h3><p data-i="s2p"></p></li>
     <li><span class="d" data-capn="2">Day −20</span><h3 data-i="s3h">Visuals for the client</h3><p data-i="s3p"></p></li>
     <li><span class="d" data-capn="3">Show day</span><h3 data-i="s4h">Delivered as designed</h3><p data-i="s4p"></p></li>
   </ol>
+</section>
+
+<section class="s sp spB" id="scanning">
+  <div class="top">
+    <div>
+      <span class="k" data-i="spK"></span>
+      <h2 data-i="spH"></h2>
+      <p class="lead" data-i="spP"></p>
+      <div class="acts"><button type="button" class="more2" data-i="spMore" aria-expanded="false"></button><a class="btn" href="/3d-venue-scanning/" data-i="spGo"></a></div>
+    </div>
+    <figure><div class="vid"><video data-src="/3d-venue-scanning/m/hotel.mp4" poster="/3d-venue-scanning/m/hotel.jpg" muted loop playsinline preload="none"></video></div><figcaption data-i="spHc"></figcaption></figure>
+  </div>
+  <div class="spx"><div><div class="xin">
+    <dl class="facts">
+      <div><dt>≈1&nbsp;<span data-i="spCm">см</span></dt><dd data-i="spF1"></dd></div>
+      <div><dt data-i="spF2h"></dt><dd data-i="spF2"></dd></div>
+      <div><dt data-i="spF3h"></dt><dd data-i="spF3"></dd></div>
+    </dl>
+    <div class="tiles">
+      <div><div class="vid"><video data-src="/3d-venue-scanning/m/me_far.mp4" poster="/3d-venue-scanning/m/me_far.jpg" muted loop playsinline preload="none"></video></div><p data-i="spV1"></p></div>
+      <div><div class="vid"><video data-src="/3d-venue-scanning/m/interior.mp4" poster="/3d-venue-scanning/m/interior.jpg" muted loop playsinline preload="none"></video></div><p data-i="spV2"></p></div>
+      <div><div class="vid"><video data-src="/3d-venue-scanning/m/app34.mp4" poster="/3d-venue-scanning/m/app34.jpg" muted loop playsinline preload="none"></video></div><p data-i="spV3"></p></div>
+    </div>
+    <a class="btn" href="/3d-venue-scanning/" data-i="spGo"></a>
+  </div></div></div>
 </section>
 
 <section class="s contact" id="contact">
@@ -393,7 +470,7 @@ const T = {
   h0: 'Technical design and production for events worldwide',
   loading: 'Loading 60 days of work before show day', loaded: 'Loaded: 60 days of work before show day',
   hint: 'Scroll back in time — this is how we’ll build yours',
-  cta: 'Discuss your project', scanBtn: 'About scanning', bAlt: 'or write directly ↓',
+  cta: 'Discuss your project', scanBtn: 'About scanning', spK: 'Digital copy of the venue', spH: '3D venue scanning', spP: 'A point cloud in one site visit: an exact digital copy of the venue with every wall and step. Italy, France, UAE and worldwide.', spF1: 'accuracy inside the cloud', spF2h: '1 hour', spF2: 'for a whole hotel in Georgia', spF3h: '1 backpack', spF3: 'the scanner flies with me to any country', spGo: 'About scanning', spMore: 'Show more', spLess: 'Show less', spHc: 'A hotel in Georgia, scanned in one hour', spV1: 'Gardens, terraces and courtyards', spV2: 'Halls, stairs, corridors and complex spaces in one pass', spV3: 'The cloud grows live on screen: nothing is missed', spCm: 'cm', bAlt: 'or write directly ↓',
   bK: 'Day −60 · First call', bH: 'A preliminary budget in two working days',
   bP: '8 questions about your event. Free, with no obligation.',
   bS: 'Preparation usually takes 30 to 60 days. If your date is sooner, get in touch.',
@@ -426,7 +503,7 @@ const T = {
   h0: 'Технический дизайн и продакшн мероприятий по всему миру',
   loading: 'Загружаем 60 дней работы до дня мероприятия', loaded: 'Загружено: 60 дней работы до дня мероприятия',
   hint: 'Листайте назад во времени — так мы будем готовить и ваш проект',
-  cta: 'Обсудить проект', scanBtn: 'О сканировании', bAlt: 'или напишите напрямую ↓',
+  cta: 'Обсудить проект', scanBtn: 'О сканировании', spK: 'Цифровая копия площадки', spH: '3D-сканирование площадок', spP: 'Облако точек за один выезд: точная цифровая копия площадки с каждой стеной и ступенькой. Италия, Франция, ОАЭ и весь мир.', spF1: 'точность внутри облака', spF2h: '1 час', spF2: 'на целый отель в Грузии', spF3h: '1 рюкзак', spF3: 'сканер летит со мной в любую страну', spGo: 'О сканировании', spMore: 'Подробнее', spLess: 'Свернуть', spHc: 'Отель в Грузии, отсканирован за час', spV1: 'Сады, террасы и дворы', spV2: 'Залы, лестницы, коридоры и помещения сложной формы за один проход', spV3: 'Облако растёт на экране: на месте видно, что ничего не пропущено', spCm: 'см', bAlt: 'или напишите напрямую ↓',
   bK: 'День −60 · Первый звонок', bH: 'Предварительный бюджет за два рабочих дня',
   bP: '8 вопросов о вашем мероприятии. Бесплатно и без обязательств.',
   bS: 'Подготовка обычно занимает от 30 до 60 дней. Если времени меньше, напишите, обсудим.',
@@ -913,6 +990,27 @@ dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
 dlg.addEventListener('close', () => history.replaceState(null, '', location.pathname));
 if (location.hash && PROJECTS.some(p => '#' + p.slug === location.hash)) openProject(location.hash.slice(1));
 </script>
-<script src="/nav.js?v=3" data-v="D" data-page="main" data-main="/" data-scan="/3d-venue-scanning/"></script>
+<script>
+// videos of the preview: load when close, play only while visible
+(() => {
+  const io = new IntersectionObserver(es => es.forEach(en => {
+    const v = en.target;
+    if (en.isIntersecting) { if (!v.src) v.src = v.dataset.src; v.play().catch(() => {}); } else v.pause();
+  }), { rootMargin: '200px 0px' });
+  document.querySelectorAll('#scanning video').forEach(v => io.observe(v));
+  const b = document.querySelector('.spB');
+  if (b) {
+    const m = b.querySelector('.more2');
+    m.addEventListener('click', () => {
+      const o = b.classList.toggle('open'); m.setAttribute('aria-expanded', o);
+      m.textContent = L()[o ? 'spLess' : 'spMore'];
+      if (!o) b.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    // language switch rewrites the button text: keep "Show less" while open
+    document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-l]')) setTimeout(() => { if (b.classList.contains('open')) m.textContent = L().spLess; }, 0); });
+  }
+})();
+</script>
+<script src="/nav.js?v=4" data-v="D" data-page="main" data-main="/" data-scan="/3d-venue-scanning/"></script>
 </body>
 </html>

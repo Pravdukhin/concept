@@ -7,12 +7,12 @@ const S = document.currentScript, V = S.dataset.v, PAGE = S.dataset.page; // 'ma
 const MAIN = S.dataset.main || '/nav/' + V.toLowerCase() + '.html', SCAN = S.dataset.scan || '/nav/' + V.toLowerCase() + '-scan.html';
 const TXT = {
   en: { items: ['Brief', 'Digital copy', '3D model', 'Render', 'Show day', 'Portfolio', 'About', 'How we work', 'Scanning', 'Contact'],
-        name: 'Yuriy Pravdukhin', kick: 'One project, 60 days', cta: 'Discuss your project', all: 'All sections', menu: 'Contents', close: 'Close' },
+        name: 'Yuriy Pravdukhin', kick: 'One project, 60 days', cta: 'Discuss your project', page: 'Full scanning page', all: 'All sections', menu: 'Contents', close: 'Close' },
   ru: { items: ['Бриф', 'Цифровая копия', '3D-модель', 'Рендер', 'Мероприятие', 'Портфолио', 'Обо мне', 'Как мы работаем', 'Сканирование', 'Контакты'],
-        name: 'Юрий Правдухин', kick: 'Один проект, 60 дней', cta: 'Обсудить проект', all: 'Все разделы', menu: 'Содержание', close: 'Закрыть' }
+        name: 'Юрий Правдухин', kick: 'Один проект, 60 дней', cta: 'Обсудить проект', page: 'Отдельная страница', all: 'Все разделы', menu: 'Содержание', close: 'Закрыть' }
 };
 const DAYS = ['−60', '−45', '−30', '−20', '0'];
-const SEC = ['work', 'about', 'how', null, 'contact']; // 8 = scanning page
+const SEC = ['work', 'about', 'how', 'scanning', 'contact']; // 8 = scanning section on the landing (the page itself is a sub-row in the sheet)
 const lang = () => (document.documentElement.lang === 'ru' ? 'ru' : 'en');
 const X = () => TXT[lang()];
 const $ = (h) => { const d = document.createElement('div'); d.innerHTML = h.trim(); return d.firstChild; };
@@ -82,6 +82,13 @@ header.bar{display:none!important}
 .sh li.on a{color:var(--ink)}
 .sh li.on a::after{content:"";position:absolute;left:40.5px;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 3px rgba(8,20,36,.6),0 0 14px rgba(242,166,72,.55)}
 .sh .sp{height:20px}
+.sh li.sub a{font-size:16px;padding:2px 0 10px;color:var(--dim)}
+.sh li.sub a .t{padding-left:44px;position:relative}
+.sh li.sub a .t::before{content:"";position:absolute;left:28px;top:-6px;width:8px;height:12px;border-left:1px solid rgba(232,236,241,.35);border-bottom:1px solid rgba(232,236,241,.35)}
+.sh li.sub a i{font-style:normal;color:var(--amber);margin-left:6px}
+.sh li.sub a::before{display:none}
+.sh li.sub.on a{color:var(--ink)}
+.sh li.sub a:hover{color:var(--ink)}
 .sh .ft{margin-top:auto;padding-top:26px;display:flex;align-items:center;justify-content:space-between;gap:12px}
 .sh .ft .btn{margin:0}
 .scale .sc-read{cursor:pointer}
@@ -126,8 +133,8 @@ const cls = (i, a) => (i === a ? 'on' : (i < a ? 'p' : '')) + (i >= 5 ? ' sec' :
 // ---------- going places ----------
 function go(i) {
   closeSheet();
-  if (PAGE === 'scan') { location.href = i === 8 ? SCAN : MAIN + (i < 5 ? '#s' + i : '#' + SEC[i - 5]); return; }
-  if (i === 8) { location.href = SCAN; return; }
+  if (PAGE === 'scan') { location.href = MAIN + (i < 5 ? '#s' + i : '#' + SEC[i - 5]); return; }
+  if (i === 8 && !document.getElementById('scanning')) { location.href = SCAN; return; }
   if (i < 5) {
     if (!onRing()) { if (typeof freeScroll === 'function') freeScroll(); scrollTo({ top: ring.offsetTop + ring.offsetHeight - innerHeight, behavior: 'instant' }); }
     if (typeof jumpStage === 'function') jumpStage(i);
@@ -172,7 +179,8 @@ if (V === 'B' || V === 'C' || V === 'D') {
 function renderSheet() {
   if (!sheet) return;
   const a = current(), it = items();
-  const row = i => `<li class="${cls(i, a)}"><a href="#" data-go="${i}"><span class="d">${i < 5 ? DAYS[i] : ''}</span><span class="t">${it[i]}</span></a></li>`;
+  const row = i => `<li class="${PAGE === 'scan' && i === 8 ? 'p sec' : cls(i, a)}"><a href="#" data-go="${i}"><span class="d">${i < 5 ? DAYS[i] : ''}</span><span class="t">${it[i]}</span></a></li>`
+    + (i === 8 ? `<li class="sub${PAGE === 'scan' ? ' on' : ''}"><a href="${SCAN}"><span class="d"></span><span class="t">${X().page}<i>↗</i></span></a></li>` : '');
   sheet.querySelector('.pn').innerHTML = `<div class="hd"><a class="me" href="${PAGE === 'scan' ? MAIN : '#top'}">${X().name}</a><button type="button" class="x" aria-label="${X().close}">×</button></div>
     <p class="k">${X().kick}</p><ol>${[0, 1, 2, 3, 4].map(row).join('')}</ol><div class="sp"></div><ol>${[5, 6, 7, 8, 9].map(row).join('')}</ol>
     <div class="ft"><a class="btn wa" href="https://wa.me/393498929736" target="_blank" rel="noopener">${X().cta}</a><div class="lang" data-lang>${langBtns()}</div></div>`;
