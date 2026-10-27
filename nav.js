@@ -7,10 +7,10 @@ const S = document.currentScript, V = S.dataset.v, PAGE = S.dataset.page, V6 = (
 document.documentElement.classList.add('v6', 'v6' + V6); // 'main' | 'scan'
 const MAIN = S.dataset.main || '/nav/' + V.toLowerCase() + '.html', SCAN = S.dataset.scan || '/nav/' + V.toLowerCase() + '-scan.html';
 const TXT = {
-  en: { items: ['Brief', 'Digital copy', '3D model', 'Render', 'Show day', 'Portfolio', 'About', 'Stages and pricing', 'Scanning', 'Contact'],
-        name: 'Yuriy Pravdukhin', kick: 'One project, 60 days', cta: 'Discuss your project', page: 'Full scanning page', allp: 'All projects', all: 'All sections', menu: 'Contents', close: 'Close' },
-  ru: { items: ['Бриф', 'Цифровая копия', '3D-модель', 'Рендер', 'Мероприятие', 'Портфолио', 'Обо мне', 'Этапы и стоимость', 'Сканирование', 'Контакты'],
-        name: 'Юрий Правдухин', kick: 'Один проект, 60 дней', cta: 'Обсудить проект', page: 'Отдельная страница', allp: 'Все проекты', all: 'Все разделы', menu: 'Содержание', close: 'Закрыть' }
+  en: { items: ['Start', 'Digital copy', '3D model', 'Render', 'Show day', 'Portfolio', 'About', 'Work stages and pricing', 'Scanning', 'Contact'],
+        name: 'Yuriy Pravdukhin', kick: 'One project, 60 days', cta: 'Discuss your project', page: 'Scanning in detail', allp: 'All projects', all: 'All sections', menu: 'Contents', close: 'Close' },
+  ru: { items: ['Начало', 'Цифровая копия', '3D-модель', 'Рендер', 'Мероприятие', 'Портфолио', 'Обо мне', 'Этапы работы и стоимость', 'Сканирование', 'Контакты'],
+        name: 'Юрий Правдухин', kick: 'Один проект, 60 дней', cta: 'Обсудить проект', page: 'Подробно о сканировании', allp: 'Все проекты', all: 'Все разделы', menu: 'Содержание', close: 'Закрыть' }
 };
 const DAYS = ['−60', '−45', '−30', '−20', '0'];
 // portfolio in the site map: the landing's PROJECTS when present, else this copy (update it when projects change)
@@ -210,6 +210,23 @@ function go(i) {
   scrollTo({ top: e.getBoundingClientRect().top + scrollY - 56, behavior: far ? 'instant' : 'smooth' });
 }
 
+// v6.7: the name top left → the very start of the site
+function goHome() {
+  closeSheet();
+  if (dlgOpen()) dlg.close();
+  if (PAGE !== 'main' || !ring) { location.href = MAIN; return; }
+  if (onRing() && typeof jumpStage === 'function') { jumpStage(0); return; }
+  if (typeof freeScroll === 'function') freeScroll();
+  scrollTo({ top: 0, behavior: 'instant' });
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest && e.target.closest('a.me, .hero h1');
+  if (!t || PAGE !== 'main' || e.metaKey || e.ctrlKey) return;
+  e.preventDefault(); e.stopPropagation(); if (t.blur) t.blur(); goHome();
+}, true);
+if (PAGE === 'main') document.querySelectorAll('.hero h1').forEach(h => { h.style.cursor = 'pointer'; h.style.pointerEvents = 'auto'; h.setAttribute('role', 'link'); h.tabIndex = 0;
+  h.addEventListener('keydown', e => { if (e.key === 'Enter') goHome(); }); });
+
 // projects in the map: only while in the portfolio (or on a project page); the same ones the landing shows (3 on phones, 6 wider),
 // all of them once "All projects" is open there
 function pjRows(a) {
@@ -322,7 +339,7 @@ if (V === 'B' || V === 'C' || V === 'D') {
 function renderSheet() {
   if (!sheet) return;
   const a = current(), it = items();
-  const row = i => `<li class="${(PAGE === 'scan' && i === 8) || (i === 5 && dlgSlug()) ? 'p sec' : cls(i, a)}"><a href="#" data-go="${i}"><span class="d">${i < 5 ? DAYS[i] : ''}</span><span class="t">${it[i]}</span></a></li>`
+  const row = i => `<li class="${(PAGE === 'scan' && i === 8) || (i === 5 && dlgSlug()) ? 'p sec' : cls(i, a)}"><a href="#" data-go="${i}"><span class="d">${i > 0 && i < 5 ? DAYS[i] : ''}</span><span class="t">${it[i]}</span></a></li>`
     + (i === 8 ? `<li class="sub${PAGE === 'scan' ? ' on' : ''}"><a href="${SCAN}"><span class="d"></span><span class="t">${X().page}<i>↗</i></span></a></li>` : '')
     + (i === 5 ? pjRows(a) : '');
   sheet.querySelector('.pn').innerHTML = `<div class="hd"><a class="me" href="${PAGE === 'scan' ? MAIN : '#top'}">${X().name}</a><button type="button" class="x" aria-label="${X().close}">×</button></div>
