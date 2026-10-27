@@ -3,7 +3,8 @@
 // B: A + the label next to the rail opens a contents sheet drawn like the day scale
 // C: the ring untouched; after the ring a top bar with a compact pill that opens the same sheet
 (() => {
-const S = document.currentScript, V = S.dataset.v, PAGE = S.dataset.page; // 'main' | 'scan'
+const S = document.currentScript, V = S.dataset.v, PAGE = S.dataset.page, V6 = (S.dataset.v6 || 'a').toLowerCase();
+document.documentElement.classList.add('v6', 'v6' + V6); // 'main' | 'scan'
 const MAIN = S.dataset.main || '/nav/' + V.toLowerCase() + '.html', SCAN = S.dataset.scan || '/nav/' + V.toLowerCase() + '-scan.html';
 const TXT = {
   en: { items: ['Brief', 'Digital copy', '3D model', 'Render', 'Show day', 'Portfolio', 'About', 'Stages and pricing', 'Scanning', 'Contact'],
@@ -18,7 +19,8 @@ const projs = () => (typeof PROJECTS !== 'undefined' ? PROJECTS.map(p => [p.slug
 const dlg = document.getElementById('dlg');
 const dlgOpen = () => !!(dlg && dlg.open);
 const dlgSlug = () => (dlgOpen() && location.hash.length > 1 ? location.hash.slice(1) : '');
-const SEC = ['work', 'about', 'how', 'scanning', 'contact']; // 8 = scanning section on the landing (the page itself is a sub-row in the sheet)
+const SEC = ['work', 'about', 'how', 'scanning', 'contact'];
+const SEC_ORDER = [6, 5, 7, 8, 9];   // as on the page: About, Portfolio, Stages and pricing, Scanning, Contact // 8 = scanning section on the landing (the page itself is a sub-row in the sheet)
 const lang = () => (document.documentElement.lang === 'ru' ? 'ru' : 'en');
 const X = () => TXT[lang()];
 const $ = (h) => { const d = document.createElement('div'); d.innerHTML = h.trim(); return d.firstChild; };
@@ -114,6 +116,38 @@ section.s > .retA{position:absolute;left:var(--pad);top:40px}
 .sh .ft .btn{margin:0}
 .scale .sc-read{cursor:pointer}
 body.navpad{padding-bottom:64px}
+/* ===== v6 test ===== */
+.burg{position:fixed;z-index:32;top:calc(12px + env(safe-area-inset-top,0px));right:max(12px,calc(var(--pad) - 10px));width:46px;height:46px;border-radius:50%;appearance:none;border:0;background:rgba(8,20,36,.35);color:var(--ink);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:0;-webkit-tap-highlight-color:transparent;transition:background .2s}
+.burg:hover{background:rgba(242,166,72,.14)}
+.burg .bl{display:block;width:24px;height:2px;border-radius:1px;background:currentColor}
+.burg.burg-in{position:static;background:none;width:40px;height:40px}
+.nb .r{padding-right:52px}
+.nb{padding-top:calc(17px + env(safe-area-inset-top,0px));padding-bottom:17px}
+/* the day scale sits under the burger */
+.scale{margin-top:0}
+.scale .sc-read{margin-right:56px;margin-left:-56px;transition:opacity .45s ease}
+.at0 .scale .sc-read{opacity:0}
+.scale .dp{transition:opacity .45s ease}
+.st0 .scale .dp{opacity:0;pointer-events:none}
+.dp button.r0{display:none}
+/* phones: the name needs the top row; the counter (and the percent) go right under the burger */
+@media (max-width:560px){.scale .sc-read{margin:38px 0 10px 0}.v6 .pct{right:var(--pad);top:calc(60px + env(safe-area-inset-top,0px))}}
+.dp .ln2{display:none}
+/* loading percent on the first screen, where the day counter will be */
+.pct{position:absolute;z-index:3;right:calc(var(--pad) + 56px);top:calc(22px + env(safe-area-inset-top,0px));pointer-events:none;font-variant-numeric:tabular-nums;color:var(--amber);font-size:clamp(26px,2.6vw,34px);font-weight:300;letter-spacing:-.02em;line-height:1.08;opacity:0;transition:opacity .45s ease;text-shadow:0 1px 10px rgba(8,20,36,.85)}
+.pct small{font-size:.5em;margin-left:.08em;color:var(--dim)}
+.at0 .pct{opacity:1}
+/* variants */
+.v6c #rail, .v6d #rail{display:none}
+.v6b .dp, .v6d .dp{display:none}
+.v6b .scale .sc-read, .v6d .scale .sc-read{margin-bottom:0}
+.v6c .dp button span{opacity:0;transition:opacity .3s}
+.v6c .dp button.on span{opacity:1}
+.v6b #rail{margin-top:10px}
+.v6b #rail button{position:relative;padding-bottom:20px}
+.v6b #rail button::after{content:attr(data-d);position:absolute;left:0;top:20px;font-size:11px;color:#b9c3cf;font-variant-numeric:tabular-nums;letter-spacing:.02em;text-shadow:0 1px 8px rgba(8,20,36,.9)}
+.v6b #rail button.on::after{color:var(--ink)}
+
 /* D: the day scale becomes the path: rows in scroll order, the dot only goes down */
 .dp{position:relative;margin-left:auto;width:max-content;padding-right:6px}
 .dp .ln{position:absolute;right:6px;top:0;bottom:0;width:1px;background:rgba(232,236,241,.42)}
@@ -145,12 +179,13 @@ function current() {
   if (PAGE === 'scan') return 8;
   if (dlgOpen()) return 5;
   if (onRing()) return (typeof stageOf === 'function' && typeof step !== 'undefined') ? stageOf(step) : 0;
-  let k = 5;
-  SEC.forEach((id, j) => { if (!id) return; const e = document.getElementById(id); if (e && e.getBoundingClientRect().top < innerHeight * .45) k = 5 + j; });
+  let k = SEC_ORDER[0], best = -1e9;   // the lowest section whose top has passed the upper part of the screen
+  SEC.forEach((id, j) => { if (!id) return; const e = document.getElementById(id); if (!e) return; const t = e.getBoundingClientRect().top; if (t < innerHeight * .45 && t > best) { best = t; k = 5 + j; } });
   return k;
 }
 // progress: passed items dim amber, current bright
-const cls = (i, a) => (i === a ? 'on' : (i < a ? 'p' : '')) + (i >= 5 ? ' sec' : '');
+const ORD = i => i < 5 ? i : 5 + SEC_ORDER.indexOf(i);
+const cls = (i, a) => (i === a ? 'on' : (ORD(i) < ORD(a) ? 'p' : '')) + (i >= 5 ? ' sec' : '');
 
 // ---------- going places ----------
 function go(i) {
@@ -241,12 +276,14 @@ function syncRet() {
 }
 
 document.body.appendChild(bar);
-if (V === 'C' || V === 'D') { pill = $(`<button type="button" class="pill" aria-haspopup="dialog"></button>`); bar.querySelector('.r').prepend(pill); pill.addEventListener('click', openSheet); }
+const BURG = '<span class="bl"></span><span class="bl"></span><span class="bl"></span>';
+const burg = $(`<button type="button" class="burg" aria-haspopup="dialog">${BURG}</button>`);
+document.body.appendChild(burg); burg.addEventListener('click', openSheet);
 let pill2 = null, lang2 = null;
 const dlgN = document.getElementById('dlgn');
-if (pill && dlgN) {
-  pill2 = $(`<button type="button" class="pill" aria-haspopup="dialog"></button>`); lang2 = $(`<div class="lang" data-lang></div>`);
-  dlgN.append(pill2, lang2); pill2.addEventListener('click', openSheet);
+if (dlgN) {
+  pill2 = $(`<button type="button" class="burg burg-in" aria-haspopup="dialog">${BURG}</button>`); lang2 = $(`<div class="lang" data-lang></div>`);
+  dlgN.append(lang2, pill2); pill2.addEventListener('click', openSheet);
   // language switch inside a project page: draw the page again in the new language
   document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-l]') && dlgOpen()) { const sl = dlgSlug(); setTimeout(() => { if (sl && typeof openProject === 'function') { const y = dlg.querySelector('.dlg').scrollTop; openProject(sl); dlg.querySelector('.dlg').scrollTop = y; } }, 0); } });
 }
@@ -283,7 +320,7 @@ function renderSheet() {
     + (i === 8 ? `<li class="sub${PAGE === 'scan' ? ' on' : ''}"><a href="${SCAN}"><span class="d"></span><span class="t">${X().page}<i>↗</i></span></a></li>` : '')
     + (i === 5 ? pjRows(a) : '');
   sheet.querySelector('.pn').innerHTML = `<div class="hd"><a class="me" href="${PAGE === 'scan' ? MAIN : '#top'}">${X().name}</a><button type="button" class="x" aria-label="${X().close}">×</button></div>
-    <p class="k">${X().kick}</p><ol>${[0, 1, 2, 3, 4].map(row).join('')}</ol><div class="sp"></div><ol>${[5, 6, 7, 8, 9].map(row).join('')}</ol>
+    <p class="k">${X().kick}</p><ol>${[0, 1, 2, 3, 4].map(row).join('')}</ol><div class="sp"></div><ol>${SEC_ORDER.map(row).join('')}</ol>
     <div class="ft"><a class="btn wa" href="https://wa.me/393498929736" target="_blank" rel="noopener">${X().cta}</a><div class="lang" data-lang>${langBtns()}</div></div>`;
 }
 const langBtns = () => ['en', 'ru'].map(l => `<button type="button" data-l="${l}" aria-pressed="${l === lang()}">${l.toUpperCase()}</button>`).join('');
@@ -307,11 +344,11 @@ function renderDp() {
   dp.querySelectorAll('button').forEach(b => b.remove());
   const it = items();
   [0, 1, 2, 3, 4].forEach(i => { const b = document.createElement('button'); b.type = 'button'; b.dataset.go = i; b.innerHTML = `<span>${it[i]}</span><b>${DAYS[i]}</b>`; dp.appendChild(b); });
-  const all = document.createElement('button'); all.type = 'button'; all.className = 'all'; all.innerHTML = `<span>${X().all}</span><i class="ic"></i>`; dp.appendChild(all);
   dpRows = [...dp.querySelectorAll('button[data-go]')]; dpSt = -1;
   const y = b => b.offsetTop + b.offsetHeight / 2;
-  dp.querySelector('.ln').style.cssText = `top:${y(dpRows[0])}px;height:${y(dpRows[4]) - y(dpRows[0])}px;bottom:auto`;
-  dp.querySelector('.ln2').style.cssText = `top:${y(dpRows[4])}px;height:${y(all) - y(dpRows[4]) - 6}px`;
+  dpRows[0].classList.add('r0');   // the Brief row stays out of the scale (it is the first screen)
+  dp.querySelector('.ln').style.cssText = `top:${y(dpRows[1])}px;height:${y(dpRows[4]) - y(dpRows[1])}px;bottom:auto`;
+  dp.querySelector('.ln2').style.display = 'none';
 }
 let dpLang = '', dpYs = null;
 function dpLayout() { // row centres inside .dp: they only change with language or size
@@ -323,25 +360,35 @@ function dpLayout() { // row centres inside .dp: they only change with language 
 let more = null;
 if (PAGE === 'main' && document.getElementById('rail')) {
   const st = document.createElement('style');
-  st.textContent = `.more{position:fixed;z-index:24;appearance:none;border:0;background:none;padding:4px 10px;margin:0;color:var(--amber);font:inherit;font-size:20px;line-height:1;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .5s;transform:translateX(-50%);-webkit-tap-highlight-color:transparent}
+  st.textContent = `.more{position:fixed;z-index:24;left:50%;bottom:calc(3px + env(safe-area-inset-bottom,0px));appearance:none;border:0;background:none;padding:2px 14px;margin:0;color:var(--amber);font:inherit;font-size:22px;line-height:1;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .5s;transform:translateX(-50%);-webkit-tap-highlight-color:transparent}
 .more.on{opacity:1;pointer-events:auto}
 .more span{display:block;animation:bob 1.6s ease-in-out infinite}
 @media (prefers-reduced-motion:reduce){.more span{animation:none}}`;
   document.head.appendChild(st);
   more = $(`<button type="button" class="more" aria-label="Portfolio"><span>↓</span></button>`);
   document.body.appendChild(more);
-  more.addEventListener('click', () => go(5));
+  more.addEventListener('click', () => { if (stageOf(step) === 0) jumpStage(1); else go(SEC_ORDER[0]); });
 }
 let railX = null;
 function moreLayout() { if (!more) return; const rl = document.getElementById('rail'), f = rl.firstElementChild.getBoundingClientRect(), l = rl.lastElementChild.getBoundingClientRect(); railX = [(f.left + l.right) / 2, rl.getBoundingClientRect().bottom]; }
 addEventListener('resize', () => { dpYs = null; railX = null; });
 // one loop for the scale dot and the arrow; it does nothing when nothing moved
 let fKey = '';
+const pct = PAGE === 'main' && document.getElementById('stage') ? $(`<div class="pct" aria-live="polite"><b>0</b><small>%</small></div>`) : null;
+if (pct) document.getElementById('stage').appendChild(pct);
+let at0 = null, st0 = null;
 function frame() {
+  if (pct && typeof step !== 'undefined') {
+    const pn = document.getElementById('pcn'); if (pn) pct.firstChild.textContent = pn.textContent;
+    const z = onRing() && step === 0 && !(typeof AUTO !== 'undefined' && AUTO.run);
+    if (z !== at0) { at0 = z; document.documentElement.classList.toggle('at0', z); }
+    const z0 = onRing() && typeof stageOf === 'function' && stageOf(step) === 0;
+    if (z0 !== st0) { st0 = z0; document.documentElement.classList.toggle('st0', z0); }
+  }
   if (typeof step !== 'undefined' && typeof STOPS === 'function') {
     if (dp && dpLang !== lang()) { dpLang = lang(); renderDp(); dpYs = null; }
     const run = typeof AUTO !== 'undefined' && AUTO.run;
-    const key = scrollY + '|' + innerHeight + '|' + step + '|' + run + '|' + dpLang + '|' + (dpYs ? 1 : 0);
+    const key = scrollY + '|' + innerHeight + '|' + step + '|' + run + '|' + dpLang + '|' + (dpYs ? 1 : 0) + '|' + (typeof LREADY === 'undefined' || LREADY);
     if (key !== fKey) {
       fKey = key;
       const r = ring.getBoundingClientRect(), span = r.height - innerHeight;
@@ -351,16 +398,16 @@ function frame() {
         const f = Math.min(1, Math.max(0, -r.top / span)) * (N - 1);   // smooth, from the real scroll
         let k = 0; while (k < 3 && f > S[k + 1]) k++;
         const t = Math.min(1, Math.max(0, (f - S[k]) / (S[k + 1] - S[k])));
-        const yy = ys[k] + t * (ys[k + 1] - ys[k]);
+        const yy = Math.max(ys[1], ys[k] + t * (ys[k + 1] - ys[k]));
         dpDot.style.transform = `translateY(${yy}px)`;
-        dpFill.style.top = ys[0] + 'px'; dpFill.style.height = Math.max(0, yy - ys[0]) + 'px';
+        dpFill.style.top = ys[1] + 'px'; dpFill.style.height = Math.max(0, yy - ys[1]) + 'px';
         const st = Math.round(k + t);
         if (dpSt !== st) { dpSt = st; dpRows.forEach((b, j) => { b.classList.toggle('on', j === st); b.classList.toggle('pas', j < st); }); }
       }
       if (more) {
         const onR = r.bottom >= innerHeight * .5;
-        const show = onR && stageOf(step) === 4 && step >= N - 3 && !run && r.bottom >= innerHeight - 1;
-        if (show) { if (!railX) moreLayout(); more.style.left = railX[0] + 'px'; more.style.top = (railX[1] - 10) + 'px'; }
+        const ready = typeof LREADY === 'undefined' || LREADY;
+        const show = onR && !run && r.bottom >= innerHeight - 1 && ((stageOf(step) === 4 && step >= N - 3) || (step === 0 && ready));
         if (more.classList.contains('on') !== show) more.classList.toggle('on', show);
       }
     }
@@ -371,12 +418,12 @@ let dpDot = null, dpFill = null, dpSt = -1;
 if (dp) { dpDot = dp.querySelector('.dot'); dpFill = dp.querySelector('.fill'); dpDot.style.top = '0'; }
 if (dp || more) requestAnimationFrame(frame);
 
+if (V6 === 'b') { const rl = document.getElementById('rail'); if (rl) [...rl.children].forEach((b, j) => b.dataset.d = DAYS[j]); }
 // ---------- keep in sync ----------
 let last = '';
 function sync() {
   const a = current(), r = onRing(), L = lang();
   let on = PAGE === 'scan' || !r;
-  if (dp && PAGE === 'main') { const al = dp.querySelector('.all'); if (al) on = al.getBoundingClientRect().bottom <= bar.offsetHeight; }
   bar.classList.toggle('on', on);
   syncRet();
   bar.querySelector('.me').textContent = X().name;
@@ -392,7 +439,6 @@ function sync() {
   }
   if (lang2 && (!lang2.children.length || lang2.dataset.k !== L)) { lang2.innerHTML = langBtns(); lang2.dataset.k = L; }
   if (pill) pill.innerHTML = `<span class="mini">${items().map((t, i) => `${i === 5 ? '<span class="g"></span>' : ''}<i class="${cls(i, a)}"></i>`).join('')}</span><span>${labelHtml(a)}</span><span class="ic" style="display:none"></span>`;
-  if (pill2) pill2.innerHTML = pill.innerHTML;
   if (sheet && sheet.classList.contains('open')) renderSheet();
 }
 // the old rail/scale keep working; we only listen
