@@ -940,7 +940,7 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(size);
 // top → day −45 (cloud) → −30 (model) → −20 (render) → show day (end of the ring); after the last stop the page scrolls normally.
 // Any backward input (wheel up, swipe down, arrow up, a click on the rail/scale/menu) switches to free scrolling
 // in both directions; the steps come back only when the page returns to the very top.
-const AUTO = { armed: true, run: false, idx: -1, raf: 0, t0: 0, T: 1, gid: 0, hopG: -1 };
+const AUTO = { armed: true, run: false, idx: -1, raf: 0, t0: 0, T: 1, gid: 0, hopG: -1, back: false };
 const ringTop = () => ring.getBoundingClientRect().top + scrollY;
 const ringSpan = () => ring.offsetHeight - stage.clientHeight;
 const yOf = st => ringTop() + ringSpan() * st / (N - 1);
@@ -952,7 +952,7 @@ function goStop(i) {
   const stops = STOPS();
   if (i >= stops.length) { AUTO.armed = false; return false; }   // past the last stop: normal page scrolling
   if (AUTO.run) cancelAnimationFrame(AUTO.raf);
-  AUTO.run = true; AUTO.idx = i; AUTO.hopG = AUTO.gid;
+  AUTO.run = true; AUTO.idx = i; AUTO.hopG = AUTO.gid; AUTO.back = false;
   hopSteps(i === 0 ? Math.max(stepAt(), HOLD) : stepAt(), stops[i]);
   return true;
 }
@@ -969,6 +969,17 @@ function hopSteps(s0, s1) {
   })(t0);
 }
 const hopDone = () => !AUTO.run || (performance.now() - AUTO.t0) / AUTO.T > .5;   // second half of a hop: a new push may go on
+// v6.2: backward between the top and the −45 hold: play back to the top on its own (the mirror of the first forward hop)
+const backing = () => AUTO.run && AUTO.back;
+function backHop() {
+  if (backing()) return true;
+  const s = stepAt();
+  if (s <= 0.05 || s > STOPS()[0] + 1) return false;
+  if (AUTO.run) cancelAnimationFrame(AUTO.raf);
+  AUTO.armed = true; AUTO.run = true; AUTO.idx = -1; AUTO.hopG = AUTO.gid; AUTO.back = true;
+  hopSteps(s, 0);
+  return true;
+}
 function freeScroll() { if (AUTO.run) { AUTO.run = false; cancelAnimationFrame(AUTO.raf); } AUTO.armed = false; }
 // a new push: the first event of a gesture. Returns true when this push started (or continued to) the next hop.
 function push() {
@@ -986,8 +997,9 @@ addEventListener('wheel', e => {
   wLast = now; wRecent.shift(); wRecent.push(m);
   if (fresh) AUTO.gid++;
   const ours = AUTO.gid === AUTO.hopG;               // events of the push that made the last hop
+  if (e.deltaY < 0 && (backing() || ((fresh || !ours || !AUTO.armed) && backHop()))) { e.preventDefault(); return; }   // v6.2: back to the top on its own
   if (!AUTO.armed && !AUTO.run) { if (ours && e.deltaY > 0 && e.cancelable) e.preventDefault(); return; }   // its tail must not scroll the page on
-  if (e.deltaY < 0) { if (fresh || !ours) freeScroll(); return; }               // backwards: free from now on
+  if (e.deltaY < 0) { if ((fresh || !ours) && !atTop()) freeScroll(); return; }               // backwards: free from now on
   if (fresh && push()) { e.preventDefault(); return; }
   if (AUTO.run || ours || AUTO.armed) e.preventDefault();                        // rest of a push: swallowed
 }, { passive: false });
@@ -1004,17 +1016,19 @@ addEventListener('touchstart', e => {
 addEventListener('touchmove', e => {
   if (touchY === null) return;
   const ours = AUTO.gid === AUTO.hopG;
-  if (!AUTO.armed && !AUTO.run) { if (ours && e.cancelable) e.preventDefault(); return; }
   const dy = e.touches[0].clientY - touchY;
-  if (dy > 6 && !ours) { freeScroll(); return; }                                 // finger down = scrolling back
+  if (e.cancelable && (backing() || (dy > 6 && !touchUsed && backHop()))) { touchUsed = true; e.preventDefault(); return; }   // v6.2
+  if (!AUTO.armed && !AUTO.run) { if (ours && e.cancelable) e.preventDefault(); return; }
+  if (dy > 6 && !ours) { if (!atTop()) freeScroll(); return; }                                 // finger down = scrolling back
   if (dy < -4 && !touchUsed) { touchUsed = true; if (push()) { e.preventDefault(); return; } }
   if (e.cancelable && (AUTO.run || ours || AUTO.armed)) e.preventDefault();
 }, { passive: false });
 // ---- keys: one press = one gesture, held key repeats are part of it ----
 addEventListener('keydown', e => {
   if (e.target.closest && e.target.closest('input,textarea,dialog')) return;
+  if (['ArrowUp', 'PageUp', 'Home'].includes(e.key) && (backing() || (!e.repeat && backHop()))) { e.preventDefault(); return; }   // v6.2
   if (!AUTO.armed && !AUTO.run) return;
-  if (['ArrowUp', 'PageUp', 'Home'].includes(e.key)) { freeScroll(); return; }
+  if (['ArrowUp', 'PageUp', 'Home'].includes(e.key)) { if (!atTop()) freeScroll(); return; }
   if (['ArrowDown', 'PageDown', ' ', 'End'].includes(e.key)) {
     e.preventDefault();
     if (!e.repeat) { AUTO.gid++; push(); }
