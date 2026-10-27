@@ -140,7 +140,7 @@ body.navpad{padding-bottom:64px}
 .pct .pl,.pct .ph{display:block;font-size:13px;line-height:1.35;letter-spacing:0;font-weight:400;white-space:nowrap;text-shadow:0 0 4px rgba(8,20,36,.9),0 1px 12px rgba(8,20,36,.85)}
 .pct .pl{margin-top:2px;color:var(--ink)}
 .pct .ph{margin-top:2px;color:rgba(232,236,241,.78);opacity:0;transition:opacity .45s ease}
-.pct.hint .ph{opacity:1}
+.pct.pc-h .ph{opacity:1}
 @media (max-width:560px){.pct .pl,.pct .ph{font-size:12px}}
 .st0 .pct{opacity:1}
 /* variants */
@@ -396,7 +396,7 @@ function frame() {
     const z = onRing() && step === 0 && !(typeof AUTO !== 'undefined' && AUTO.run);
     if (z !== at0) { at0 = z; document.documentElement.classList.toggle('at0', z); }
     if (pctLang !== lang()) { pctLang = lang(); const t = PCT_TXT[pctLang] || PCT_TXT.en; pct.children[2].textContent = t[0]; pct.children[3].textContent = t[1]; }
-    pct.classList.toggle('hint', onRing() && pctF < (typeof HOLD !== 'undefined' ? HOLD : 1) && !(typeof AUTO !== 'undefined' && AUTO.run) && typeof LREADY !== 'undefined' && LREADY);
+    pct.classList.toggle('pc-h', onRing() && pctF < (typeof HOLD !== 'undefined' ? HOLD : 1) && !(typeof AUTO !== 'undefined' && AUTO.run) && typeof LREADY !== 'undefined' && LREADY);
     const z0 = onRing() && typeof stageOf === 'function' && stageOf(step) === 0;
     if (z0 !== st0) { st0 = z0; document.documentElement.classList.toggle('st0', z0); }
   }
