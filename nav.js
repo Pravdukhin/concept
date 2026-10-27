@@ -381,8 +381,8 @@ addEventListener('resize', () => { dpYs = null; railX = null; });
 // one loop for the scale dot and the arrow; it does nothing when nothing moved
 let fKey = '';
 const pct = PAGE === 'main' && document.getElementById('stage') ? $(`<div class="pct"><b aria-live="polite">0</b><small>%</small><span class="pl"></span><span class="ph"></span></div>`) : null;
-const PCT_TXT = { ru: ['Готовность мероприятия', 'Листайте, чтобы разобрать его ↓'], en: ['Event readiness', 'Scroll to rewind it ↓'] };
-let pctLang = '';
+const PCT_TXT = { ru: ['Готовность мероприятия', 'Листайте, чтобы разобрать его ↓'], en: ['Event readiness', 'Scroll to take it apart ↓'] };
+let pctLang = '', pctF = 0;
 if (pct) document.getElementById('stage').appendChild(pct);
 let at0 = null, st0 = null;
 function frame() {
@@ -390,12 +390,13 @@ function frame() {
     const pn = document.getElementById('pcn');
     if (typeof LREADY !== 'undefined' && LREADY && typeof R_END !== 'undefined') {
       const rr = ring.getBoundingClientRect(), f = Math.min(1, Math.max(0, -rr.top / (rr.height - innerHeight))) * (N - 1);
-      pct.firstChild.textContent = String(Math.max(0, Math.ceil(100 * (1 - f / R_END) - 0.001)));
+      const H = typeof HOLD !== 'undefined' ? HOLD : 0;
+      pctF = f; pct.firstChild.textContent = String(f <= H ? 100 : Math.max(0, Math.min(100, Math.ceil(100 * (1 - (f - H) / (R_END - H)) - 0.001))));
     } else if (pn) pct.firstChild.textContent = pn.textContent;
     const z = onRing() && step === 0 && !(typeof AUTO !== 'undefined' && AUTO.run);
     if (z !== at0) { at0 = z; document.documentElement.classList.toggle('at0', z); }
     if (pctLang !== lang()) { pctLang = lang(); const t = PCT_TXT[pctLang] || PCT_TXT.en; pct.children[2].textContent = t[0]; pct.children[3].textContent = t[1]; }
-    pct.classList.toggle('hint', z && typeof LREADY !== 'undefined' && LREADY);
+    pct.classList.toggle('hint', onRing() && pctF < (typeof HOLD !== 'undefined' ? HOLD : 1) && !(typeof AUTO !== 'undefined' && AUTO.run) && typeof LREADY !== 'undefined' && LREADY);
     const z0 = onRing() && typeof stageOf === 'function' && stageOf(step) === 0;
     if (z0 !== st0) { st0 = z0; document.documentElement.classList.toggle('st0', z0); }
   }
