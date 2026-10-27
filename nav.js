@@ -126,7 +126,7 @@ body.navpad{padding-bottom:64px}
 /* the day scale sits under the burger */
 .scale{margin-top:0}
 .scale .sc-read{margin-right:56px;margin-left:-56px;transition:opacity .45s ease}
-.at0 .scale .sc-read{opacity:0}
+.st0 .scale .sc-read{opacity:0}
 .scale .dp{transition:opacity .45s ease}
 .st0 .scale .dp{opacity:0;pointer-events:none}
 .dp button.r0{display:none}
@@ -136,7 +136,7 @@ body.navpad{padding-bottom:64px}
 /* loading percent on the first screen, where the day counter will be */
 .pct{position:absolute;z-index:3;right:calc(var(--pad) + 56px);top:calc(22px + env(safe-area-inset-top,0px));pointer-events:none;font-variant-numeric:tabular-nums;color:var(--amber);font-size:clamp(26px,2.6vw,34px);font-weight:300;letter-spacing:-.02em;line-height:1.08;opacity:0;transition:opacity .45s ease;text-shadow:0 1px 10px rgba(8,20,36,.85)}
 .pct small{font-size:.5em;margin-left:.08em;color:var(--dim)}
-.at0 .pct{opacity:1}
+.st0 .pct{opacity:1}
 /* variants */
 .v6c #rail, .v6d #rail{display:none}
 .v6b .dp, .v6d .dp{display:none}
@@ -379,7 +379,11 @@ if (pct) document.getElementById('stage').appendChild(pct);
 let at0 = null, st0 = null;
 function frame() {
   if (pct && typeof step !== 'undefined') {
-    const pn = document.getElementById('pcn'); if (pn) pct.firstChild.textContent = pn.textContent;
+    const pn = document.getElementById('pcn');
+    if (typeof LREADY !== 'undefined' && LREADY && typeof R_END !== 'undefined') {
+      const rr = ring.getBoundingClientRect(), f = Math.min(1, Math.max(0, -rr.top / (rr.height - innerHeight))) * (N - 1);
+      pct.firstChild.textContent = String(Math.max(0, Math.ceil(100 * (1 - f / R_END) - 0.001)));
+    } else if (pn) pct.firstChild.textContent = pn.textContent;
     const z = onRing() && step === 0 && !(typeof AUTO !== 'undefined' && AUTO.run);
     if (z !== at0) { at0 = z; document.documentElement.classList.toggle('at0', z); }
     const z0 = onRing() && typeof stageOf === 'function' && stageOf(step) === 0;
