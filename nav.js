@@ -136,6 +136,12 @@ body.navpad{padding-bottom:64px}
 /* loading percent on the first screen, where the day counter will be */
 .pct{position:absolute;z-index:3;right:calc(var(--pad) + 56px);top:calc(22px + env(safe-area-inset-top,0px));pointer-events:none;font-variant-numeric:tabular-nums;color:var(--amber);font-size:clamp(26px,2.6vw,34px);font-weight:300;letter-spacing:-.02em;line-height:1.08;opacity:0;transition:opacity .45s ease;text-shadow:0 1px 10px rgba(8,20,36,.85)}
 .pct small{font-size:.5em;margin-left:.08em;color:var(--dim)}
+.pct{text-align:right}
+.pct .pl,.pct .ph{display:block;font-size:13px;line-height:1.35;letter-spacing:0;font-weight:400;white-space:nowrap;text-shadow:0 0 4px rgba(8,20,36,.9),0 1px 12px rgba(8,20,36,.85)}
+.pct .pl{margin-top:2px;color:var(--ink)}
+.pct .ph{margin-top:2px;color:rgba(232,236,241,.78);opacity:0;transition:opacity .45s ease}
+.pct.hint .ph{opacity:1}
+@media (max-width:560px){.pct .pl,.pct .ph{font-size:12px}}
 .st0 .pct{opacity:1}
 /* variants */
 .v6c #rail, .v6d #rail{display:none}
@@ -374,7 +380,9 @@ function moreLayout() { if (!more) return; const rl = document.getElementById('r
 addEventListener('resize', () => { dpYs = null; railX = null; });
 // one loop for the scale dot and the arrow; it does nothing when nothing moved
 let fKey = '';
-const pct = PAGE === 'main' && document.getElementById('stage') ? $(`<div class="pct" aria-live="polite"><b>0</b><small>%</small></div>`) : null;
+const pct = PAGE === 'main' && document.getElementById('stage') ? $(`<div class="pct"><b aria-live="polite">0</b><small>%</small><span class="pl"></span><span class="ph"></span></div>`) : null;
+const PCT_TXT = { ru: ['Готовность мероприятия', 'Листайте, чтобы разобрать его ↓'], en: ['Event readiness', 'Scroll to rewind it ↓'] };
+let pctLang = '';
 if (pct) document.getElementById('stage').appendChild(pct);
 let at0 = null, st0 = null;
 function frame() {
@@ -386,6 +394,8 @@ function frame() {
     } else if (pn) pct.firstChild.textContent = pn.textContent;
     const z = onRing() && step === 0 && !(typeof AUTO !== 'undefined' && AUTO.run);
     if (z !== at0) { at0 = z; document.documentElement.classList.toggle('at0', z); }
+    if (pctLang !== lang()) { pctLang = lang(); const t = PCT_TXT[pctLang] || PCT_TXT.en; pct.children[2].textContent = t[0]; pct.children[3].textContent = t[1]; }
+    pct.classList.toggle('hint', z && typeof LREADY !== 'undefined' && LREADY);
     const z0 = onRing() && typeof stageOf === 'function' && stageOf(step) === 0;
     if (z0 !== st0) { st0 = z0; document.documentElement.classList.toggle('st0', z0); }
   }
