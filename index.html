@@ -374,6 +374,11 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 .prtime{margin:36px 0 0;max-width:56ch;font-size:clamp(16px,1.6vw,19px);line-height:1.5;color:var(--ink)}
 .prtime + .prnote{margin-top:10px}
 </style>
+
+<style>
+/* v5.0.2: first-screen loader in the 16:9 frame on phones: same type size, less air */
+@media (max-width:560px){.loader.tight{padding-top:2px;padding-bottom:2px}.loader.tight .lt{margin-top:6px}.loader.tight .lh{margin-top:8px}.loader.tight .lh .ar{margin-top:2px}.loader.tight .bar2{margin-top:8px}}
+</style>
 </head>
 <body>
 
@@ -631,6 +636,7 @@ document.addEventListener('click', e => { const b = e.target.closest('[data-l]')
 let LKEY = '';
 function placeLoader() {
   const ld = el('loader');
+  ld.classList.toggle('tight', mode === 'band');
   if (!portrait()) { ld.style.top = ''; ld.style.transform = ''; LKEY = ''; return; }
   const key = innerWidth + '|' + mode + '|' + (document.fonts && document.fonts.status);
   if (key === LKEY) return;                       // same width and frame: keep the place (language switch, address bar)
@@ -655,13 +661,19 @@ function placeLoader() {
   [el('lt').textContent, el('lh').textContent, motto.textContent, geoH.textContent, el('geo').textContent, el('scu').textContent] = keep;
   marks.forEach((m, j) => m.lastChild.textContent = keep[6][j]);
   intro.hidden = ih0; cap.hidden = ch0;
-  let top = hb + 6, bot = introTop - 10;
-  if (mode === 'band') {                          // keep it inside the 16:9 picture
+  const top = hb + 6, bot = introTop - 10;
+  // the same size and place in both frames (9:16 and 16:9)
+  const space = bot - top;
+  let k = Math.max(.5, Math.min(1, space / lh));
+  let y = top + Math.max(0, (space - lh * k) / 2);
+  if (mode === 'band') {                          // 16:9: never above the top edge of the picture; shrink a little only if it must
     const sh = stage.clientHeight, bh = stage.clientWidth * 9 / 16, bt = (sh - bh) / 2;
-    top = Math.max(top, bt + 8); bot = Math.min(bot, bt + bh - 8);
+    if (y < bt + 8) {
+      y = bt + 8;
+      if (y + lh * k > bot) k = Math.max(k * .85, .45, Math.min(k, (bot - y) / lh));
+    }
   }
-  const space = bot - top, k = Math.max(.5, Math.min(1, space / lh));
-  ld.style.top = (top + Math.max(0, (space - lh * k) / 2)) + 'px';
+  ld.style.top = y + 'px';
   ld.style.transform = 'translateX(-50%) scale(' + k.toFixed(3) + ')';
 }
 const cv = el('cv'), ctx = cv.getContext('2d'), stage = el('stage'), ring = el('ring');
