@@ -623,6 +623,10 @@ let LREADY = false;
 let LANG = (() => {
   const q = new URLSearchParams(location.search).get('lang'); if (q === 'ru' || q === 'en') return q;
   try { const v = localStorage.getItem('lang'); if (v === 'ru' || v === 'en') return v; } catch (e) {}
+  // v7.2: by the device time zone (no IP lookup): UA and GE → English; RU, BY, KZ, KG, UZ, TJ, TM, AM, AZ, MD → Russian
+  let tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+  if (/^(Europe\/(Kyiv|Kiev|Uzhgorod|Zaporozhye)|Asia\/Tbilisi)$/.test(tz)) return 'en';
+  if (/^(Europe\/(Moscow|Kaliningrad|Samara|Volgograd|Saratov|Ulyanovsk|Astrakhan|Kirov|Minsk|Chisinau|Tiraspol)|Asia\/(Yekaterinburg|Omsk|Novosibirsk|Barnaul|Tomsk|Novokuznetsk|Krasnoyarsk|Irkutsk|Chita|Yakutsk|Khandyga|Vladivostok|Ust-Nera|Magadan|Sakhalin|Srednekolymsk|Kamchatka|Anadyr|Almaty|Qostanay|Aqtobe|Aqtau|Atyrau|Oral|Qyzylorda|Bishkek|Tashkent|Samarkand|Dushanbe|Ashgabat|Yerevan|Baku))$/.test(tz)) return 'ru';
   return /^ru\b/i.test(navigator.language || '') ? 'ru' : 'en';
 })();
 const L = () => T[LANG];
