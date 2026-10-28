@@ -730,8 +730,8 @@ const STAGE_START = [0, R_END, A_END + F_MODEL, A_END + F_RENDER, A_END + F_EVEN
 // ---------- streaming frame packs ----------
 const sets = {}; let bytesIn = 0;
 // big landscape screens get the 1920/2560 pack, everything else the 1152 one
-const HD = () => !!IDX.h && !portrait() && innerWidth * Math.min(devicePixelRatio || 1, 2) >= 1700;
-const setKey = () => mode === 'full' ? 'p' : (HD() && sets.h && sets.h.done ? 'h' : 'l');   // v7.4: HD only once fully loaded
+const HD = () => !!IDX.h && !portrait() && innerWidth >= 900;   // v7.5: every desktop / laptop gets the full-quality pack
+const setKey = () => mode === 'full' ? 'p' : (HD() ? 'h' : 'l');
 // v7.4: downloads wait while the ring is off screen (sections below, a project page open)
 const packsPaused = () => { const d = document.getElementById('dlg'); return (d && d.open) || ring.getBoundingClientRect().bottom < 0; };
 const FAST_MBIT = 25;
@@ -760,9 +760,6 @@ async function loadSet(k, bg = false) {
     clearInterval(wd); s.ms += performance.now() - t1;
   }
   s.done = s.got >= tot; progress(); draw();
-  // v7.4: a fast first pack on a big screen → fetch the HD pack quietly, switch to it when complete
-  if (k === 'l' && s.done && !bg && HD() && !sets.h && s.ms > 0 && tot * 8 / 1e6 / (s.ms / 1000) >= FAST_MBIT)
-    setTimeout(() => loadSet('h', true).then(h => { if (h.done && setKey() !== curKey) setMode(mode); }), 1500);
   if (wantBand && k === FIRST_KEY && s.done) { wantBand = false; preloadBand(); }
   return s;
 }
