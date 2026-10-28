@@ -255,7 +255,7 @@ function labelHtml(a) { return `${a < 5 && DAYS[a] !== '0' ? `<b>${DAYS[a]}</b>`
 
 let bar = null, nr = null, sheet = null, pill = null;
 // unified bar (all variants)
-bar = $(`<header class="nb" aria-label="Site"><div class="l"><a class="me" href="${PAGE === 'scan' ? MAIN : '#top'}"></a></div><div class="r"><div class="lang" data-lang></div></div></header>`);
+bar = $(`<header class="nb" aria-label="Site"><div class="l"><a class="me" href="${PAGE === 'scan' ? MAIN : '#top'}"></a></div><div class="r"></div></header>`);
 // ---------- the way back up: first-block buttons remember the stage they were pressed on ----------
 const RET_KEY = 'navRet';
 let retSetAt = -1e9;   // just pressed: the page may still be on the ring for a moment (e.g. before leaving for the scanning page)
@@ -305,7 +305,7 @@ document.body.appendChild(burg); burg.addEventListener('click', openSheet);
 let pill2 = null, lang2 = null;
 const dlgN = document.getElementById('dlgn');
 if (dlgN) {
-  pill2 = $(`<button type="button" class="burg burg-in" aria-haspopup="dialog">${BURG}</button>`); lang2 = $(`<div class="lang" data-lang></div>`);
+  pill2 = $(`<button type="button" class="burg burg-in" aria-haspopup="dialog">${BURG}</button>`); lang2 = $(`<button type="button" class="lsw in" aria-haspopup="listbox"><span class="c">EN</span><span class="cv"></span></button>`);
   dlgN.append(lang2, pill2); pill2.addEventListener('click', openSheet);
   // language switch inside a project page: draw the page again in the new language
   document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-l]') && dlgOpen()) { const sl = dlgSlug(); setTimeout(() => { if (sl && typeof openProject === 'function') { const y = dlg.querySelector('.dlg').scrollTop; openProject(sl); dlg.querySelector('.dlg').scrollTop = y; } }, 0); } });
@@ -344,7 +344,7 @@ function renderSheet() {
     + (i === 5 ? pjRows(a) : '');
   sheet.querySelector('.pn').innerHTML = `<div class="hd"><a class="me" href="${PAGE === 'scan' ? MAIN : '#top'}">${X().name}</a><button type="button" class="x" aria-label="${X().close}">×</button></div>
     <p class="k">${X().kick}</p><ol>${[0, 1, 2, 3, 4].map(row).join('')}</ol><div class="sp"></div><ol>${SEC_ORDER.map(row).join('')}</ol>
-    <div class="ft"><a class="btn wa" href="https://wa.me/393498929736" target="_blank" rel="noopener">${X().cta}</a><div class="lang" data-lang>${langBtns()}</div></div>`;
+    <div class="ft"><a class="btn wa" href="https://wa.me/393498929736" target="_blank" rel="noopener">${X().cta}</a></div>`;
 }
 const langBtns = () => ['en', 'ru'].map(l => `<button type="button" data-l="${l}" aria-pressed="${l === lang()}">${l.toUpperCase()}</button>`).join('');
 function openSheet() { if (!sheet) return; const host = dlgOpen() ? dlg : document.body; if (sheet.parentNode !== host) host.appendChild(sheet); renderSheet(); sheet.classList.add('open'); document.documentElement.style.overflow = 'hidden'; }
@@ -459,7 +459,6 @@ function sync() {
   bar.classList.toggle('on', on);
   syncRet();
   bar.querySelector('.me').textContent = X().name;
-  const lb = bar.querySelector('.lang'); if (!lb.children.length || lb.dataset.k !== L) { lb.innerHTML = langBtns(); lb.dataset.k = L; }
   const key = a + '|' + r + '|' + L + '|' + dlgSlug();
   if (key === last) return; last = key;
   if (nr) {
@@ -469,7 +468,6 @@ function sync() {
     // on the ring the B label hides on phones (frame button lives there); the day scale opens the sheet instead
     nr.querySelector('.nl').style.display = r ? 'none' : '';
   }
-  if (lang2 && (!lang2.children.length || lang2.dataset.k !== L)) { lang2.innerHTML = langBtns(); lang2.dataset.k = L; }
   if (pill) pill.innerHTML = `<span class="mini">${items().map((t, i) => `${i === 5 ? '<span class="g"></span>' : ''}<i class="${cls(i, a)}"></i>`).join('')}</span><span>${labelHtml(a)}</span><span class="ic" style="display:none"></span>`;
   if (sheet && sheet.classList.contains('open')) renderSheet();
 }
@@ -501,4 +499,56 @@ if (PAGE === 'main' && location.hash) {
   };
   if (document.readyState === 'complete') setTimeout(run, 300); else addEventListener('load', () => setTimeout(run, 300));
 }
+
+// ---------- language switch, variant A (v7.1, 28.10) ----------
+(() => {
+const LS = [['en', 'EN', 'English'], ['it', 'IT', 'Italiano'], ['fr', 'FR', 'Français'], ['es', 'ES', 'Español'], ['ru', 'RU', 'Русский'], ['tr', 'TR', 'Türkçe']];
+const base = c => (c === 'ru' ? 'ru' : 'en');
+const sel = () => { let v = ''; try { v = localStorage.getItem('langSel') || ''; } catch (e) {} return LS.some(x => x[0] === v) && base(v) === lang() ? v : lang(); };
+const st = document.createElement('style');
+st.textContent = `
+.lsw{position:fixed;z-index:32;top:calc(12px + env(safe-area-inset-top,0px));right:calc(max(12px,calc(var(--pad) - 10px)) + 54px);height:46px;min-width:46px;border:0;border-radius:23px;background:rgba(8,20,36,.35);color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;padding:0 13px 0 15px;font:inherit;font-size:14px;letter-spacing:.05em;-webkit-tap-highlight-color:transparent;transition:background .2s}
+.lsw:hover,.lsw[aria-expanded="true"]{background:rgba(8,20,36,.65)}
+.lsw .cv{width:8px;height:8px;border-right:1.5px solid var(--dim);border-bottom:1.5px solid var(--dim);transform:translateY(-2px) rotate(45deg)}
+.lsw.in{position:static;margin-left:auto}
+.lsd{position:fixed;z-index:45;top:calc(64px + env(safe-area-inset-top,0px));right:calc(max(12px,calc(var(--pad) - 10px)) + 54px);min-width:200px;background:rgba(10,24,42,.97);border:1px solid var(--line);border-radius:14px;padding:6px;opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity .2s,transform .2s;box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.lsd.open{opacity:1;transform:none;pointer-events:auto}
+.lsd button{display:flex;width:100%;align-items:center;gap:12px;border:0;background:none;color:var(--ink);font:inherit;padding:10px 12px;border-radius:9px;cursor:pointer;text-align:left;font-size:15px}
+.lsd button:hover{background:rgba(255,255,255,.05)}
+.lsd .k{width:22px;color:var(--dim);font-size:12px;letter-spacing:.05em}
+.lsd button[aria-pressed="true"],.lsd button[aria-pressed="true"] .k{color:var(--amber)}
+.lsd .ok{margin-left:auto;color:var(--amber);visibility:hidden}
+.lsd button[aria-pressed="true"] .ok{visibility:visible}
+/* the percent and the day counter move left of the switch on wide screens */
+@media (min-width:561px){.v6 .pct{right:calc(var(--pad) + 128px)}.scale .sc-read{margin-right:128px;margin-left:-128px}}
+`;
+document.head.appendChild(st);
+const btn = $(`<button type="button" class="lsw" aria-haspopup="listbox" aria-expanded="false"><span class="c">EN</span><span class="cv"></span></button>`);
+document.body.appendChild(btn);
+const dd = $(`<div class="lsd" role="listbox"></div>`);
+document.body.appendChild(dd);
+const btns = () => [btn, ...(lang2 ? [lang2] : [])];
+function draw() {
+  const c = sel();
+  btns().forEach(b => { b.querySelector('.c').textContent = c.toUpperCase(); });
+  dd.innerHTML = LS.map(([k, code, name]) => `<button type="button" data-l="${base(k)}" data-ls="${k}" aria-pressed="${k === c}"><span class="k">${code}</span>${name}<span class="ok">✓</span></button>`).join('');
+}
+function open(from) {
+  const host = dlgOpen() ? dlg : document.body; if (dd.parentNode !== host) host.appendChild(dd);
+  const r = from.getBoundingClientRect(); dd.style.right = (innerWidth - r.right) + 'px'; dd.style.top = (r.bottom + 6) + 'px';
+  draw(); dd.classList.add('open'); btns().forEach(b => b.setAttribute('aria-expanded', 'true'));
+}
+function close() { dd.classList.remove('open'); btns().forEach(b => b.setAttribute('aria-expanded', 'false')); }
+btns().forEach(b => b.addEventListener('click', e => { e.stopPropagation(); dd.classList.contains('open') ? close() : open(b); }));
+document.addEventListener('click', e => {
+  const it = e.target.closest && e.target.closest('[data-ls]');
+  if (it) { try { localStorage.setItem('langSel', it.dataset.ls); } catch (x) {} setTimeout(() => { draw(); close(); }, 0); return; }
+  if (!(e.target.closest && e.target.closest('.lsd, .lsw'))) close();   // the switch itself toggles
+}, true);
+addEventListener('scroll', close, { passive: true });
+// the switch hides with the menu button while the site map is open
+const obs = new MutationObserver(() => { const o = sheet && sheet.classList.contains('open'); btn.style.visibility = o ? 'hidden' : ''; if (o) close(); });
+if (sheet) obs.observe(sheet, { attributes: true, attributeFilter: ['class'] });
+draw();
+})();
 })();
