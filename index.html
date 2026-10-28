@@ -737,26 +737,65 @@ const packsPaused = () => { const d = document.getElementById('dlg'); return (d 
 const FAST_MBIT = 25;
 let curKey = null;
 // one pack per orientation, frames stored in the order the scroll first needs them
+// v7.6: two sources for the packs; the faster one wins on the first 768 KB, a stalled one hands over to the other
+const PACK_SRC = ['', 'https://pravdukhin-media.pages.dev/'], PROBE = 768 * 1024, PV = new URLSearchParams(location.search).get('pv') || '8';   // ?pv=… = a cold test
+window.__packSrc = {};
+function openPack(src, k, from, signal, bg) {
+  const h = from ? { Range: 'bytes=' + from + '-' } : {};
+  return fetch(src + 'r_' + k + '.bin?v=' + PV, { headers: h, signal, priority: bg ? 'low' : 'high' }).then(r => {
+    if (!r.ok) throw new Error('http ' + r.status);
+    // a copy that does not match this page's frame index (e.g. a mirror not updated after a new pack) is not used
+    const cr = r.headers.get('content-range'), full = cr ? +cr.split('/')[1] : (r.status === 200 ? +(r.headers.get('content-length') || 0) : 0);
+    if (full && full !== IDX[k].total) { r.body.cancel(); throw new Error('size ' + full); }
+    return { rd: r.body.getReader(), skip: from && r.status === 200 ? from : 0 };   // server ignored Range: drop what we have
+  });
+}
+// open every source, read until one has PROBE bytes; that one wins, the rest are cancelled
+function racePack(k, s, tot, outer, bg) {
+  return new Promise((resolve, reject) => {
+    let settled = false, failed = 0; const t0 = performance.now();
+    const cands = PACK_SRC.map(src => ({ src, ac: new AbortController(), parts: [], n: 0 }));
+    const stop = () => cands.forEach(c => c.ac.abort());
+    outer.addEventListener('abort', stop);
+    cands.forEach(c => openPack(c.src, k, 0, c.ac.signal, bg).then(async st => {
+      for (;;) {
+        const { done, value } = await st.rd.read();
+        if (settled) return;
+        if (!done) { c.parts.push(value); c.n += value.length; s.last = Date.now(); }
+        if (done || c.n >= Math.min(PROBE, tot)) {
+          settled = true; cands.forEach(o => { if (o !== c) o.ac.abort(); });
+          outer.addEventListener('abort', () => c.ac.abort());
+          for (const p of c.parts) { const v = p.subarray(0, tot - s.got); s.buf.set(v, s.got); s.got += v.length; bytesIn += v.length; }
+          window.__packSrc[k] = (c.src || 'site') + ' · ' + Math.round(performance.now() - t0) + ' ms for ' + Math.round(c.n / 1024) + ' KB';
+          progress(); draw(); resolve({ src: c.src, st: { rd: st.rd, skip: 0 } }); return;
+        }
+      }
+    }).catch(e => { if (!settled && ++failed === cands.length) { settled = true; reject(e); } }));
+  });
+}
 async function loadSet(k, bg = false) {
   if (sets[k]) return sets[k];
-  const tot = IDX[k].total, s = { buf: new Uint8Array(tot), got: 0, done: false, tries: 0, ms: 0 }; sets[k] = s;
-  // mobile networks drop long streams: a watchdog aborts a stalled stream and resumes from the last byte with a Range request
+  const tot = IDX[k].total, s = { buf: new Uint8Array(tot), got: 0, done: false, tries: 0, ms: 0, src: null, last: 0 }; sets[k] = s;
+  // a watchdog aborts a stalled stream; the next attempt resumes from the last byte with a Range request, on the other source
   while (s.got < tot && s.tries < 12) {
     while (packsPaused()) await new Promise(r => setTimeout(r, 500));
-    s.tries++; const ac = new AbortController(); let last = Date.now(), paused = false, t1 = performance.now();
-    const wd = setInterval(() => { if (packsPaused()) { paused = true; ac.abort(); } else if (Date.now() - last > 5000) ac.abort(); }, 1000);
+    s.tries++; const ac = new AbortController(); let paused = false, t1 = performance.now(); s.last = Date.now();
+    const wd = setInterval(() => { if (packsPaused()) { paused = true; ac.abort(); } else if (Date.now() - s.last > 5000) ac.abort(); }, 1000);
     try {
-      const h = s.got ? { Range: 'bytes=' + s.got + '-' } : {};
-      const r = await fetch('r_' + k + '.bin?v=8', { headers: h, signal: ac.signal, priority: bg ? 'low' : 'high' });
-      let skip = s.got && r.status === 200 ? s.got : 0;   // server ignored Range: drop what we already have
-      const rd = r.body.getReader();
-      for (;;) {
-        const { done, value } = await rd.read(); if (done) break; last = Date.now();
+      let st;
+      if (s.src === null && s.got === 0) { const w = await racePack(k, s, tot, ac.signal, bg); s.src = w.src; st = w.st; }
+      else { if (s.src === null) s.src = PACK_SRC[0]; st = await openPack(s.src, k, s.got, ac.signal, bg); }
+      let skip = st.skip; const rd = st.rd;
+      while (s.got < tot) {
+        const { done, value } = await rd.read(); if (done) break; s.last = Date.now();
         let v = value; if (skip) { if (v.length <= skip) { skip -= v.length; continue; } v = v.subarray(skip); skip = 0; }
         v = v.subarray(0, tot - s.got); s.buf.set(v, s.got); s.got += v.length; bytesIn += v.length; progress(); draw();
-        if (s.got >= tot) break;
       }
-    } catch (e) { lastErr = 'net: ' + (e && e.name); if (paused) s.tries--; else await new Promise(r => setTimeout(r, 400 * s.tries)); }
+    } catch (e) {
+      lastErr = 'net: ' + (e && e.name);
+      if (paused) s.tries--;
+      else { if (s.src !== null && PACK_SRC.length > 1) { s.src = PACK_SRC[(PACK_SRC.indexOf(s.src) + 1) % PACK_SRC.length]; window.__packSrc[k] += ' → ' + (s.src || 'site'); } await new Promise(r => setTimeout(r, 400 * s.tries)); }
+    }
     clearInterval(wd); s.ms += performance.now() - t1;
   }
   s.done = s.got >= tot; progress(); draw();
