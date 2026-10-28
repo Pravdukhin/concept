@@ -502,7 +502,7 @@ if (PAGE === 'main' && location.hash) {
 
 // ---------- language switch, variant A (v7.1, 28.10) ----------
 (() => {
-const LS = [['en', 'EN', 'English'], ['it', 'IT', 'Italiano'], ['fr', 'FR', 'Français'], ['es', 'ES', 'Español'], ['ru', 'RU', 'Русский'], ['tr', 'TR', 'Türkçe']];
+const LS = [['en', 'EN', 'English'], ['ru', 'RU', 'Русский'], ['it', 'IT', 'Italiano'], ['fr', 'FR', 'Français'], ['es', 'ES', 'Español'], ['tr', 'TR', 'Türkçe']];
 const base = c => (c === 'ru' ? 'ru' : 'en');
 const sel = () => { let v = ''; try { v = localStorage.getItem('langSel') || ''; } catch (e) {} return LS.some(x => x[0] === v) && base(v) === lang() ? v : lang(); };
 const st = document.createElement('style');
