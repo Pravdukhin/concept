@@ -731,19 +731,23 @@ const STAGE_START = [0, R_END, A_END + F_MODEL, A_END + F_RENDER, A_END + F_EVEN
 const sets = {}; let bytesIn = 0;
 // big landscape screens get the 1920/2560 pack, everything else the 1152 one
 const HD = () => !!IDX.h && !portrait() && innerWidth * Math.min(devicePixelRatio || 1, 2) >= 1700;
-const setKey = () => mode === 'full' ? 'p' : (HD() ? 'h' : 'l');
+const setKey = () => mode === 'full' ? 'p' : (HD() && sets.h && sets.h.done ? 'h' : 'l');   // v7.4: HD only once fully loaded
+// v7.4: downloads wait while the ring is off screen (sections below, a project page open)
+const packsPaused = () => { const d = document.getElementById('dlg'); return (d && d.open) || ring.getBoundingClientRect().bottom < 0; };
+const FAST_MBIT = 25;
 let curKey = null;
 // one pack per orientation, frames stored in the order the scroll first needs them
-async function loadSet(k) {
+async function loadSet(k, bg = false) {
   if (sets[k]) return sets[k];
-  const tot = IDX[k].total, s = { buf: new Uint8Array(tot), got: 0, done: false, tries: 0 }; sets[k] = s;
+  const tot = IDX[k].total, s = { buf: new Uint8Array(tot), got: 0, done: false, tries: 0, ms: 0 }; sets[k] = s;
   // mobile networks drop long streams: a watchdog aborts a stalled stream and resumes from the last byte with a Range request
   while (s.got < tot && s.tries < 12) {
-    s.tries++; const ac = new AbortController(); let last = Date.now();
-    const wd = setInterval(() => { if (Date.now() - last > 5000) ac.abort(); }, 1000);
+    while (packsPaused()) await new Promise(r => setTimeout(r, 500));
+    s.tries++; const ac = new AbortController(); let last = Date.now(), paused = false, t1 = performance.now();
+    const wd = setInterval(() => { if (packsPaused()) { paused = true; ac.abort(); } else if (Date.now() - last > 5000) ac.abort(); }, 1000);
     try {
       const h = s.got ? { Range: 'bytes=' + s.got + '-' } : {};
-      const r = await fetch('r_' + k + '.bin?v=8', { headers: h, signal: ac.signal });
+      const r = await fetch('r_' + k + '.bin?v=8', { headers: h, signal: ac.signal, priority: bg ? 'low' : 'high' });
       let skip = s.got && r.status === 200 ? s.got : 0;   // server ignored Range: drop what we already have
       const rd = r.body.getReader();
       for (;;) {
@@ -752,10 +756,13 @@ async function loadSet(k) {
         v = v.subarray(0, tot - s.got); s.buf.set(v, s.got); s.got += v.length; bytesIn += v.length; progress(); draw();
         if (s.got >= tot) break;
       }
-    } catch (e) { lastErr = 'net: ' + (e && e.name); await new Promise(r => setTimeout(r, 400 * s.tries)); }
-    clearInterval(wd);
+    } catch (e) { lastErr = 'net: ' + (e && e.name); if (paused) s.tries--; else await new Promise(r => setTimeout(r, 400 * s.tries)); }
+    clearInterval(wd); s.ms += performance.now() - t1;
   }
   s.done = s.got >= tot; progress(); draw();
+  // v7.4: a fast first pack on a big screen → fetch the HD pack quietly, switch to it when complete
+  if (k === 'l' && s.done && !bg && HD() && !sets.h && s.ms > 0 && tot * 8 / 1e6 / (s.ms / 1000) >= FAST_MBIT)
+    setTimeout(() => loadSet('h', true).then(h => { if (h.done && setKey() !== curKey) setMode(mode); }), 1500);
   if (wantBand && k === FIRST_KEY && s.done) { wantBand = false; preloadBand(); }
   return s;
 }
@@ -933,7 +940,7 @@ let FIRST_KEY = null, wantBand = false;
 function preloadBand() {
   if (!portrait() || sets.l) return;
   const main = sets[FIRST_KEY];
-  if (main && main.done) loadSet('l'); else wantBand = true;
+  if (main && main.done) loadSet('l', true); else wantBand = true;
 }
 function setMode(m) {
   mode = m; el('mode').hidden = !portrait(); el('mode').classList.toggle('band', mode === 'band'); el('mode').querySelector('.fl').textContent = mode === 'band' ? '16:9' : '9:16'; el('mode').setAttribute('aria-label', mode === 'band' ? '16:9 → 9:16' : '9:16 → 16:9');
