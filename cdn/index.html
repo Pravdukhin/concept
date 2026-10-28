@@ -739,11 +739,11 @@ const FAST_MBIT = 25;
 let curKey = null;
 // one pack per orientation, frames stored in the order the scroll first needs them
 // v7.6: two sources for the packs; the faster one wins on the first 768 KB, a stalled one hands over to the other
-const PACK_SRC = ['/', 'https://pravdukhin-media.pages.dev/'], PROBE = 768 * 1024;
+const PACK_SRC = ['/', 'https://pravdukhin-media.pages.dev/'], PROBE = 768 * 1024, PV = new URLSearchParams(location.search).get('pv') || '8';   // ?pv=… = a cold test
 window.__packSrc = {};
 function openPack(src, k, from, signal, bg) {
   const h = from ? { Range: 'bytes=' + from + '-' } : {};
-  return fetch(src + 'r_' + k + '.bin?v=8', { headers: h, signal, priority: bg ? 'low' : 'high' }).then(r => {
+  return fetch(src + 'r_' + k + '.bin?v=' + PV, { headers: h, signal, priority: bg ? 'low' : 'high' }).then(r => {
     if (!r.ok) throw new Error('http ' + r.status);
     return { rd: r.body.getReader(), skip: from && r.status === 200 ? from : 0 };   // server ignored Range: drop what we have
   });
