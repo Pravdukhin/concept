@@ -323,8 +323,13 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 .wmore button:hover{border-color:rgba(242,166,72,.6)}
 /* project page head: back on the left, site map on the right */
 .dlg-head{justify-content:space-between}
-.dlg-head .back{appearance:none;background:none;border:0;color:var(--ink);font:inherit;font-size:15px;font-weight:400;padding:6px 0;cursor:pointer;display:flex;align-items:center;gap:8px;white-space:nowrap}
-.dlg-head .back span{color:var(--amber)}
+.dlg-head .back{appearance:none;background:none;border:0;outline:none;color:var(--amber);font:inherit;font-size:clamp(24px,2.2vw,30px);font-weight:400;line-height:1;padding:6px 14px 6px 0;margin:0;cursor:pointer;display:flex;align-items:center;gap:10px;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+.dlg-head .back:focus,.dlg-head .back:focus-visible{outline:none}
+.dlg-head .back span{display:block;animation:backL 1.6s ease-in-out infinite}
+.dlg-head .back b{font-size:clamp(13px,1.1vw,15px);color:var(--dim);letter-spacing:.02em}
+.dlg-head .back:hover b{color:var(--ink)}
+@keyframes backL{0%,100%{transform:translateX(0)}50%{transform:translateX(-6px)}}
+@media (prefers-reduced-motion:reduce){.dlg-head .back span{animation:none}}
 .dlg-head .r{display:flex;align-items:center;gap:10px}
 .dlg-title{grid-column:1/-1;margin:0;font-weight:300;font-size:clamp(26px,3.6vw,44px);letter-spacing:-.015em;line-height:1.1}
 </style>
