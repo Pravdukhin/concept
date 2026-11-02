@@ -97,7 +97,7 @@ section.s > .retA{position:absolute;left:var(--pad);top:40px}
 .sh ol::before{content:"";position:absolute;left:44px;top:6px;bottom:6px;width:1px;background:rgba(232,236,241,.3)}
 .sh li a{position:relative;display:flex;align-items:baseline;gap:0;padding:9px 0;text-decoration:none;color:#c3ccd7;font-size:21px;letter-spacing:-.005em}
 .sh li a:hover{color:var(--ink)}
-.sh li a .d{width:36px;flex:none;text-align:right;font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums}
+.sh li a .d{width:36px;flex:none;text-align:right;font-size:12px;line-height:1;align-self:center;position:relative;top:1px;color:var(--dim);font-variant-numeric:tabular-nums}
 .sh li a .t{padding-left:28px}
 .sh li a::before{content:"";position:absolute;left:40px;top:50%;width:9px;height:1px;background:rgba(232,236,241,.6)}
 .sh li.p a::before{background:rgba(242,166,72,.6)}
