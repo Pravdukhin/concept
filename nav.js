@@ -14,8 +14,9 @@ const TXT = {
 };
 const DAYS = ['−60', '−45', '−30', '−20', '0'];
 // portfolio in the site map: the landing's PROJECTS when present, else this copy (update it when projects change)
-const PROJ_COPY = [["tuscany-2026", "Italy Event", 2026], ["istanbul-2026", "Istanbul Event", 2026], ["amway-kuala-lumpur-2026", "Amway LTS Malaysia", 2026], ["iba-dubai-2025", "IBA Dubai", 2025], ["amway-shanghai-2025", "Amway LTS Shanghai", 2025], ["belgrade-2024", "Belgrade Conference", 2024], ["bvlgari-dubai-2024", "Bvlgari Dubai", 2024], ["istanbul-cistern-2024", "Istanbul Conference", 2024], ["amway-abu-dhabi-2024", "Amway Conference", 2024], ["emirates-palace-2024", "Amway Gala Dinner", 2024], ["villette-2024", "France Wedding", 2024], ["challain-2023", "France Wedding", 2023], ["amway-thailand-2023", "Amway Conference", 2023], ["tiktok-cyprus-2022", "TikTok", 2022]];
-const projs = () => (typeof PROJECTS !== 'undefined' ? PROJECTS.map(p => [p.slug, p.title, p.year]) : PROJ_COPY);
+const PROJ_COPY = [["tuscany-2026", "Private event in Italy", 2026, "Частное мероприятие в Италии"], ["istanbul-2026", "Private event in Istanbul", 2026, "Частное мероприятие в Стамбуле"], ["kuala-lumpur-2026", "Conference in Kuala Lumpur", 2026, "Конференция в Куала-Лумпуре"], ["dubai-2025", "Sports event in Dubai", 2025, "Спортивное мероприятие в Дубае"], ["belgrade-2024", "Conference in Belgrade", 2024, "Конференция в Белграде"], ["dubai-2024", "Private event in Dubai", 2024, "Частное мероприятие в Дубае"], ["amway-shanghai-2025", "Conference in Shanghai", 2025, "Конференция в Шанхае"], ["istanbul-cistern-2024", "Conference in Istanbul", 2024, "Конференция в Стамбуле"], ["amway-abu-dhabi-2024", "Conference in Abu Dhabi", 2024, "Конференция в Абу-Даби"], ["emirates-palace-2024", "Gala dinner in Abu Dhabi", 2024, "Гала-ужин в Абу-Даби"], ["villette-2024", "Private event near Paris", 2024, "Частное мероприятие под Парижем"], ["challain-2023", "Private event in the Loire Valley", 2023, "Частное мероприятие в долине Луары"], ["amway-thailand-2023", "Conference in Thailand", 2023, "Конференция в Таиланде"], ["tiktok-cyprus-2022", "Corporate event in Limassol", 2022, "Корпоративное мероприятие в Лимасоле"]];
+const projs = () => (typeof PROJECTS !== 'undefined' ? PROJECTS.map(p => [p.slug, (lang() === 'ru' && p.title_ru) || p.title, p.year])
+  : PROJ_COPY.map(p => [p[0], (lang() === 'ru' && p[3]) || p[1], p[2]]));
 const dlg = document.getElementById('dlg');
 const dlgOpen = () => !!(dlg && dlg.open);
 const dlgSlug = () => (dlgOpen() && location.hash.length > 1 ? location.hash.slice(1) : '');
@@ -96,7 +97,7 @@ section.s > .retA{position:absolute;left:var(--pad);top:40px}
 .sh ol::before{content:"";position:absolute;left:44px;top:6px;bottom:6px;width:1px;background:rgba(232,236,241,.3)}
 .sh li a{position:relative;display:flex;align-items:baseline;gap:0;padding:9px 0;text-decoration:none;color:#c3ccd7;font-size:21px;letter-spacing:-.005em}
 .sh li a:hover{color:var(--ink)}
-.sh li a .d{width:36px;flex:none;text-align:right;font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums}
+.sh li a .d{width:36px;flex:none;text-align:right;font-size:12px;line-height:1;align-self:center;position:relative;top:1px;color:var(--dim);font-variant-numeric:tabular-nums}
 .sh li a .t{padding-left:28px}
 .sh li a::before{content:"";position:absolute;left:40px;top:50%;width:9px;height:1px;background:rgba(232,236,241,.6)}
 .sh li.p a::before{background:rgba(242,166,72,.6)}
