@@ -410,17 +410,12 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 .pg-in{max-width:1400px;margin:0 auto;padding:30px var(--pad) 0;display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:20px 56px;align-items:start}
 .pg-story{margin:0;font-size:clamp(16px,1.35vw,18px);line-height:1.6;color:#c3ccd7;max-width:680px}
 .pg-story p{margin:0 0 .85em}.pg-story p:last-child{margin-bottom:0}
-.pg-long{display:block}
-.pg-long .pg-story{max-width:none;column-count:2;column-gap:56px}
-.pg-long .pg-meta{display:flex;justify-content:space-between;align-items:flex-start;gap:16px 40px;flex-wrap:wrap;margin-top:26px}
-.pg-long .pg-tags{justify-content:flex-start;margin:0}
-.pg-long .pg-cred{margin:0;justify-self:auto;text-align:right}
-.pg-read{display:none;appearance:none;background:none;border:0;padding:8px 0 0;font:inherit;font-size:15px;color:var(--amber);cursor:pointer}
-@media (max-width:760px){.pg-long .pg-story{columns:auto;column-count:auto}
-  .pg-long .pg-meta{flex-direction:column}.pg-long .pg-tags{order:-1}.pg-long .pg-cred{text-align:left}
-  .pg-long{display:flex;flex-direction:column}.pg-long .pg-meta{display:contents}.pg-long .pg-tags{order:-1;margin-bottom:6px}.pg-long .pg-cred{order:3;margin-top:18px}
-  .pg-clip:not(.pg-open){max-height:15.5em;overflow:hidden;-webkit-mask-image:linear-gradient(180deg,#000 70%,transparent);mask-image:linear-gradient(180deg,#000 70%,transparent)}
-  .pg-read{display:block;order:2;align-self:flex-start}}
+.pg-long .pg-meta{display:contents}
+.pg-sw{grid-area:story;max-width:680px}
+.pg-clip:not(.pg-open) .pg-x{display:none}
+.pg-read{display:block;appearance:none;background:none;border:0;padding:10px 0 0;font:inherit;font-size:15px;color:var(--amber);cursor:pointer}
+.pg-read:hover{color:var(--ink)}
+@media (max-width:760px){.pg-clip:not(.pg-open){max-height:15.5em;overflow:hidden;-webkit-mask-image:linear-gradient(180deg,#000 70%,transparent);mask-image:linear-gradient(180deg,#000 70%,transparent)}}
 
 .pg-tags{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
 .pg-tags li{border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;color:#c3ccd7;white-space:nowrap}
@@ -1244,7 +1239,7 @@ function renderPage(p, P) {
   box.innerHTML = `<figure class="pg-hero"><img src="${P.base}${P.hero[0]}.webp" data-full="${P.base}${P.hero[0]}.webp" width="${P.hero[1]}" height="${P.hero[2]}" alt="${t(P.title)}" style="object-position:${innerWidth <= 760 ? P.posM || P.pos : P.pos}">`
     + `<figcaption><h2 id="dlgt2">${t(P.title)}</h2><p class="m">${t(P.meta)}</p></figcaption></figure>`
     + (() => { const ps = P.story ? t(P.story).split(/\n\s*\n/) : [], lg = ps.length > 2;
-      const st = P.story ? `<div class="pg-story${lg ? ' pg-clip' : ''}">${ps.map(x => `<p>${x}</p>`).join('')}</div>${lg ? `<button type="button" class="pg-read">${T.read}</button>` : ''}` : '<span class="pg-story"></span>';
+      const sh = P.storyShow || 4, st = P.story ? (lg ? '<div class="pg-sw">' : '') + `<div class="pg-story${lg ? ' pg-clip' : ''}">${ps.map((x, k) => `<p${lg && k >= sh ? ' class="pg-x"' : ''}>${x}</p>`).join('')}</div>${lg ? `<button type="button" class="pg-read">${T.read}</button></div>` : ''}` : '<span class="pg-story"></span>';
       return `<div class="pg-in${lg ? ' pg-long' : ''}">` + st + (lg ? '<div class="pg-meta">' : ''); })()
     + `${P.tags ? `<ul class="pg-tags">${t(P.tags).map(x => `<li>${x}</li>`).join('')}</ul>` : ''}${P.credits ? `<dl class="pg-cred">${P.credits.map(c => `<dt>${t(c[0])}</dt><dd>${[].concat(c[1]).map(h => `<a href="https://www.instagram.com/${h}/" target="_blank" rel="noopener">@${h}</a>`).join(' ')}</dd>`).join('')}</dl>` : ''}${P.story && t(P.story).split(/\n\s*\n/).length > 2 ? '</div>' : ''}</div>`
     + P.secs.map((S, i) => {
