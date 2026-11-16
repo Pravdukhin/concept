@@ -77,6 +77,7 @@ if (PAGE === 'pres') {
 .pvn-sh li.pvn-sub a .pvn-t::before{content:"";position:absolute;left:28px;top:-6px;width:8px;height:12px;border-left:1px solid rgba(232,236,241,.35);border-bottom:1px solid rgba(232,236,241,.35)}
 .pvn-sh li.pvn-sub a i{display:inline;color:var(--pv-amber);margin-left:6px}
 .pvn-sh li.pvn-sub.pvn-on a{color:var(--pv-ink)}
+.pvn-sh li.pvn-sub.pvn-on > a::after{display:none}
 .pvn-sh li.pvn-sub.pvn-on a i{display:none}
 .pvn-sh li.pvn-sub a:hover{color:var(--pv-ink)}
 .pvn-sh .pvn-ft{display:block;margin-top:auto;padding-top:26px}
