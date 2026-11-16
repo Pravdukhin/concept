@@ -23,7 +23,7 @@ const pres = () => (typeof PRES !== 'undefined' ? PRES.map(p => [p.url, (lang() 
 const dlg = document.getElementById('dlg');
 const dlgOpen = () => !!(dlg && dlg.open);
 const dlgSlug = () => (dlgOpen() && location.hash.length > 1 ? location.hash.slice(1) : '');
-const SEC = ['work', 'about', 'how', 'scanning', 'contact', 'presentation'];
+const SEC = ['work', 'about', 'how', 'scanning', 'contact', 'interactive'];
 const SEC_ORDER = [6, 5, 7, 8, 10, 9];   // as on the page: About, Portfolio, Stages and pricing, Scanning, Contact // 8 = scanning section on the landing (the page itself is a sub-row in the sheet)
 const lang = () => (document.documentElement.lang === 'ru' ? 'ru' : 'en');
 const X = () => TXT[lang()];
@@ -343,12 +343,15 @@ bar = $(`<header class="nb" aria-label="Site"><div class="l"><a class="me" href=
 // ---------- the way back up: first-block buttons remember the stage they were pressed on ----------
 const RET_KEY = 'navRet';
 let retSetAt = -1e9;   // just pressed: the page may still be on the ring for a moment (e.g. before leaving for the scanning page)
-const getRet = () => { try { const v = JSON.parse(sessionStorage.getItem(RET_KEY)); return v && typeof v.j === 'number' ? v : null; } catch (e) { return null; } };
+const getRet = () => { try { const v = JSON.parse(sessionStorage.getItem(RET_KEY)); return v && (typeof v.j === 'number' || v.sec) ? v : null; } catch (e) { return null; } };
 const setRet = v => { try { if (v === null) sessionStorage.removeItem(RET_KEY); else sessionStorage.setItem(RET_KEY, JSON.stringify(v)); } catch (e) {} };
-const RET_T = { pfBtn: 'work', costBtn: 'how', scanBtn: 'scan', presBtn: 'presentation' };
+const RET_T = { pfBtn: 'work', costBtn: 'how', scanBtn: 'scan', presBtn: 'interactive' };
 document.addEventListener('click', e => {
   const b = e.target.closest && e.target.closest('#pfBtn, #scanBtn, #costBtn, #presBtn');
-  if (b && typeof stageOf === 'function' && typeof step !== 'undefined') { setRet({ j: stageOf(step), t: RET_T[b.id] }); retSetAt = performance.now(); }
+  if (b && typeof stageOf === 'function' && typeof step !== 'undefined') { setRet({ j: stageOf(step), t: RET_T[b.id] }); retSetAt = performance.now(); return; }
+  // v8.1.5: buttons inside "Work stages and pricing" come back to the same place there
+  const sb = e.target.closest && e.target.closest('#how .steps a.scb');
+  if (sb) { const to = sb.getAttribute('href') || ''; setRet({ sec: 'how', sel: sb.dataset.i ? `[data-i="${sb.dataset.i}"]` : '', t: to.includes('3d-venue-scanning') ? 'scan' : to.replace(/^#/, '') }); retSetAt = performance.now(); }
 }, true);
 function returnTo(j) {
   if (typeof freeScroll === 'function') freeScroll();
@@ -361,9 +364,13 @@ const retA = $(`<button type="button" class="retA" hidden><span>↑</span><small
 retA.addEventListener('click', () => {
   const r = getRet(); setRet(null); syncRet();
   if (!r) return;
-  if (PAGE === 'scan') { location.href = MAIN + '#s' + r.j; return; }
+  if (PAGE === 'scan') { location.href = MAIN + (r.sec ? '#' + r.sec : '#s' + r.j); return; }
   if (dlgOpen()) dlg.close();
-  closeSheet(); returnTo(r.j);
+  closeSheet();
+  if (r.sec) { const el = (r.sel && document.querySelector('#' + r.sec + ' ' + r.sel)) || document.getElementById(r.sec); if (!el) return;
+    if (typeof freeScroll === 'function') freeScroll();
+    const rc = el.getBoundingClientRect(); scrollTo({ top: rc.top + scrollY - (r.sel ? Math.max(70, innerHeight * .35) : 56), behavior: 'smooth' }); return; }
+  returnTo(r.j);
 });
 function retHost(t) {
   if (PAGE === 'scan') return document.querySelector('main .hero .txt') || document.querySelector('main');
@@ -574,7 +581,7 @@ document.addEventListener('click', e => {
 }, true);
 // arriving from the scanning page: #s0..#s4 = ring stage, #work… = section
 if (PAGE === 'main' && location.hash) {
-  const h = location.hash.slice(1);
+  const h = location.hash.slice(1) === 'presentation' ? 'interactive' : location.hash.slice(1);
   const run = () => {
     // a project link (#slug): the page already opened it; put the landing at the portfolio behind it
     if (projs().some(p => p[0] === h)) { const w = document.getElementById('work'); if (w) { if (typeof freeScroll === 'function') freeScroll(); scrollTo({ top: w.getBoundingClientRect().top + scrollY - 56, behavior: 'instant' }); } return; }

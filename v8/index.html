@@ -423,7 +423,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <style>
 /* v8.1 round 6: device frames for the clean screen recordings */
-#presentation .stg{display:block;position:relative;max-width:980px;margin:0 auto;padding-bottom:2%}
+#interactive .stg{display:block;position:relative;max-width:980px;margin:0 auto;padding-bottom:2%}
 .mac{position:relative;width:100%}
 .mac .scr{position:relative;background:#0a1220;border:clamp(5px,1vw,11px) solid #1b2029;border-bottom-width:clamp(7px,1.4vw,15px);border-radius:clamp(9px,1.6vw,18px) clamp(9px,1.6vw,18px) 4px 4px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 34px 70px rgba(0,0,0,.5)}
 .mac .wbar{display:flex;align-items:center;gap:clamp(3px,.5vw,6px);height:clamp(13px,2.3vw,27px);padding:0 clamp(6px,1vw,12px);background:#141a24;border-bottom:1px solid rgba(255,255,255,.05)}
@@ -434,18 +434,18 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 .mac video{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:#0a1220}
 .mac .base{position:relative;height:clamp(7px,1.3vw,15px);margin:0 -6.5%;background:linear-gradient(#323a48,#171c25 70%);border-radius:2px 2px 50% 50% / 2px 2px 100% 100%}
 .mac .base::after{content:"";position:absolute;left:50%;top:0;width:13%;height:42%;transform:translateX(-50%);background:#20262f;border-radius:0 0 6px 6px}
-#presentation .stg .ph{position:absolute;right:-1%;bottom:-3%;width:clamp(90px,21%,210px);aspect-ratio:1180/2556;border:clamp(3px,.55vw,6px) solid #262b33;border-radius:15.5% / 7.2%;background:#000;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.12),0 26px 56px rgba(0,0,0,.6)}
-#presentation .stg .ph video{display:block;width:100%;height:100%;object-fit:cover}
+#interactive .stg .ph{position:absolute;right:-1%;bottom:-3%;width:clamp(90px,21%,210px);aspect-ratio:1180/2556;border:clamp(3px,.55vw,6px) solid #262b33;border-radius:15.5% / 7.2%;background:#000;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.12),0 26px 56px rgba(0,0,0,.6)}
+#interactive .stg .ph video{display:block;width:100%;height:100%;object-fit:cover}
 .ph .di{position:absolute;top:1.25%;left:50%;width:32%;height:4.2%;transform:translateX(-50%);background:#000;border-radius:999px}
 /* computer: the phone stands beside the laptop */
 @media (min-width:761px){
-  #presentation .stg{display:flex;align-items:flex-end;gap:clamp(18px,3vw,40px);max-width:1120px}
-  #presentation .stg .mac{flex:1 1 auto;min-width:0}
-  #presentation .stg .ph{position:relative;right:auto;bottom:auto;flex:0 0 auto;width:clamp(120px,20%,220px);margin-bottom:1%}
+  #interactive .stg{display:flex;align-items:flex-end;gap:clamp(18px,3vw,40px);max-width:1120px}
+  #interactive .stg .mac{flex:1 1 auto;min-width:0}
+  #interactive .stg .ph{position:relative;right:auto;bottom:auto;flex:0 0 auto;width:clamp(120px,20%,220px);margin-bottom:1%}
 }
-@media (max-width:760px){ .mac .base{margin:0 -3%} #presentation .stg{margin-right:4%} #presentation .stg .ph{width:27%;right:-5%;bottom:-6%;border-width:3px} }
-.noph #presentation .stg .ph{display:none}
-.noph #presentation .stg{display:block;max-width:980px}
+@media (max-width:760px){ .mac .base{margin:0 -3%} #interactive .stg{margin-right:4%} #interactive .stg .ph{width:27%;right:-5%;bottom:-6%;border-width:3px} }
+.noph #interactive .stg .ph{display:none}
+.noph #interactive .stg{display:block;max-width:980px}
 </style>
 
 <style>
@@ -649,7 +649,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
             <p id="capp"></p>
             <a class="btn" id="scanBtn" hidden href="/v8/3d-venue-scanning/" data-i="scanBtn">About scanning</a>
             <a class="btn wa" id="briefBtn" hidden href="https://wa.me/393498929736" target="_blank" rel="noopener" data-i="briefBtn">Request a brief</a>
-            <span class="bpair"><a class="btn" id="costBtn" hidden href="#how" data-i="costBtn">What it costs</a><a class="btn nwb" id="presBtn" hidden href="#presentation"><span class="lg" data-i="presBtn">Interactive visuals</span><span class="sm" data-i="presBtnS">Interactive visuals</span><em data-i="newTag">NEW</em></a></span>
+            <span class="bpair"><a class="btn" id="costBtn" hidden href="#how" data-i="costBtn">What it costs</a><a class="btn nwb" id="presBtn" hidden href="#interactive"><span class="lg" data-i="presBtn">Interactive visuals</span><span class="sm" data-i="presBtnS">Interactive visuals</span><em data-i="newTag">NEW</em></a></span>
             <a class="btn wa" id="cta" hidden href="https://wa.me/393498929736" target="_blank" rel="noopener" data-i="cta">Discuss your project</a>
           </div>
           <div class="rail" id="rail" aria-label="Stages"><button type="button" aria-label="Show day"></button><button type="button" aria-label="Laser scan"></button><button type="button" aria-label="3D model"></button><button type="button" aria-label="Render"></button><button type="button" aria-label="Built"></button></div>
@@ -716,7 +716,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
     <li id="brief" class="first"><span class="d" data-i="bK">60 days to show · First call</span><h3 data-i="bH">A preliminary budget in two working days</h3><p><span data-i="bP"></span><b class="hl" data-i="bPb"></b><span data-i="bPc"></span></p><div class="bot"><div class="pr"><b data-i="p0">Free</b></div><a class="btn wa" href="https://wa.me/393498929736" target="_blank" rel="noopener" data-i="briefBtn">Request a brief</a></div></li>
     <li><span class="d" data-capn="0">45 days to show</span><h3 data-i="s1h">A digital copy of the venue</h3><p data-i="s1p"></p><div class="bot"><div class="pr"><b data-i="p1"></b><span data-i="p1s"></span></div><a class="btn scb" href="/v8/3d-venue-scanning/" data-i="scanBtn">About scanning</a></div></li>
     <li><span class="d" data-capn="1">30 days to show</span><h3 data-i="s2h">Technical design, true to size</h3><p data-i="s2p"></p><div class="bot"><div class="pr"><b data-i="p2"></b><span data-i="p2s"></span></div></div></li>
-    <li><span class="d" data-capn="2">20 days to show</span><h3 data-i="s3h">Visuals for the client</h3><p data-i="s3p"></p><p class="x3" data-i="s3x"></p><div class="bot"><div class="pr"><b data-i="p2v"></b><span data-i="p2vs"></span></div><a class="btn scb" href="#presentation" data-i="s3b">About the interactive presentation</a></div></li>
+    <li><span class="d" data-capn="2">20 days to show</span><h3 data-i="s3h">Visuals for the client</h3><p data-i="s3p"></p><p class="x3" data-i="s3x"></p><div class="bot"><div class="pr"><b data-i="p2v"></b><span data-i="p2vs"></span></div><a class="btn scb" href="#interactive" data-i="s3b">About the interactive presentation</a></div></li>
   </ol>
   <ol class="steps si">
     <li><span class="d" data-capn="3">Show day</span><h3 data-i="s4h">Delivered as designed</h3><p data-i="s4p"></p><div class="bot"><div class="pr"><b data-i="p3"></b><span data-i="p3s"></span></div></div></li>
@@ -751,7 +751,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
   </div></div></div>
 </section>
 
-<section class="s spP" id="presentation">
+<section class="s spP" id="interactive">
   <div class="prh">
     <div><span class="k" data-i="prK"></span><h2 data-i="prH"></h2></div>
     <p class="lead" data-i="prP"></p>
@@ -1513,14 +1513,14 @@ function setV(v, base) { const src = base + (innerWidth <= 760 && v.dataset.m ? 
   if (v.dataset.src !== src) { v.dataset.src = src; if (v.getAttribute('src')) v.src = src; } }
 // play only the videos that are shown, and only while the section is near the screen
 function syncPres() {
-  const s = document.getElementById('presentation'); if (!s) return;
+  const s = document.getElementById('interactive'); if (!s) return;
   s.querySelectorAll('video').forEach(v => {
     const shown = v.offsetParent !== null && v.dataset.src;
     if (PVIS && shown) { if (v.getAttribute('src') !== v.dataset.src) v.src = v.dataset.src; v.play().catch(() => {}); } else v.pause();
   });
 }
 function renderPres() {
-  const s = document.getElementById('presentation'); if (!s) return;
+  const s = document.getElementById('interactive'); if (!s) return;
   const ru = LANG === 'ru', p = PRES[PRI], lg = ru ? 'ru' : 'en';
   s.querySelector('.prt').innerHTML = PRES.map((q, i) => `<button type="button" role="tab" aria-selected="${i === PRI}" data-pr="${i}"><img src="${q.thumb}" alt="" loading="lazy"><span>${(ru && q.t_ru) || q.t}</span></button>`).join('');
   s.querySelector('#prGo').href = p.url + '?lang=' + LANG;
@@ -1530,7 +1530,7 @@ function renderPres() {
   syncPres();
 }
 (() => {
-  const s = document.getElementById('presentation'); if (!s) return;
+  const s = document.getElementById('interactive'); if (!s) return;
   s.querySelector('.prt').addEventListener('click', e => { const b = e.target.closest('[data-pr]'); if (!b || +b.dataset.pr === PRI) return; PRI = +b.dataset.pr; renderPres(); });
   renderPres();
   new IntersectionObserver(es => es.forEach(en => { PVIS = en.isIntersecting; syncPres(); }), { rootMargin: '200px 0px' }).observe(s.querySelector('.stg'));
@@ -1550,6 +1550,6 @@ function renderPres() {
   document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-l]')) setTimeout(label, 0); });
 })();
 </script>
-<script src="/v8/nav.js?v=24" data-v="D" data-page="main" data-main="/v8/" data-scan="/v8/3d-venue-scanning/"></script>
+<script src="/v8/nav.js?v=25" data-v="D" data-page="main" data-main="/v8/" data-scan="/v8/3d-venue-scanning/"></script>
 </body>
 </html>
