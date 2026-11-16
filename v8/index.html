@@ -346,19 +346,71 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
   .phs .hi{padding:34px 0 18px}
   .phs .steps.sd{grid-template-columns:1fr;padding:0 16px 20px}
 }
-/* v8.1: interactive presentations: previews switch in place, the presentation itself opens separately */
-.spP .top{align-items:start}
-.spP .lead2{margin-top:-12px}
-.spP .facts{margin:6px 0 0}
-.prt{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
-.prt button{appearance:none;font:inherit;font-size:14px;color:var(--dim);background:none;border:1px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer;white-space:nowrap;transition:color .2s,border-color .2s}
-.prt button:hover{color:var(--ink)}
-.prt button[aria-selected="true"]{color:var(--ink);border-color:var(--amber)}
-.spP .vid video{transition:opacity .25s}
-.spP .fc{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px 20px;margin-top:14px}
-.spP .fc figcaption{margin:0}
-.spB.spP .btn::after{content:" ↗"}
-@media (max-width:760px){ .spP .lead2{margin-top:-10px} .spP .facts{margin-bottom:6px} }
+/* v8.1: interactive presentations (round 2): devices from the reel, thumbnails, layout options pv1|pv2|pv3 */
+.spP{scroll-margin-top:56px}
+.spP .k{display:block;color:var(--amber);font-size:13px;font-weight:500;letter-spacing:.04em;margin-bottom:10px}
+.spP h2{font-weight:300;font-size:clamp(30px,4.4vw,52px);letter-spacing:-.02em;margin:0;line-height:1.08}
+.prh{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px clamp(24px,4vw,56px);align-items:end;margin-bottom:clamp(20px,3vw,36px)}
+.prh .lead{margin:0;max-width:46ch}
+.stg{position:relative;max-width:1000px;margin:0 auto}
+.stg .dev{position:relative;aspect-ratio:1280/746}
+.stg .dev::before{content:"";position:absolute;inset:-1px;z-index:1;pointer-events:none;box-shadow:inset 0 0 30px 22px var(--night)}
+.stg .dv{display:block;width:100%;height:100%;object-fit:cover}
+.stg .lap{display:none;position:absolute;left:9%;right:9%;top:6%;bottom:12%;border:10px solid #18202d;border-bottom-width:12px;border-radius:14px;background:#000;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.45)}
+.stg .lap::after{content:"";position:absolute}
+.stg .lap video{display:block;width:100%;height:100%;object-fit:cover}
+.stg.laptop .dev::before{display:none}
+.stg.laptop .dv{display:none}
+.stg.laptop .lap{display:block}
+.stg.laptop .dev::after{content:"";position:absolute;left:4%;right:4%;bottom:7%;height:14px;border-radius:0 0 14px 14px;background:linear-gradient(#2a3446,#141b27)}
+.stg .ph{position:absolute;right:1.5%;bottom:-4%;width:clamp(96px,17%,190px);aspect-ratio:9/19.5;border-radius:24px;border:6px solid #141b27;background:#000;overflow:hidden;box-shadow:0 24px 50px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.06)}
+.stg .ph video{display:block;width:100%;height:100%;object-fit:cover}
+.stg.nophone .ph{display:none}
+.prs{display:flex;justify-content:space-between;align-items:flex-end;gap:20px 32px;flex-wrap:wrap;margin-top:clamp(22px,3vw,34px)}
+.prt{display:flex;gap:14px;overflow-x:auto;scrollbar-width:none;padding:2px}
+.prt button{appearance:none;font:inherit;background:none;border:0;padding:0;cursor:pointer;color:var(--dim);text-align:left;width:150px;flex:0 0 auto}
+.prt img{display:block;width:150px;aspect-ratio:16/9;object-fit:cover;border-radius:8px;opacity:.55;outline:1px solid var(--line);outline-offset:0;transition:opacity .2s,outline-color .2s}
+.prt span{display:block;font-size:12px;line-height:1.35;margin-top:7px;transition:color .2s}
+.prt button:hover img{opacity:.85}
+.prt button[aria-selected="true"] img{opacity:1;outline:1px solid var(--amber);outline-offset:3px}
+.prt button[aria-selected="true"] span{color:var(--ink)}
+.prs .go{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.prs .pnote{margin:0;padding:0;border:0;color:var(--dim);font-size:13px}
+.spP .btn::after{content:" →"}
+/* pv2: no text, the screens speak */
+.pv2 .prh .lead{display:none}
+.pv2 .prh{grid-template-columns:1fr}
+/* pv3: devices left, text right (mirror of Scanning) */
+@media (min-width:901px){
+  .pv3 .spP{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);grid-template-areas:"stg prh" "stg prs";column-gap:clamp(28px,4vw,56px);align-items:start}
+  .pv3 .prh{grid-area:prh;grid-template-columns:1fr;align-self:end;margin:0 0 22px}
+  .pv3 .stg{grid-area:stg;margin:0;align-self:center}
+  .pv3 .prs{grid-area:prs;flex-direction:column;align-items:flex-start;margin:0}
+  .pv3 .prs .go{align-items:flex-start}
+  .pv3 .prt button,.pv3 .prt img{width:132px}
+}
+@media (max-width:760px){
+  .prh{grid-template-columns:1fr}
+  .stg .ph{width:24%;right:0;bottom:-8%;border-radius:16px;border-width:4px}
+  .prs{flex-direction:column;align-items:stretch;margin-top:30px}
+  .prs .go{align-items:flex-start}
+  .prt{margin:0 calc(-1 * var(--pad));padding:2px var(--pad)}
+  .prt button,.prt img{width:138px}
+}
+/* Delivery options: rva two frames, rvb brackets, rvc filled + framed */
+.rva .phs .fr2{display:block}
+.phs .fr2{display:none;grid-area:1/2/3/3;border:1px solid var(--line);border-radius:12px;pointer-events:none}
+.rva .phs .hi{padding-left:20px;padding-right:20px}
+.rva .phs .steps.si{padding:0 20px 22px}
+.rvb .phs .fr{display:none}
+.rvb .phs .phh{padding-left:0;padding-right:0}
+.rvb .phs .phh::before{content:"";display:block;height:9px;border:1px solid rgba(242,166,72,.6);border-bottom:0;border-radius:3px 3px 0 0;margin-bottom:16px}
+.rvb .phs .steps.sd{padding-left:0;padding-right:0}
+.rvc .phs .fr{background:rgba(255,255,255,.025);border-color:transparent}
+.rvc .phs .fr2{display:block}
+.rvc .phs .hi{padding-left:20px;padding-right:20px}
+.rvc .phs .steps.si{padding:0 20px 22px}
+@media (max-width:900px){ .rva .phs .fr2,.rvc .phs .fr2{grid-area:3/1/5/2} .rva .phs .hi,.rvc .phs .hi{margin-top:24px;padding-top:20px} .rvb .phs .hi{padding-top:30px} }
 </style>
 
 <style>
@@ -613,7 +665,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
   <p class="lead" data-i="hP">First the project is designed, then it is built. The client sees what they pay for, and the budget is agreed faster.</p>
   <p class="lead lead2"><span data-i="hP2a"></span><b class="fee" data-i="hP2b"></b><span data-i="hP2c"></span></p>
   <div class="phs">
-  <div class="fr" aria-hidden="true"></div>
+  <div class="fr" aria-hidden="true"></div><div class="fr2" aria-hidden="true"></div>
   <div class="phh hd"><span class="k" data-i="dvK">Development</span><p data-i="dvP"></p></div>
   <div class="phh hi"><span class="k" data-i="imK">Delivery</span></div>
   <ol class="steps sd">
@@ -655,20 +707,18 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
   </div></div></div>
 </section>
 
-<section class="s sp spB spP" id="presentation">
-  <div class="top">
-    <div>
-      <span class="k" data-i="prK"></span>
-      <h2 data-i="prH"></h2>
-      <p class="lead" data-i="prP"></p>
-      <p class="lead lead2" data-i="prP2"></p>
-      <dl class="facts"></dl>
-    </div>
-    <figure>
-      <div class="prt" role="tablist"></div>
-      <div class="vid"><video muted loop playsinline preload="none"></video></div>
-      <div class="fc"><figcaption data-i="prNote"></figcaption><a class="btn" id="prGo" href="https://demo.pravdukhin.com/" target="_blank" rel="noopener" data-i="prGo"></a></div>
-    </figure>
+<section class="s spP" id="presentation">
+  <div class="prh">
+    <div><span class="k" data-i="prK"></span><h2 data-i="prH"></h2></div>
+    <p class="lead" data-i="prP"></p>
+  </div>
+  <div class="stg">
+    <div class="dev"><video class="dv" muted loop playsinline preload="none"></video><div class="lap"><video class="lv" muted loop playsinline preload="none"></video></div></div>
+    <div class="ph"><video muted loop playsinline preload="none"></video></div>
+  </div>
+  <div class="prs">
+    <div class="prt" role="tablist"></div>
+    <div class="go"><a class="btn" id="prGo" href="https://demo.pravdukhin.com/" data-i="prGo"></a><p class="pnote" data-i="prNote"></p></div>
   </div>
 </section>
 <section class="s contact" id="contact">
@@ -707,7 +757,7 @@ const T = {
   h0: 'Technical design and production for events worldwide',
   loading: 'Loading 60 days of work before show day', loaded: 'Loaded: 60 days of work before show day',
   hint: 'Scroll back in time — this is how we’ll build yours',
-  cta: 'Discuss your project', scanBtn: 'About scanning', spK: 'Digital copy of the venue', spH: '3D venue scanning', spP: 'A point cloud in one site visit: an exact digital copy of the venue with every wall and step. Italy, France, UAE and worldwide.', spF1: 'accuracy inside the cloud', spF2h: '1 hour', spF2: 'for a whole hotel in Georgia', spF3h: '1 backpack', spF3: 'the scanner flies with me to any country', spGo: 'About scanning', spMore: 'Show more', spLess: 'Show less', spHc: 'A hotel in Georgia, scanned in one hour', dvK: 'Development', dvP: 'Engineering 3D design of the event build. The result: a true-to-size project, visuals for the client and a full technical budget. Unlike the preliminary one, it is final: what is drawn gets built within it.', imK: 'Delivery', s3x: 'The same renders become an interactive presentation with a seating plan: it opens from a link on a phone, lets you walk through the hall and see the stage from any seat.', s3b: 'About the interactive presentation', prK: 'Visuals for the client', prH: 'Interactive presentation of the hall with seating', prP: 'The client opens a link on a phone or computer, walks through the hall and sees how everything will be.', prP2: 'The hall is built from a scan of the venue, with the decor and the full setup already in place. On the plan you can seat the guests and see the view from their places.', prGo: 'Open the presentation', prNote: 'Guests and names are fictional. The venue has been altered.', spV1: 'Gardens, terraces and courtyards', spV2: 'Halls, stairs, corridors and complex spaces in one pass', spV3: 'The cloud grows live on screen: nothing is missed', spCm: 'cm', bAlt: 'or write directly ↓',
+  cta: 'Discuss your project', scanBtn: 'About scanning', spK: 'Digital copy of the venue', spH: '3D venue scanning', spP: 'A point cloud in one site visit: an exact digital copy of the venue with every wall and step. Italy, France, UAE and worldwide.', spF1: 'accuracy inside the cloud', spF2h: '1 hour', spF2: 'for a whole hotel in Georgia', spF3h: '1 backpack', spF3: 'the scanner flies with me to any country', spGo: 'About scanning', spMore: 'Show more', spLess: 'Show less', spHc: 'A hotel in Georgia, scanned in one hour', dvK: 'Development', dvP: 'Engineering 3D design of the event. The result: a true-to-size build project, visuals for the client and a working technical budget for delivery.', imK: 'Delivery', s3x: 'Optionally, the 3D model and renders can be turned into an interactive presentation with a seating plan. It opens from a link on a phone: walk through the venue and move the guests around.', s3b: 'See an example', prK: 'Visuals for the client', prH: 'Interactive project presentation with seating', prP: 'The future event in one link: a walk from the entrance to the stage, lighting and decor, an interactive seating plan and the view from any seat.', prGo: 'Open the presentation', prNote: 'Guests and names are fictional. The venue has been altered.', spV1: 'Gardens, terraces and courtyards', spV2: 'Halls, stairs, corridors and complex spaces in one pass', spV3: 'The cloud grows live on screen: nothing is missed', spCm: 'cm', bAlt: 'or write directly ↓',
   bK: '60 days to show · First call', sD: ['45 days to show', '30 days to show', '20 days to show', 'Show day'], bH: 'A preliminary budget in two working days',
   bP: 'To begin, answer 8 questions about your event. Within two working days I will prepare ', bPb: 'an indicative technical budget across all departments: sound, lighting, video, screens, staging and structures', bPc: '. I will also propose the next steps. If the figures work for you, we move on to the project.',
   bS: 'The whole path from the first call to show day usually takes 30 to 60 days. If you have less time, get in touch and we’ll see what can be done.',
@@ -738,7 +788,7 @@ const T = {
   h0: 'Технический дизайн и продакшн мероприятий по всему миру',
   loading: 'Загружаем 60 дней работы до дня мероприятия', loaded: 'Загружено: 60 дней работы до дня мероприятия',
   hint: 'Листайте назад во времени — так мы будем готовить и ваш проект',
-  cta: 'Обсудить проект', scanBtn: 'О сканировании', spK: 'Цифровая копия площадки', spH: '3D-сканирование площадок', spP: 'Облако точек за один выезд: точная цифровая копия площадки с каждой стеной и ступенькой. Италия, Франция, ОАЭ и весь мир.', spF1: 'точность внутри облака', spF2h: '1 час', spF2: 'на целый отель в Грузии', spF3h: '1 рюкзак', spF3: 'сканер летит со мной в любую страну', spGo: 'О сканировании', spMore: 'Подробнее', spLess: 'Свернуть', spHc: 'Отель в Грузии, отсканирован за час', dvK: 'Разработка', dvP: 'Инженерная 3D-разработка застройки мероприятия. Итог: проект в точных размерах, визуализация для клиента и полный технический бюджет. В отличие от предварительного, он окончательный: в его рамках выполняется ровно то, что нарисовано.', imK: 'Реализация', s3x: 'Из этих же рендеров собираем интерактивную презентацию с рассадкой гостей: её открывают по ссылке с телефона, проходят по залу и смотрят на сцену с любого места.', s3b: 'Об интерактивной презентации', prK: 'Визуализация для клиента', prH: 'Интерактивная презентация зала с рассадкой', prP: 'Клиент открывает ссылку с телефона или компьютера, проходит по залу и видит, как всё будет.', prP2: 'Зал собран по скану площадки, в нём уже стоят декор и остальной сетап. На схеме можно рассадить гостей и посмотреть, какой вид открывается с их мест.', prGo: 'Открыть презентацию', prNote: 'Гости и имена вымышлены. Площадка изменена.', spV1: 'Сады, террасы и дворы', spV2: 'Залы, лестницы, коридоры и помещения сложной формы за один проход', spV3: 'Облако растёт на экране: на месте видно, что ничего не пропущено', spCm: 'см', bAlt: 'или напишите напрямую ↓',
+  cta: 'Обсудить проект', scanBtn: 'О сканировании', spK: 'Цифровая копия площадки', spH: '3D-сканирование площадок', spP: 'Облако точек за один выезд: точная цифровая копия площадки с каждой стеной и ступенькой. Италия, Франция, ОАЭ и весь мир.', spF1: 'точность внутри облака', spF2h: '1 час', spF2: 'на целый отель в Грузии', spF3h: '1 рюкзак', spF3: 'сканер летит со мной в любую страну', spGo: 'О сканировании', spMore: 'Подробнее', spLess: 'Свернуть', spHc: 'Отель в Грузии, отсканирован за час', dvK: 'Разработка', dvP: 'Инженерная 3D-разработка мероприятия. Итог: проект застройки в точных размерах, визуализация для клиента и рабочий технический бюджет на реализацию.', imK: 'Реализация', s3x: 'Дополнительно на основе 3D-модели и рендеров можно собрать интерактивную презентацию с рассадкой гостей. Её возможно открыть по ссылке с телефона, прогуляться по площадке и пересадить гостей.', s3b: 'Пример презентации', prK: 'Визуализация для клиента', prH: 'Интерактивная презентация проекта с рассадкой', prP: 'Будущее мероприятие по одной ссылке: проход от входа до сцены, свет и декор, интерактивная рассадка гостей и вид с любого места.', prGo: 'Открыть презентацию', prNote: 'Гости и имена вымышлены. Площадка изменена.', spV1: 'Сады, террасы и дворы', spV2: 'Залы, лестницы, коридоры и помещения сложной формы за один проход', spV3: 'Облако растёт на экране: на месте видно, что ничего не пропущено', spCm: 'см', bAlt: 'или напишите напрямую ↓',
   bK: '60 дней до мероприятия · Первый звонок', sD: ['45 дней до мероприятия', '30 дней до мероприятия', '20 дней до мероприятия', 'День мероприятия'], bH: 'Предварительный бюджет за два рабочих дня',
   bP: 'Чтобы начать, ответьте на 8 вопросов о мероприятии. Через два рабочих дня я подготовлю ', bPb: 'ориентировочный технический бюджет по всем блокам: звук, свет, видео, экраны, сцена и конструкции', bPc: '. Также предложу план дальнейших действий. Если цифры вас устроят, переходим к работе над проектом.',
   bS: 'Весь путь от первого звонка до дня мероприятия обычно занимает от 30 до 60 дней. Если времени меньше, напишите, обсудим, что успеем.',
@@ -1405,30 +1455,35 @@ if (location.hash && PROJECTS.some(p => '#' + p.slug === location.hash)) openPro
 // v8.1: interactive presentations. Each lives on its own site (demo.pravdukhin.com): here only a light preview.
 // Add a new one by adding a row; the site map (nav.js) reads this list too.
 const PRES = [
-  { url: 'https://demo.pravdukhin.com/', t: 'Private Event · 164 PAX', t_ru: 'Частное мероприятие · 164 PAX', v: "/w/pres/ge",
-    f: [['17', 'tables on the plan', 'столов на схеме'], ['4', 'tables with a view of the stage', 'стола с видом на сцену'], ['2', 'lighting scenes', 'схемы света']] },
-  { url: 'https://demo.pravdukhin.com/ist-v1/', t: 'Private Event · 63 PAX', t_ru: 'Частное мероприятие · 63 PAX', v: "/w/pres/ist",
-    f: [['9', 'tables on the plan', 'столов на схеме'], ['4', 'tables with a view of the stage', 'стола с видом на сцену'], ['5', 'points on the route through the hall', 'точек маршрута по залу']] }
+  { url: 'https://demo.pravdukhin.com/', t: 'Private event · 164 guests', t_ru: 'Частное мероприятие · 164 гостя', thumb: "/w/pres/ge_t.jpg",
+    dev: "/w/pres/ge_dev_ru", ph: "/w/pres/ge_ph_ru" },
+  { url: 'https://demo.pravdukhin.com/ist-v1/', t: 'Private event · 63 guests', t_ru: 'Частное мероприятие · 63 гостя', thumb: "/w/pres/ist_t.jpg",
+    lap: "/w/pres/ist" }
 ];
 let PRI = 0;
+// temporary: layout options to choose from (?pv=1|2|3, ?rv=a|b|c)
+(() => { const q = new URLSearchParams(location.search), h = document.documentElement;
+  h.classList.add('pv' + (/^[123]$/.test(q.get('pv')) ? q.get('pv') : '1'), 'rv' + (/^[abc]$/.test(q.get('rv')) ? q.get('rv') : 'b')); })();
+function setV(v, base) { const src = base + (innerWidth <= 760 && v.dataset.m ? '_m' : '') + '.mp4'; v.poster = base + '.jpg';
+  if (v.dataset.src !== src) { v.dataset.src = src; if (v.getAttribute('src')) { v.src = src; v.play().catch(() => {}); } } }
 function renderPres() {
   const s = document.getElementById('presentation'); if (!s) return;
   const ru = LANG === 'ru', p = PRES[PRI];
-  s.querySelector('.prt').innerHTML = PRES.map((q, i) => `<button type="button" role="tab" aria-selected="${i === PRI}" data-pr="${i}">${(ru && q.t_ru) || q.t}</button>`).join('');
-  s.querySelector('.facts').innerHTML = p.f.map(f => `<div><dt>${f[0]}</dt><dd>${ru ? f[2] : f[1]}</dd></div>`).join('');
+  s.querySelector('.prt').innerHTML = PRES.map((q, i) => `<button type="button" role="tab" aria-selected="${i === PRI}" data-pr="${i}"><img src="${q.thumb}" alt="" loading="lazy"><span>${(ru && q.t_ru) || q.t}</span></button>`).join('');
   s.querySelector('#prGo').href = p.url + '?lang=' + LANG;
-  const v = s.querySelector('video'), src = p.v + (innerWidth <= 760 ? '_m' : '') + '.mp4';
-  v.poster = p.v + '.jpg';
-  if (v.dataset.src !== src) { v.dataset.src = src; if (v.getAttribute('src')) { v.src = src; v.play().catch(() => {}); } }
+  const g = s.querySelector('.stg'); g.classList.toggle('laptop', !p.dev); g.classList.toggle('nophone', !p.ph);
+  const dv = s.querySelector('.dv'), lv = s.querySelector('.lv'), pv = s.querySelector('.ph video');
+  dv.dataset.m = lv.dataset.m = '1';
+  if (p.dev) setV(dv, p.dev); if (p.lap) setV(lv, p.lap); if (p.ph) setV(pv, p.ph);
 }
 (() => {
   const s = document.getElementById('presentation'); if (!s) return;
   s.querySelector('.prt').addEventListener('click', e => { const b = e.target.closest('[data-pr]'); if (!b || +b.dataset.pr === PRI) return; PRI = +b.dataset.pr; renderPres(); });
   renderPres();
-  const v = s.querySelector('video');
-  new IntersectionObserver(es => es.forEach(en => {
-    if (en.isIntersecting) { if (!v.getAttribute('src')) v.src = v.dataset.src; v.play().catch(() => {}); } else v.pause();
-  }), { rootMargin: '200px 0px' }).observe(v);
+  const vs = [...s.querySelectorAll('video')];
+  new IntersectionObserver(es => es.forEach(en => vs.forEach(v => {
+    if (en.isIntersecting) { if (!v.dataset.src) return; if (!v.getAttribute('src')) v.src = v.dataset.src; v.play().catch(() => {}); } else v.pause();
+  })), { rootMargin: '200px 0px' }).observe(s.querySelector('.stg'));
 })();
 </script>
 <script>
@@ -1445,6 +1500,6 @@ function renderPres() {
   document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-l]')) setTimeout(label, 0); });
 })();
 </script>
-<script src="/v8/nav.js?v=18" data-v="D" data-page="main" data-main="/v8/" data-scan="/v8/3d-venue-scanning/"></script>
+<script src="/v8/nav.js?v=19" data-v="D" data-page="main" data-main="/v8/" data-scan="/v8/3d-venue-scanning/"></script>
 </body>
 </html>

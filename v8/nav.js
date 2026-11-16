@@ -18,7 +18,7 @@ const PROJ_COPY = [["tuscany-2026", "Private event in Italy", 2026, "Частн�
 const projs = () => (typeof PROJECTS !== 'undefined' ? PROJECTS.map(p => [p.slug, (lang() === 'ru' && p.title_ru) || p.title, p.year])
   : PROJ_COPY.map(p => [p[0], (lang() === 'ru' && p[3]) || p[1], p[2]]));
 // v8.1: interactive presentations: the landing's PRES when present, else this copy (update it when presentations change)
-const PRES_COPY = [['https://demo.pravdukhin.com/', 'Private Event · 164 PAX', 'Частное мероприятие · 164 PAX'], ['https://demo.pravdukhin.com/ist-v1/', 'Private Event · 63 PAX', 'Частное мероприятие · 63 PAX']];
+const PRES_COPY = [['https://demo.pravdukhin.com/', 'Private event · 164 guests', 'Частное мероприятие · 164 гостя'], ['https://demo.pravdukhin.com/ist-v1/', 'Private event · 63 guests', 'Частное мероприятие · 63 гостя']];
 const pres = () => (typeof PRES !== 'undefined' ? PRES.map(p => [p.url, (lang() === 'ru' && p.t_ru) || p.t]) : PRES_COPY.map(p => [p[0], (lang() === 'ru' && p[2]) || p[1]]));
 const dlg = document.getElementById('dlg');
 const dlgOpen = () => !!(dlg && dlg.open);
@@ -346,7 +346,7 @@ function renderSheet() {
   const row = i => `<li class="${(PAGE === 'scan' && i === 8) || (i === 5 && dlgSlug()) ? 'p sec' : cls(i, a)}"><a href="#" data-go="${i}"><span class="d">${i > 0 && i < 5 ? DAYS[i] : ''}</span><span class="t">${it[i]}</span></a></li>`
     + (i === 8 ? `<li class="sub${PAGE === 'scan' ? ' on' : ''}"><a href="${SCAN}"><span class="d"></span><span class="t">${X().page}<i>↗</i></span></a></li>` : '')
     + (i === 5 ? pjRows(a) : '')
-    + (i === 10 ? pres().map(p => `<li class="sub"><a href="${p[0]}?lang=${lang()}" target="_blank" rel="noopener"><span class="d"></span><span class="t">${p[1]}<i>↗</i></span></a></li>`).join('') : '');
+    + (i === 10 ? pres().map(p => `<li class="sub"><a href="${p[0]}?lang=${lang()}"><span class="d"></span><span class="t">${p[1]}<i>↗</i></span></a></li>`).join('') : '');
   sheet.querySelector('.pn').innerHTML = `<div class="hd"><a class="me" href="${PAGE === 'scan' ? MAIN : '#top'}">${X().name}</a><button type="button" class="x" aria-label="${X().close}">×</button></div>
     <p class="k">${X().kick}</p><ol>${[0, 1, 2, 3, 4].map(row).join('')}</ol><div class="sp"></div><ol>${SEC_ORDER.map(row).join('')}</ol>
     <div class="ft"><a class="btn wa" href="https://wa.me/393498929736" target="_blank" rel="noopener">${X().cta}</a></div>`;
