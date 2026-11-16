@@ -353,6 +353,13 @@ document.addEventListener('click', e => {
   const sb = e.target.closest && e.target.closest('#how .steps a.scb');
   if (sb) { const to = sb.getAttribute('href') || ''; setRet({ sec: 'how', sel: sb.dataset.i ? `[data-i="${sb.dataset.i}"]` : '', t: to.includes('3d-venue-scanning') ? 'scan' : to.replace(/^#/, '') }); retSetAt = performance.now(); }
 }, true);
+const LAND_KEY = 'navLand';
+function toBtn(el, smooth) {
+  if (typeof freeScroll === 'function') freeScroll();
+  const vh = (window.visualViewport && visualViewport.height) || innerHeight, m = Math.max(32, Math.round(vh * .06));
+  const y = Math.max(0, Math.round(el.getBoundingClientRect().bottom + scrollY - vh + m));
+  scrollTo({ top: y, behavior: smooth ? 'smooth' : 'instant' }); return y;
+}
 function returnTo(j) {
   if (typeof freeScroll === 'function') freeScroll();
   const y = j > 0 && typeof yOf === 'function' ? yOf(STOPS()[j - 1]) : (typeof ringTop === 'function' ? ringTop() : 0);
@@ -364,12 +371,15 @@ const retA = $(`<button type="button" class="retA" hidden><span>↑</span><small
 retA.addEventListener('click', () => {
   const r = getRet(); setRet(null); syncRet();
   if (!r) return;
-  if (PAGE === 'scan') { location.href = MAIN + (r.sec ? '#' + r.sec : '#s' + r.j); return; }
+  if (PAGE === 'scan') { if (r.sec && r.sel) { try { sessionStorage.setItem(LAND_KEY, JSON.stringify({ sec: r.sec, sel: r.sel })); } catch (e) {} }
+    location.href = MAIN + (r.sec ? '#' + r.sec : '#s' + r.j); return; }
   if (dlgOpen()) dlg.close();
   closeSheet();
-  if (r.sec) { const el = (r.sel && document.querySelector('#' + r.sec + ' ' + r.sel)) || document.getElementById(r.sec); if (!el) return;
+  if (r.sec) { const b = r.sel && document.querySelector('#' + r.sec + ' ' + r.sel);
+    if (b) { toBtn(b, true); return; }
+    const el = document.getElementById(r.sec); if (!el) return;
     if (typeof freeScroll === 'function') freeScroll();
-    const rc = el.getBoundingClientRect(); scrollTo({ top: rc.top + scrollY - (r.sel ? Math.max(70, innerHeight * .35) : 56), behavior: 'smooth' }); return; }
+    scrollTo({ top: el.getBoundingClientRect().top + scrollY - 56, behavior: 'smooth' }); return; }
   returnTo(r.j);
 });
 function retHost(t) {
@@ -587,7 +597,13 @@ if (PAGE === 'main' && location.hash) {
     if (projs().some(p => p[0] === h)) { const w = document.getElementById('work'); if (w) { if (typeof freeScroll === 'function') freeScroll(); scrollTo({ top: w.getBoundingClientRect().top + scrollY - 56, behavior: 'instant' }); } return; }
     history.replaceState(null, '', location.pathname);
     if (/^s[0-4]$/.test(h)) { const j = +h[1]; if (j > 0) { const t = setInterval(() => { if (typeof LREADY !== 'undefined' && LREADY) { clearInterval(t); returnTo(j); } }, 150); } }
-    else if (SEC.includes(h)) setTimeout(() => go(5 + SEC.indexOf(h)), 50);
+    else if (SEC.includes(h)) {
+      // back from the scanning page to the button pressed in that section: the button near the bottom of the screen
+      let land = null; try { land = JSON.parse(sessionStorage.getItem(LAND_KEY)); sessionStorage.removeItem(LAND_KEY); } catch (e) {}
+      const b = land && land.sec === h && land.sel && document.querySelector('#' + h + ' ' + land.sel);
+      if (b) { let y = toBtn(b); setTimeout(() => { if (Math.abs(scrollY - y) < 3) y = toBtn(b); }, 700); setTimeout(() => { if (Math.abs(scrollY - y) < 3) toBtn(b); }, 1600); }
+      else setTimeout(() => go(5 + SEC.indexOf(h)), 50);
+    }
   };
   if (document.readyState === 'complete') setTimeout(run, 300); else addEventListener('load', () => setTimeout(run, 300));
 }

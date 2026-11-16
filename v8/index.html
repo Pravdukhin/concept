@@ -450,9 +450,10 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <style>
 /* v8.1.2: second button on stage −20 with a NEW tag */
-.bpair{display:inline-flex;flex-wrap:wrap;gap:8px;width:max-content;max-width:calc(100vw - 2 * var(--pad));margin:10px 0 14px}
+.bpair{display:flex;flex-wrap:wrap;gap:8px;width:max-content;max-width:calc(100vw - 2 * var(--pad));margin:14px 0 0}
 .cap .bpair .btn{white-space:nowrap;margin:0}
-@media (max-width:440px){ .bpair{gap:5px} .cap .bpair .btn{padding:5px 9px;font-size:12px} .btn.nwb em{margin-left:.45em;letter-spacing:.06em} }
+.bpair[hidden]{display:none}
+@media (max-width:560px){ .bpair{margin:10px 0 22px} }
 .btn.nwb .sm{display:none}
 .btn.nwb em{font-style:normal;color:var(--amber);font-size:.72em;letter-spacing:.12em;margin-left:.7em;font-weight:500;vertical-align:.08em}
 .btn.nwb:hover em{color:var(--night)}
@@ -649,7 +650,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
             <p id="capp"></p>
             <a class="btn" id="scanBtn" hidden href="/v8/3d-venue-scanning/" data-i="scanBtn">About scanning</a>
             <a class="btn wa" id="briefBtn" hidden href="https://wa.me/393498929736" target="_blank" rel="noopener" data-i="briefBtn">Request a brief</a>
-            <span class="bpair"><a class="btn" id="costBtn" hidden href="#how" data-i="costBtn">What it costs</a><a class="btn nwb" id="presBtn" hidden href="#interactive"><span class="lg" data-i="presBtn">Interactive visuals</span><span class="sm" data-i="presBtnS">Interactive visuals</span><em data-i="newTag">NEW</em></a></span>
+            <span class="bpair" hidden><a class="btn" id="costBtn" hidden href="#how" data-i="costBtn">What it costs</a><a class="btn nwb" id="presBtn" hidden href="#interactive"><span class="lg" data-i="presBtn">Interactive visuals</span><span class="sm" data-i="presBtnS">Interactive visuals</span><em data-i="newTag">NEW</em></a></span>
             <a class="btn wa" id="cta" hidden href="https://wa.me/393498929736" target="_blank" rel="noopener" data-i="cta">Discuss your project</a>
           </div>
           <div class="rail" id="rail" aria-label="Stages"><button type="button" aria-label="Show day"></button><button type="button" aria-label="Laser scan"></button><button type="button" aria-label="3D model"></button><button type="button" aria-label="Render"></button><button type="button" aria-label="Built"></button></div>
@@ -1204,7 +1205,7 @@ function ui() {
   if (st === 0) { cap.hidden = true; return; }
   const [n, h, p] = CAPS()[st - 1];
   if (el('caph').textContent !== h) { el('capn').textContent = n; el('caph').textContent = h; el('capp').textContent = p; }
-  el('cta').hidden = st !== 4; el('scanBtn').hidden = !(SCAN_PAGE && st === 1); el('briefBtn').hidden = st !== 2; el('costBtn').hidden = st !== 3; el('presBtn').hidden = st !== 3; cap.hidden = false;
+  el('cta').hidden = st !== 4; el('scanBtn').hidden = !(SCAN_PAGE && st === 1); el('briefBtn').hidden = st !== 2; el('costBtn').hidden = st !== 3; el('presBtn').hidden = st !== 3; document.querySelector('.bpair').hidden = st !== 3; cap.hidden = false;
 }
 [...el('rail').children].forEach((b, j) => b.addEventListener('click', () => jumpStage(j)));
 function onScroll() {
@@ -1550,6 +1551,6 @@ function renderPres() {
   document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-l]')) setTimeout(label, 0); });
 })();
 </script>
-<script src="/v8/nav.js?v=25" data-v="D" data-page="main" data-main="/v8/" data-scan="/v8/3d-venue-scanning/"></script>
+<script src="/v8/nav.js?v=26" data-v="D" data-page="main" data-main="/v8/" data-scan="/v8/3d-venue-scanning/"></script>
 </body>
 </html>
