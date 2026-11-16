@@ -7,9 +7,9 @@ const S = document.currentScript, V = S.dataset.v, PAGE = S.dataset.page, V6 = (
 document.documentElement.classList.add('v6', 'v6' + V6); // 'main' | 'scan'
 const MAIN = S.dataset.main || '/nav/' + V.toLowerCase() + '.html', SCAN = S.dataset.scan || '/nav/' + V.toLowerCase() + '-scan.html';
 const TXT = {
-  en: { items: ['Start', 'Digital copy', '3D model', 'Render', 'Show day', 'Portfolio', 'About', 'Work stages and pricing', 'Scanning', 'Contact'],
+  en: { items: ['Start', 'Digital copy', '3D model', 'Render', 'Show day', 'Portfolio', 'About', 'Work stages and pricing', 'Scanning', 'Contact', 'Interactive presentation'],
         name: 'Yuriy Pravdukhin', kick: 'One project, 60 days', cta: 'Discuss your project', page: 'Scanning in detail', allp: 'All projects', all: 'All sections', menu: 'Contents', close: 'Close' },
-  ru: { items: ['Начало', 'Цифровая копия', '3D-модель', 'Рендер', 'Мероприятие', 'Портфолио', 'Обо мне', 'Этапы работы и стоимость', 'Сканирование', 'Контакты'],
+  ru: { items: ['Начало', 'Цифровая копия', '3D-модель', 'Рендер', 'Мероприятие', 'Портфолио', 'Обо мне', 'Этапы работы и стоимость', 'Сканирование', 'Контакты', 'Интерактивная презентация'],
         name: 'Юрий Правдухин', kick: 'Один проект, 60 дней', cta: 'Обсудить проект', page: 'Подробно о сканировании', allp: 'Все проекты', all: 'Все разделы', menu: 'Содержание', close: 'Закрыть' }
 };
 const DAYS = ['−60', '−45', '−30', '−20', '0'];
@@ -17,11 +17,14 @@ const DAYS = ['−60', '−45', '−30', '−20', '0'];
 const PROJ_COPY = [["tuscany-2026", "Private event in Italy", 2026, "Частное мероприятие в Италии"], ["istanbul-2026", "Private event in Istanbul", 2026, "Частное мероприятие в Стамбуле"], ["kuala-lumpur-2026", "Conference in Kuala Lumpur", 2026, "Конференция в Куала-Лумпуре"], ["dubai-2025", "Sports event in Dubai", 2025, "Спортивное мероприятие в Дубае"], ["belgrade-2024", "Conference in Belgrade", 2024, "Конференция в Белграде"], ["dubai-2024", "Private event in Dubai", 2024, "Частное мероприятие в Дубае"], ["amway-shanghai-2025", "Conference in Shanghai", 2025, "Конференция в Шанхае"], ["istanbul-cistern-2024", "Conference in Istanbul", 2024, "Конференция в Стамбуле"], ["amway-abu-dhabi-2024", "Conference in Abu Dhabi", 2024, "Конференция в Абу-Даби"], ["emirates-palace-2024", "Gala dinner in Abu Dhabi", 2024, "Гала-ужин в Абу-Даби"], ["villette-2024", "Private event near Paris", 2024, "Частное мероприятие под Парижем"], ["challain-2023", "Private event in the Loire Valley", 2023, "Частное мероприятие в долине Луары"], ["amway-thailand-2023", "Conference in Thailand", 2023, "Конференция в Таиланде"], ["tiktok-cyprus-2022", "Corporate event in Limassol", 2022, "Корпоративное мероприятие в Лимасоле"]];
 const projs = () => (typeof PROJECTS !== 'undefined' ? PROJECTS.map(p => [p.slug, (lang() === 'ru' && p.title_ru) || p.title, p.year])
   : PROJ_COPY.map(p => [p[0], (lang() === 'ru' && p[3]) || p[1], p[2]]));
+// v8.1: interactive presentations: the landing's PRES when present, else this copy (update it when presentations change)
+const PRES_COPY = [['https://demo.pravdukhin.com/', 'Private Event · 164 PAX', 'Частное мероприятие · 164 PAX'], ['https://demo.pravdukhin.com/ist-v1/', 'Private Event · 63 PAX', 'Частное мероприятие · 63 PAX']];
+const pres = () => (typeof PRES !== 'undefined' ? PRES.map(p => [p.url, (lang() === 'ru' && p.t_ru) || p.t]) : PRES_COPY.map(p => [p[0], (lang() === 'ru' && p[2]) || p[1]]));
 const dlg = document.getElementById('dlg');
 const dlgOpen = () => !!(dlg && dlg.open);
 const dlgSlug = () => (dlgOpen() && location.hash.length > 1 ? location.hash.slice(1) : '');
-const SEC = ['work', 'about', 'how', 'scanning', 'contact'];
-const SEC_ORDER = [6, 5, 7, 8, 9];   // as on the page: About, Portfolio, Stages and pricing, Scanning, Contact // 8 = scanning section on the landing (the page itself is a sub-row in the sheet)
+const SEC = ['work', 'about', 'how', 'scanning', 'contact', 'presentation'];
+const SEC_ORDER = [6, 5, 7, 8, 10, 9];   // as on the page: About, Portfolio, Stages and pricing, Scanning, Contact // 8 = scanning section on the landing (the page itself is a sub-row in the sheet)
 const lang = () => (document.documentElement.lang === 'ru' ? 'ru' : 'en');
 const X = () => TXT[lang()];
 const $ = (h) => { const d = document.createElement('div'); d.innerHTML = h.trim(); return d.firstChild; };
@@ -342,7 +345,8 @@ function renderSheet() {
   const a = current(), it = items();
   const row = i => `<li class="${(PAGE === 'scan' && i === 8) || (i === 5 && dlgSlug()) ? 'p sec' : cls(i, a)}"><a href="#" data-go="${i}"><span class="d">${i > 0 && i < 5 ? DAYS[i] : ''}</span><span class="t">${it[i]}</span></a></li>`
     + (i === 8 ? `<li class="sub${PAGE === 'scan' ? ' on' : ''}"><a href="${SCAN}"><span class="d"></span><span class="t">${X().page}<i>↗</i></span></a></li>` : '')
-    + (i === 5 ? pjRows(a) : '');
+    + (i === 5 ? pjRows(a) : '')
+    + (i === 10 ? pres().map(p => `<li class="sub"><a href="${p[0]}?lang=${lang()}" target="_blank" rel="noopener"><span class="d"></span><span class="t">${p[1]}<i>↗</i></span></a></li>`).join('') : '');
   sheet.querySelector('.pn').innerHTML = `<div class="hd"><a class="me" href="${PAGE === 'scan' ? MAIN : '#top'}">${X().name}</a><button type="button" class="x" aria-label="${X().close}">×</button></div>
     <p class="k">${X().kick}</p><ol>${[0, 1, 2, 3, 4].map(row).join('')}</ol><div class="sp"></div><ol>${SEC_ORDER.map(row).join('')}</ol>
     <div class="ft"><a class="btn wa" href="https://wa.me/393498929736" target="_blank" rel="noopener">${X().cta}</a></div>`;
