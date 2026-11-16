@@ -1490,8 +1490,8 @@ if (location.hash && PROJECTS.some(p => '#' + p.slug === location.hash)) openPro
 // v8.1: interactive presentations. Each lives on its own site (demo.pravdukhin.com): here only a light preview.
 // Add a new one by adding a row; the site map (nav.js) reads this list too.
 const PRES = [
-  { url: 'https://demo.pravdukhin.com/', t: 'Private event · 164 guests', t_ru: 'Частное мероприятие · 164 гостя', thumb: "/w/pres/ge_t.jpg", code: "/w/pres/private-event-164" },
-  { url: 'https://demo.pravdukhin.com/ist-v1/', t: 'Private event · 63 guests', t_ru: 'Частное мероприятие · 63 гостя', thumb: "/w/pres/ist_t.jpg", code: "/w/pres/private-event-63" }
+  { url: 'https://demo.pravdukhin.com/private-event-164/', t: 'Private event · 164 guests', t_ru: 'Частное мероприятие · 164 гостя', thumb: "/w/pres/ge_t.jpg", code: "/w/pres/private-event-164" },
+  { url: 'https://demo.pravdukhin.com/private-event-63/', t: 'Private event · 63 guests', t_ru: 'Частное мероприятие · 63 гостя', thumb: "/w/pres/ist_t.jpg", code: "/w/pres/private-event-63" }
 ];
 let PRI = 0;
 // layout: chosen pv2 + rva (16.11); the other options stay reachable for comparison: ?pv=1|3, ?rv=b|c, ?ph=0 (no phone)
@@ -1541,6 +1541,6 @@ function renderPres() {
   document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-l]')) setTimeout(label, 0); });
 })();
 </script>
-<script src="/v8/nav.js?v=19" data-v="D" data-page="main" data-main="/v8/" data-scan="/v8/3d-venue-scanning/"></script>
+<script src="/v8/nav.js?v=20" data-v="D" data-page="main" data-main="/v8/" data-scan="/v8/3d-venue-scanning/"></script>
 </body>
 </html>
