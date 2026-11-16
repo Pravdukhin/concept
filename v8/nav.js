@@ -345,9 +345,9 @@ const RET_KEY = 'navRet';
 let retSetAt = -1e9;   // just pressed: the page may still be on the ring for a moment (e.g. before leaving for the scanning page)
 const getRet = () => { try { const v = JSON.parse(sessionStorage.getItem(RET_KEY)); return v && typeof v.j === 'number' ? v : null; } catch (e) { return null; } };
 const setRet = v => { try { if (v === null) sessionStorage.removeItem(RET_KEY); else sessionStorage.setItem(RET_KEY, JSON.stringify(v)); } catch (e) {} };
-const RET_T = { pfBtn: 'work', costBtn: 'how', scanBtn: 'scan' };
+const RET_T = { pfBtn: 'work', costBtn: 'how', scanBtn: 'scan', presBtn: 'presentation' };
 document.addEventListener('click', e => {
-  const b = e.target.closest && e.target.closest('#pfBtn, #scanBtn, #costBtn');
+  const b = e.target.closest && e.target.closest('#pfBtn, #scanBtn, #costBtn, #presBtn');
   if (b && typeof stageOf === 'function' && typeof step !== 'undefined') { setRet({ j: stageOf(step), t: RET_T[b.id] }); retSetAt = performance.now(); }
 }, true);
 function returnTo(j) {
