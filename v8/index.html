@@ -422,6 +422,33 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 </style>
 
 <style>
+/* v8.1 round 6: device frames for the clean screen recordings */
+#presentation .stg{display:block;position:relative;max-width:980px;margin:0 auto;padding-bottom:2%}
+.mac{position:relative;width:100%}
+.mac .scr{position:relative;background:#0a1220;border:clamp(5px,1vw,11px) solid #1b2029;border-bottom-width:clamp(7px,1.4vw,15px);border-radius:clamp(9px,1.6vw,18px) clamp(9px,1.6vw,18px) 4px 4px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 34px 70px rgba(0,0,0,.5)}
+.mac .wbar{display:flex;align-items:center;gap:clamp(3px,.5vw,6px);height:clamp(13px,2.3vw,27px);padding:0 clamp(6px,1vw,12px);background:#141a24;border-bottom:1px solid rgba(255,255,255,.05)}
+.mac .wbar i{flex:0 0 auto;width:clamp(4px,.75vw,9px);aspect-ratio:1;border-radius:50%;background:#ff5f57}
+.mac .wbar i:nth-child(2){background:#febc2e}
+.mac .wbar i:nth-child(3){background:#28c840}
+.mac .wbar span{margin:0 auto;transform:translateX(-12%);padding:.25em 2.4em;border-radius:5px;background:#0c111a;color:var(--dim);font-size:clamp(6px,.85vw,11px);letter-spacing:.01em;white-space:nowrap}
+.mac video{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:#0a1220}
+.mac .base{position:relative;height:clamp(7px,1.3vw,15px);margin:0 -6.5%;background:linear-gradient(#323a48,#171c25 70%);border-radius:2px 2px 50% 50% / 2px 2px 100% 100%}
+.mac .base::after{content:"";position:absolute;left:50%;top:0;width:13%;height:42%;transform:translateX(-50%);background:#20262f;border-radius:0 0 6px 6px}
+#presentation .stg .ph{position:absolute;right:-1%;bottom:-3%;width:clamp(90px,21%,210px);aspect-ratio:1180/2556;border:clamp(3px,.55vw,6px) solid #262b33;border-radius:15.5% / 7.2%;background:#000;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.12),0 26px 56px rgba(0,0,0,.6)}
+#presentation .stg .ph video{display:block;width:100%;height:100%;object-fit:cover}
+.ph .di{position:absolute;top:1.25%;left:50%;width:32%;height:4.2%;transform:translateX(-50%);background:#000;border-radius:999px}
+/* computer: the phone stands beside the laptop */
+@media (min-width:761px){
+  #presentation .stg{display:flex;align-items:flex-end;gap:clamp(18px,3vw,40px);max-width:1120px}
+  #presentation .stg .mac{flex:1 1 auto;min-width:0}
+  #presentation .stg .ph{position:relative;right:auto;bottom:auto;flex:0 0 auto;width:clamp(120px,20%,220px);margin-bottom:1%}
+}
+@media (max-width:760px){ .mac .base{margin:0 -3%} #presentation .stg{margin-right:4%} #presentation .stg .ph{width:27%;right:-5%;bottom:-6%;border-width:3px} }
+.noph #presentation .stg .ph{display:none}
+.noph #presentation .stg{display:block;max-width:980px}
+</style>
+
+<style>
 /* portfolio: the first projects, the rest open in place */
 .grid.cut > .card:nth-child(n+7){display:none}
 @media (max-width:560px){.grid.cut > .card:nth-child(n+4){display:none}}
@@ -721,8 +748,8 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
     <p class="lead" data-i="prP"></p>
   </div>
   <div class="stg">
-    <div class="dev"><video class="dv" muted loop playsinline preload="none"></video><div class="lap"><video class="lv" muted loop playsinline preload="none"></video></div></div>
-    <div class="ph"><video muted loop playsinline preload="none"></video></div>
+    <div class="mac"><div class="scr"><div class="wbar"><i></i><i></i><i></i><span>demo.pravdukhin.com</span></div><video class="dv" muted loop playsinline preload="none"></video></div><div class="base"></div></div>
+    <div class="ph"><video muted loop playsinline preload="none"></video><i class="di"></i></div>
   </div>
   <div class="prs">
     <div class="prt" role="tablist"></div>
@@ -1463,10 +1490,8 @@ if (location.hash && PROJECTS.some(p => '#' + p.slug === location.hash)) openPro
 // v8.1: interactive presentations. Each lives on its own site (demo.pravdukhin.com): here only a light preview.
 // Add a new one by adding a row; the site map (nav.js) reads this list too.
 const PRES = [
-  { url: 'https://demo.pravdukhin.com/', t: 'Private event · 164 guests', t_ru: 'Частное мероприятие · 164 гостя', thumb: "/w/pres/ge_t.jpg",
-    dev: "/w/pres/ge_dev_ru", ph: "/w/pres/ge_ph_ru", ph2: "/w/pres/ge_ph2_ru" },
-  { url: 'https://demo.pravdukhin.com/ist-v1/', t: 'Private event · 63 guests', t_ru: 'Частное мероприятие · 63 гостя', thumb: "/w/pres/ist_t.jpg",
-    lap: "/w/pres/ist" }
+  { url: 'https://demo.pravdukhin.com/', t: 'Private event · 164 guests', t_ru: 'Частное мероприятие · 164 гостя', thumb: "/w/pres/ge_t.jpg", code: "/w/pres/private-event-164" },
+  { url: 'https://demo.pravdukhin.com/ist-v1/', t: 'Private event · 63 guests', t_ru: 'Частное мероприятие · 63 гостя', thumb: "/w/pres/ist_t.jpg", code: "/w/pres/private-event-63" }
 ];
 let PRI = 0;
 // layout: chosen pv2 + rva (16.11); the other options stay reachable for comparison: ?pv=1|3, ?rv=b|c, ?ph=0 (no phone)
@@ -1487,13 +1512,12 @@ function syncPres() {
 }
 function renderPres() {
   const s = document.getElementById('presentation'); if (!s) return;
-  const ru = LANG === 'ru', p = PRES[PRI];
+  const ru = LANG === 'ru', p = PRES[PRI], lg = ru ? 'ru' : 'en';
   s.querySelector('.prt').innerHTML = PRES.map((q, i) => `<button type="button" role="tab" aria-selected="${i === PRI}" data-pr="${i}"><img src="${q.thumb}" alt="" loading="lazy"><span>${(ru && q.t_ru) || q.t}</span></button>`).join('');
   s.querySelector('#prGo').href = p.url + '?lang=' + LANG;
-  const g = s.querySelector('.stg'); g.classList.toggle('laptop', !p.dev); g.classList.toggle('nophone', !p.ph);
-  const dv = s.querySelector('.dv'), lv = s.querySelector('.lv'), pv = s.querySelector('.ph video');
-  dv.dataset.m = lv.dataset.m = '1';
-  if (p.dev) setV(dv, p.dev); if (p.lap) setV(lv, p.lap); if (p.ph) setV(pv, (document.documentElement.classList.contains('ph3') && p.ph2) || p.ph);
+  const dv = s.querySelector('.dv'), pv = s.querySelector('.ph video');
+  dv.dataset.m = '1';
+  setV(dv, p.code + '_desktop_' + lg); setV(pv, p.code + '_phone_' + lg);
   syncPres();
 }
 (() => {
