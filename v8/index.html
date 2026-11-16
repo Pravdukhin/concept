@@ -450,10 +450,10 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <style>
 /* v8.1.2: second button on stage −20 with a NEW tag */
-.bpair{display:inline-flex;flex-wrap:nowrap;gap:8px;width:max-content;max-width:calc(100vw - 2 * var(--pad))}
-.bpair .btn{white-space:nowrap}
+.bpair{display:inline-flex;flex-wrap:wrap;gap:8px;width:max-content;max-width:calc(100vw - 2 * var(--pad));margin:10px 0 14px}
+.cap .bpair .btn{white-space:nowrap;margin:0}
+@media (max-width:440px){ .bpair{gap:5px} .cap .bpair .btn{padding:5px 9px;font-size:12px} .btn.nwb em{margin-left:.45em;letter-spacing:.06em} }
 .btn.nwb .sm{display:none}
-@media (max-width:560px){ .btn.nwb .lg{display:none} .btn.nwb .sm{display:inline} }
 .btn.nwb em{font-style:normal;color:var(--amber);font-size:.72em;letter-spacing:.12em;margin-left:.7em;font-weight:500;vertical-align:.08em}
 .btn.nwb:hover em{color:var(--night)}
 </style>
