@@ -1472,7 +1472,8 @@ let PRI = 0;
 // layout: chosen pv2 + rva (16.11); the other options stay reachable for comparison: ?pv=1|3, ?rv=b|c, ?ph=0 (no phone)
 (() => { const q = new URLSearchParams(location.search), h = document.documentElement;
   h.classList.add('pv' + (/^[123]$/.test(q.get('pv')) ? q.get('pv') : '2'), 'rv' + (/^[abc]$/.test(q.get('rv')) ? q.get('rv') : 'a'));
-  if (q.get('ph') === '0') h.classList.add('noph'); if (/^[23]$/.test(q.get('ph'))) h.classList.add('ph' + q.get('ph')); })();
+  if (q.get('ph') === '0') h.classList.add('noph'); if (/^[23]$/.test(q.get('ph'))) h.classList.add('ph' + q.get('ph'));
+  if (!q.get('ph') && innerWidth > 760) h.classList.add('ph2'); })();
 let PVIS = false;
 function setV(v, base) { const src = base + (innerWidth <= 760 && v.dataset.m ? '_m' : '') + '.mp4'; v.poster = base + '.jpg';
   if (v.dataset.src !== src) { v.dataset.src = src; if (v.getAttribute('src')) v.src = src; } }
