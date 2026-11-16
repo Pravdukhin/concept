@@ -41,7 +41,7 @@ if (PAGE === 'pres') {
   const st = document.createElement('style');
   st.textContent = `
 .pvn-burg,.pvn-sh{--pv-ink:#e8ecf1;--pv-dim:#8d9aae;--pv-line:#22324a;--pv-amber:#f2a648;--pv-bg:#081424;font-family:Geist,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
-.pvn-burg{appearance:none;width:44px;height:44px;border-radius:50%;border:0;background:rgba(8,20,36,.45);color:var(--pv-ink);cursor:pointer;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:0;-webkit-tap-highlight-color:transparent;transition:background .2s;flex:none}
+.pvn-burg{appearance:none;width:46px;height:46px;border-radius:50%;border:0;background:rgba(8,20,36,.45);color:var(--pv-ink);cursor:pointer;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:0;-webkit-tap-highlight-color:transparent;transition:background .2s;flex:none}
 .pvn-burg:hover{background:rgba(242,166,72,.16)}
 .pvn-burg i{display:block;width:22px;height:2px;border-radius:1px;background:currentColor}
 .pvn-burg.pvn-fx{position:fixed;z-index:70;top:calc(12px + env(safe-area-inset-top,0px));right:12px}
@@ -585,7 +585,7 @@ if (PAGE === 'main' && location.hash) {
 
 // ---------- language switch, variant A (v7.1, 28.10) ----------
 (() => {
-const LS = [['en', 'EN', 'English'], ['ru', 'RU', 'Русский'], ['it', 'IT', 'Italiano'], ['fr', 'FR', 'Français'], ['es', 'ES', 'Español'], ['tr', 'TR', 'Türkçe']];
+const LS = [['en', 'EN', 'English'], ['ru', 'RU', 'Русский']];  // v8.1: EN/RU only; IT/FR/ES/TR later
 const base = c => (c === 'ru' ? 'ru' : 'en');
 const sel = () => { let v = ''; try { v = localStorage.getItem('langSel') || ''; } catch (e) {} return LS.some(x => x[0] === v) && base(v) === lang() ? v : lang(); };
 const st = document.createElement('style');
