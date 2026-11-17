@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="robots" content="noindex">
+<script>/* v8.1.9: landing by a link to a section: hidden until it stands there (nav.js shows it) */
+(function () { if (/^#(how|interactive|presentation|work|about|scanning|contact)$/.test(location.hash)) { var d = document.documentElement; d.className += ' landing'; window.__landing = true;
+  setTimeout(function () { d.classList.remove('landing'); }, 2500); setTimeout(function () { window.__landing = false; }, 3500); } })();</script>
+<style>html.landing{background:#081424}html.landing body{visibility:hidden}</style>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <title>Yuriy Pravdukhin · Technical design and production for events</title>
@@ -1357,7 +1361,7 @@ addEventListener('resize', () => {
   }, 120);
 });
 addEventListener('scroll', () => {
-  if (AUTO.run) return;
+  if (AUTO.run || window.__landing) return;   // v8.1.9: not while landing on a section by link
   if (atTop()) { AUTO.armed = true; AUTO.idx = -1; return; }
   if (!AUTO.armed || performance.now() - resizedAt < 400 || performance.now() - wLast < 300) return;
   const here = AUTO.idx >= 0 ? yOf(STOPS()[AUTO.idx]) : ringTop(), tol = Math.max(120, innerHeight / 3);
@@ -1556,6 +1560,6 @@ function renderPres() {
   document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-l]')) setTimeout(label, 0); });
 })();
 </script>
-<script src="/v8/nav.js?v=27" data-v="D" data-page="main" data-main="/v8/" data-scan="/v8/3d-venue-scanning/"></script>
+<script src="/v8/nav.js?v=28" data-v="D" data-page="main" data-main="/v8/" data-scan="/v8/3d-venue-scanning/"></script>
 </body>
 </html>

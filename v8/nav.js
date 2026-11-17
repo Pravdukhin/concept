@@ -606,16 +606,21 @@ if (PAGE === 'main' && location.hash) {
       // back from the scanning page to the button pressed in that section: the button near the bottom of the screen
       let land = null; try { land = JSON.parse(sessionStorage.getItem(LAND_KEY)); sessionStorage.removeItem(LAND_KEY); } catch (e) {}
       const b = land && land.sec === h && land.sel && document.querySelector('#' + h + ' ' + land.sel);
-      if (b) { toBtn(b); holdLanding(() => toBtn(b)); }
+      if (b) { toBtn(b); holdLanding(() => toBtn(b)); landF.f = () => toBtn(b); }
       else {
-        go(5 + SEC.indexOf(h));
-        holdLanding(() => { const e = document.getElementById(h); if (!e) return; const y = Math.round(e.getBoundingClientRect().top + scrollY - 56); if (Math.abs(scrollY - y) > 2) { if (typeof freeScroll === 'function') freeScroll(); scrollTo({ top: y, behavior: 'instant' }); } });
+        const toSec = () => { const e = document.getElementById(h); if (!e) return; const y = Math.round(e.getBoundingClientRect().top + scrollY - 56); if (Math.abs(scrollY - y) > 2) { if (typeof freeScroll === 'function') freeScroll(); scrollTo({ top: y, behavior: 'instant' }); } };
+        if (typeof freeScroll === 'function') freeScroll(); toSec(); holdLanding(toSec); landF.f = toSec;
       }
     }
   };
-  // v8.1.7: do not wait for every picture: start at "load" or after 1.2 s, whichever comes first
-  let ran = false; const once = () => { if (!ran) { ran = true; run(); } };
-  if (document.readyState === 'complete') setTimeout(once, 300); else { addEventListener('load', () => setTimeout(once, 300)); setTimeout(once, 1200); }
+  // v8.1.9: right away (the page is parsed when nav.js runs), then show the page once it stands at the section
+  const landF = { f: null };
+  const show = () => { const d = document.documentElement; if (!d.classList.contains('landing')) return; if (landF.f) landF.f(); d.classList.remove('landing'); };
+  run();
+  if (document.documentElement.classList.contains('landing')) {
+    let done = false; const once = () => { if (!done) { done = true; requestAnimationFrame(() => requestAnimationFrame(show)); } };
+    (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(once); setTimeout(once, 500);
+  }
 }
 
 // ---------- language switch, variant A (v7.1, 28.10) ----------
