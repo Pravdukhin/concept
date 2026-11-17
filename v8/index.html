@@ -938,6 +938,10 @@ function placeLoader() {
   ld.style.transform = 'translateX(-50%) scale(' + k.toFixed(3) + ')';
 }
 const cv = el('cv'), ctx = cv.getContext('2d'), stage = el('stage'), ring = el('ring');
+// v8.1.7: ring height in pixels (was 800vh): in-app browsers resize the page when their bars fold
+let ringW = 0, ringVH = 0;
+function ringFix() { const w = innerWidth, h = innerHeight; if (ringW && Math.abs(w - ringW) < 2 && Math.abs(h - ringVH) < ringVH * .25) return; ringW = w; ringVH = h; ring.style.height = Math.round(8 * h) + 'px'; }
+ringFix();
 const portrait = () => innerHeight > innerWidth;
 let mode = portrait() ? 'full' : 'land';
 // scroll sequence: rewind (final part reversed, every 3rd frame) -> cloud flight back and forth -> forward
@@ -1215,7 +1219,7 @@ function onScroll() {
   el('bar').classList.toggle('on', r.bottom < innerHeight * .5);
 }
 addEventListener('scroll', onScroll, { passive: true });
-addEventListener('resize', () => { const m = portrait() ? (mode === 'land' ? 'full' : mode) : 'land'; if (m !== mode || setKey() !== curKey) setMode(m); size(); onScroll(); });
+addEventListener('resize', () => { ringFix(); const m = portrait() ? (mode === 'land' ? 'full' : mode) : 'land'; if (m !== mode || setKey() !== curKey) setMode(m); size(); onScroll(); });
 let FIRST_KEY = null, wantBand = false;
 // phones: get the 16:9 pack ready in the background (after the main pack), so the frame button switches at once
 function preloadBand() {
@@ -1551,6 +1555,6 @@ function renderPres() {
   document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-l]')) setTimeout(label, 0); });
 })();
 </script>
-<script src="/v8/nav.js?v=26" data-v="D" data-page="main" data-main="/v8/" data-scan="/v8/3d-venue-scanning/"></script>
+<script src="/v8/nav.js?v=27" data-v="D" data-page="main" data-main="/v8/" data-scan="/v8/3d-venue-scanning/"></script>
 </body>
 </html>

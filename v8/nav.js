@@ -354,6 +354,11 @@ document.addEventListener('click', e => {
   if (sb) { const to = sb.getAttribute('href') || ''; setRet({ sec: 'how', sel: sb.dataset.i ? `[data-i="${sb.dataset.i}"]` : '', t: to.includes('3d-venue-scanning') ? 'scan' : to.replace(/^#/, '') }); retSetAt = performance.now(); }
 }, true);
 const LAND_KEY = 'navLand';
+// v8.1.7: after landing by link, pictures and in-app browser bars may still move the page: put it back a few times,
+// until the visitor touches the screen, scrolls or presses a key
+let userMoved = false;
+['touchstart', 'wheel', 'keydown', 'mousedown'].forEach(t => addEventListener(t, () => { userMoved = true; }, { passive: true, capture: true }));
+function holdLanding(fn) { userMoved = false; [250, 600, 1100, 1800, 2800].forEach(ms => setTimeout(() => { if (!userMoved) fn(); }, ms)); }
 function toBtn(el, smooth) {
   if (typeof freeScroll === 'function') freeScroll();
   const vh = (window.visualViewport && visualViewport.height) || innerHeight, m = Math.max(32, Math.round(vh * .06));
@@ -601,11 +606,16 @@ if (PAGE === 'main' && location.hash) {
       // back from the scanning page to the button pressed in that section: the button near the bottom of the screen
       let land = null; try { land = JSON.parse(sessionStorage.getItem(LAND_KEY)); sessionStorage.removeItem(LAND_KEY); } catch (e) {}
       const b = land && land.sec === h && land.sel && document.querySelector('#' + h + ' ' + land.sel);
-      if (b) { let y = toBtn(b); setTimeout(() => { if (Math.abs(scrollY - y) < 3) y = toBtn(b); }, 700); setTimeout(() => { if (Math.abs(scrollY - y) < 3) toBtn(b); }, 1600); }
-      else setTimeout(() => go(5 + SEC.indexOf(h)), 50);
+      if (b) { toBtn(b); holdLanding(() => toBtn(b)); }
+      else {
+        go(5 + SEC.indexOf(h));
+        holdLanding(() => { const e = document.getElementById(h); if (!e) return; const y = Math.round(e.getBoundingClientRect().top + scrollY - 56); if (Math.abs(scrollY - y) > 2) { if (typeof freeScroll === 'function') freeScroll(); scrollTo({ top: y, behavior: 'instant' }); } });
+      }
     }
   };
-  if (document.readyState === 'complete') setTimeout(run, 300); else addEventListener('load', () => setTimeout(run, 300));
+  // v8.1.7: do not wait for every picture: start at "load" or after 1.2 s, whichever comes first
+  let ran = false; const once = () => { if (!ran) { ran = true; run(); } };
+  if (document.readyState === 'complete') setTimeout(once, 300); else { addEventListener('load', () => setTimeout(once, 300)); setTimeout(once, 1200); }
 }
 
 // ---------- language switch, variant A (v7.1, 28.10) ----------
