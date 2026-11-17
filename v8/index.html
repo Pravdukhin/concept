@@ -375,7 +375,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 .ph2 .stg.nophone,.ph3 .stg.nophone{display:block;max-width:1000px}
 @media (max-width:760px){ .ph2 .stg .ph{width:24%;border-radius:12px;border-width:3px} .ph3 .stg .ph{width:28%;border-radius:10px;border-width:3px} }
 .prs{display:flex;justify-content:space-between;align-items:flex-end;gap:20px 32px;flex-wrap:wrap;margin-top:clamp(22px,3vw,34px)}
-.prt{display:flex;gap:14px;overflow-x:auto;scrollbar-width:none;padding:2px}
+.prt{display:flex;gap:14px;overflow-x:auto;scrollbar-width:none;padding:5px;margin:-3px}
 .prt button{appearance:none;font:inherit;background:none;border:0;padding:0;cursor:pointer;color:var(--dim);text-align:left;width:150px;flex:0 0 auto}
 .prt img{display:block;width:150px;aspect-ratio:16/9;object-fit:cover;border-radius:8px;opacity:.55;outline:1px solid var(--line);outline-offset:0;transition:opacity .2s,outline-color .2s}
 .prt span{display:block;font-size:12px;line-height:1.35;margin-top:7px;transition:color .2s}
@@ -402,7 +402,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
   .stg .ph{width:24%;right:0;bottom:-8%;border-radius:16px;border-width:4px}
   .prs{flex-direction:column;align-items:stretch;margin-top:30px}
   .prs .go{align-items:flex-start}
-  .prt{margin:0 calc(-1 * var(--pad));padding:2px var(--pad)}
+  .prt{margin:-3px calc(-1 * var(--pad));padding:5px var(--pad)}
   .prt button,.prt img{width:138px}
 }
 /* Delivery options: rva two frames, rvb brackets, rvc filled + framed */
@@ -1514,7 +1514,8 @@ let PRI = 0;
   if (q.get('ph') === '0') h.classList.add('noph'); if (/^[23]$/.test(q.get('ph'))) h.classList.add('ph' + q.get('ph'));
   if (!q.get('ph') && innerWidth > 760) h.classList.add('ph2'); })();
 let PVIS = false;
-function setV(v, base) { const src = base + (innerWidth <= 760 && v.dataset.m ? '_m' : '') + '.mp4'; v.poster = base + '.jpg';
+const PRV = '?v=2';   // v8.1.8: recordings of 17.11
+function setV(v, base) { const src = base + (innerWidth <= 760 && v.dataset.m ? '_m' : '') + '.mp4' + PRV; v.poster = base + '.jpg' + PRV;
   if (v.dataset.src !== src) { v.dataset.src = src; if (v.getAttribute('src')) v.src = src; } }
 // play only the videos that are shown, and only while the section is near the screen
 function syncPres() {
