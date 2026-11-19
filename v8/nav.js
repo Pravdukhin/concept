@@ -3,6 +3,7 @@
 // B: A + the label next to the rail opens a contents sheet drawn like the day scale
 // C: the ring untouched; after the ring a top bar with a compact pill that opens the same sheet
 (() => {
+const HASH0 = location.hash;   // v8.2: the address as it came, before the page cleans it
 const S = document.currentScript, V = S.dataset.v, PAGE = S.dataset.page, V6 = (S.dataset.v6 || 'a').toLowerCase();
 document.documentElement.classList.add('v6', 'v6' + V6); // 'main' | 'scan'
 const MAIN = S.dataset.main || '/nav/' + V.toLowerCase() + '.html', SCAN = S.dataset.scan || '/nav/' + V.toLowerCase() + '-scan.html';
@@ -675,5 +676,96 @@ addEventListener('scroll', close, { passive: true });
 const obs = new MutationObserver(() => { const o = sheet && sheet.classList.contains('open'); btn.style.visibility = o ? 'hidden' : ''; if (o) close(); });
 if (sheet) obs.observe(sheet, { attributes: true, attributeFilter: ['class'] });
 draw();
+})();
+// ---------- v8.2: visit statistics (GoatCounter, no cookies, nothing stored in the browser) ----------
+// Pageviews are counted by count.js itself. Events: how long the first screen took to load (or that the visitor left
+// before it loaded), how far the ring was played, which sections were reached, every button and link pressed.
+// Names: "<group>/<where>/<what>", e.g. "click/ring/brief", "section/interactive", "ring/loaded 3-8s".
+// Outside pravdukhin.com (the working copy) every name starts with "test/".
+(() => {
+if (PAGE !== 'main' && PAGE !== 'scan') return;
+const GC = 'https://pravdukhin.goatcounter.com/count';
+if (!document.querySelector('script[data-goatcounter]')) {
+  const s = document.createElement('script'); s.async = true; s.src = 'https://gc.zgo.at/count.js'; s.dataset.goatcounter = GC;
+  s.addEventListener('load', flush); document.head.appendChild(s);
+}
+const PFX = location.hostname === 'pravdukhin.com' ? '' : 'test/';
+const queue = [], seen = new Set();
+function flush() { if (!(window.goatcounter && window.goatcounter.count)) return; while (queue.length) { const [p, t] = queue.shift(); try { window.goatcounter.count({ path: p, title: t, event: true }); } catch (e) {} } }
+function ev(name, title, once) {
+  const p = PFX + name; if (once) { if (seen.has(p)) return; seen.add(p); }
+  queue.push([p, title || p]); flush();
+  if (window.__statsLog) window.__statsLog.push(p);   // for tests
+}
+const secs = t => (t < 3000 ? '<3s' : t < 8000 ? '3-8s' : t < 15000 ? '8-15s' : '>15s');
+// how the visitor arrived
+const UA = navigator.userAgent || '';
+if (/Instagram/i.test(UA)) ev('inapp/instagram', 'Opened in the Instagram browser', 1);
+else if (/FBAN|FBAV|FB_IAB/i.test(UA)) ev('inapp/facebook', 'Opened in the Facebook browser', 1);
+else if (/Telegram/i.test(UA)) ev('inapp/telegram', 'Opened in the Telegram browser', 1);
+if (PAGE === 'main') {
+  const h = (HASH0 || '').slice(1);
+  if (h && (SEC.includes(h) || h === 'presentation' || projs().some(p => p[0] === h))) ev('landing/' + h, 'Came by a direct link to ' + h, 1);
+  // first screen: loaded, and in how long; or left before it loaded
+  const t0 = 0;   // performance.now() counts from the start of the page load
+  const lt = setInterval(() => { if (typeof LREADY !== 'undefined' && LREADY) { clearInterval(lt); ev('ring/loaded ' + secs(performance.now() - t0), 'First screen loaded', 1); } }, 250);
+  const leave = () => { if (typeof LREADY !== 'undefined' && !LREADY && onRing() && !seen.has(PFX + 'ring/left')) { seen.add(PFX + 'ring/left'); ev('ring/left-before-load ' + secs(performance.now() - t0), 'Left before the first screen loaded'); } };
+  addEventListener('pagehide', leave); document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') leave(); });
+  // how far the ring was played: stages 1..4 (−45, −30, −20, show day)
+  const STN = ['', 'day-45', 'day-30', 'day-20', 'show-day'];
+  addEventListener('scroll', () => { if (typeof stageOf !== 'function' || typeof step === 'undefined' || !onRing() || window.__landing) return; const s = stageOf(step); for (let j = 1; j <= s && j < 5; j++) ev('ring/stage-' + j + ' ' + STN[j], 'Ring played to ' + STN[j], 1); }, { passive: true });
+}
+// sections reached: the section fills the middle of the screen; the last blocks: as soon as they show
+{
+  const mids = PAGE === 'main' ? SEC.filter(id => id !== 'contact').map(id => document.getElementById(id)).filter(Boolean) : [];
+  const ends = [PAGE === 'main' ? document.getElementById('contact') : null, document.querySelector('footer')].filter(Boolean);
+  const name = el => el.id || 'footer';
+  let raf = 0;
+  const check = () => { raf = 0; const vh = innerHeight, land = window.__landing ? (HASH0 || '').slice(1) : null;
+    mids.forEach(el => { const r = el.getBoundingClientRect(); if (r.top < vh * .5 && r.bottom > vh * .3 && (!land || land === el.id)) ev('section/' + name(el), 'Reached ' + name(el), 1); });
+    ends.forEach(el => { const r = el.getBoundingClientRect(); if (r.top < vh - 40 && r.bottom > 0 && !land) ev('section/' + name(el), 'Reached ' + name(el), 1); }); };
+  addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(check); }, { passive: true });
+  setTimeout(check, 600);
+}
+// every button and link
+const ID = { pfBtn: 'portfolio', scanBtn: 'about-scanning', briefBtn: 'brief', costBtn: 'what-it-costs', presBtn: 'interactive-visuals', cta: 'discuss', prGo: 'open-presentation', dlgb: 'project-back' };
+const GO = ['start', 'day-45', 'day-30', 'day-20', 'show-day'].concat(SEC);
+const where = el => {
+  if (el.closest('.sh, .pvn-sh')) return 'menu';
+  if (el.closest('.lsd, .lsw')) return 'lang';
+  if (el.closest('header.bar, .burg')) return 'top';
+  if (el.closest('dialog[open]')) return 'project';
+  if (PAGE === 'scan') { const s = el.closest('section[id], footer'); return 'scan' + (s ? '-' + (s.id || 'footer') : ''); }
+  const s = el.closest('section[id], footer'); return s ? (s.id || 'footer') : 'page';
+};
+const what = el => {
+  const href = el.getAttribute('href') || '';
+  if (/wa\.me\//.test(href)) return 'whatsapp' + (el.id && ID[el.id] ? '-' + ID[el.id] : '');
+  if (/t\.me\//.test(href)) return 'telegram';
+  if (/^mailto:/.test(href)) return 'email';
+  if (el.id && ID[el.id]) return ID[el.id];
+  if (el.dataset.slug) return 'project-' + el.dataset.slug;
+  if (el.dataset.pj) return 'project-' + el.dataset.pj;
+  if (el.dataset.go) return GO[+el.dataset.go] || 'item-' + el.dataset.go;
+  if (el.dataset.pr) { const p = (typeof PRES !== 'undefined' && PRES[+el.dataset.pr]) || null; return 'pres-tab-' + (p ? p.code.split('-').pop() : el.dataset.pr); }
+  if (el.dataset.ls || el.dataset.l) return 'lang-' + (el.dataset.ls || el.dataset.l);
+  if (el.classList.contains('burg')) return 'menu-open';
+  if (el.classList.contains('lsw')) return 'lang-open';
+  if (el.classList.contains('retA')) { const r = (() => { try { return JSON.parse(sessionStorage.getItem('navRet')); } catch (e) { return null; } })(); return r && r.top ? 'to-top' : 'back'; }
+  if (el.classList.contains('scb')) return el.dataset.i === 'scanBtn' ? 'about-scanning' : el.dataset.i === 's3b' ? 'see-example' : 'button';
+  if (el.closest('#rail')) return 'rail-' + [...el.parentNode.children].indexOf(el);
+  if (el.closest('#wmore')) return 'all-projects';
+  if (/demo\.pravdukhin\.com/.test(href)) return 'presentation-' + (href.match(/private-event-(\d+)/) || [, 'demo'])[1];
+  if (/3d-venue-scanning/.test(href)) return 'scanning-page';
+  if (PAGE === 'scan' && (href === '../' || href === MAIN)) return 'main-site';
+  if (el.classList.contains('me')) return 'name';
+  if (el.classList.contains('x')) return 'close';
+  const t = (el.getAttribute('aria-label') || el.textContent || '').trim().replace(/\s+/g, ' ').toLowerCase().slice(0, 32);
+  return t || (el.tagName.toLowerCase() + (href ? ' ' + href.slice(0, 40) : ''));
+};
+document.addEventListener('click', e => {
+  const el = e.target.closest && e.target.closest('a, button, [role="tab"], .sc-m'); if (!el) return;
+  try { ev('click/' + where(el) + '/' + what(el), (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 60)); } catch (x) {}
+}, true);
 })();
 })();
