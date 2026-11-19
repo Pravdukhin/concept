@@ -705,6 +705,10 @@ const UA = navigator.userAgent || '';
 if (/Instagram/i.test(UA)) ev('inapp/instagram', 'Opened in the Instagram browser', 1);
 else if (/FBAN|FBAV|FB_IAB/i.test(UA)) ev('inapp/facebook', 'Opened in the Facebook browser', 1);
 else if (/Telegram/i.test(UA)) ev('inapp/telegram', 'Opened in the Telegram browser', 1);
+// paid traffic and tagged links (the page path is counted without the query, so the source is kept here)
+{ const q = new URLSearchParams(location.search);
+  if (q.get('fbclid')) ev('source/meta-ad', 'Came from a Facebook or Instagram link or ad', 1);
+  if (q.get('utm_source')) ev('source/' + q.get('utm_source').toLowerCase().slice(0, 30), 'utm_source', 1); }
 if (PAGE === 'main') {
   const h = (HASH0 || '').slice(1);
   if (h && (SEC.includes(h) || h === 'presentation' || projs().some(p => p[0] === h))) ev('landing/' + h, 'Came by a direct link to ' + h, 1);
