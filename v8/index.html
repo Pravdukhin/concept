@@ -236,6 +236,8 @@ section.s{padding:96px var(--pad) 40px;max-width:1240px;margin:0 auto;scroll-mar
 .chan span{display:block;color:var(--dim);font-size:13px;margin-bottom:6px}
 .chan a{text-decoration:none;font-size:17px;word-break:break-word}
 .chan a:hover{color:var(--amber)}
+footer .pvl{color:inherit;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(141,154,174,.5)}
+footer .pvl:hover{color:var(--ink)}
 footer{border-top:1px solid var(--line);margin-top:40px;padding:22px var(--pad) calc(28px + env(safe-area-inset-bottom,0px));color:var(--dim);font-size:13px;display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between;max-width:1240px;margin-inline:auto}
 
 /* ---------- project dialog ---------- */
@@ -783,7 +785,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 
 <footer>
   <span data-i="foot1">Iurii Pravdukhin · Technical design and production for events</span>
-  <span><span data-i="foot2">Milan, Italy · Dubai, UAE</span> · P.IVA 12554630967</span>
+  <span><span data-i="foot2">Milan, Italy · Dubai, UAE</span> · P.IVA 12554630967 · <a href="privacy/" class="pvl" data-i="privacy">Privacy</a></span>
 </footer>
 
 <dialog id="dlg" aria-labelledby="dlgt">
@@ -819,7 +821,7 @@ const T = {
   s4h: 'Delivered as designed', s4p: 'Delivery follows the approved design to the letter. At this stage I prepare a detailed technical brief and work schedule for the suppliers, which are also agreed with the venue and other services. This keeps surprises on site to a minimum and the risks under control.',
   aH: 'About', a1: 'Hi! I’m Yuriy, and I’ve been in technical event production for over 20 years, in recent years more and more often around the world. That usually means 60 flights a year, and yes, I love planes too.', a2: 'I also love bringing structure to chaos and building a system in everything I take on.', a3: 'As a technical director, I specialise in conferences and high-end private events. As my portfolio shows, galas and stadium projects come my way too.', a4: 'In summer I live near Milan, in winter I’m often in Dubai. I work on projects in SketchUp and Vectorworks, and we use visualisation tools built on Unreal Engine. For each project I bring together a trusted team of specialists, and I’m personally accountable for the result.', a5: 'I work in English and Russian.', f1: 'years in event production', f2: 'projects', f3: 'countries',
   gH: 'Where', gP: 'Based in Milan and Dubai. Delivered projects in 19 countries.', geoH: 'Experience and trusted technical partners in:',
-  mail: 'Email', close: 'Close', foot1: 'Iurii Pravdukhin · Technical design and production for events', foot2: 'Milan, Italy · Dubai, UAE',
+  mail: 'Email', close: 'Close', foot1: 'Iurii Pravdukhin · Technical design and production for events', foot2: 'Milan, Italy · Dubai, UAE', privacy: 'Privacy',
   countries: ['Italy','France','Spain','Greece','Cyprus','Malta','Montenegro','Croatia','Turkey','Georgia','Serbia','Bulgaria','UAE','Maldives','Kazakhstan','China','Singapore','Thailand','Malaysia'],
   caps: [
    ['Day −45', 'A digital copy of the venue', 'We inspect the venue and walk it with a handheld SLAM scanner. In a few hours we have a point cloud, an accurate 3D copy of the venue: every wall, tree and step. Our own equipment in Italy and the UAE.'],
@@ -850,7 +852,7 @@ const T = {
   s4h: 'Построено так, как спроектировано', s4p: 'Реализация идёт строго по утверждённому проекту. На этом этапе я готовлю для подрядчиков подробное техническое задание и график работ, они также согласовываются с площадкой и другими службами. Благодаря этому сюрпризов на монтаже минимум, а риски управляемы.',
   aH: 'Обо мне', a1: 'Привет! Меня зовут Юрий, и я занимаюсь техническим продакшном мероприятий больше 20 лет. В последние годы всё чаще по миру. Обычно это 60 перелётов в год, и да, самолёты я тоже очень люблю.', a2: 'Ещё я люблю структурировать хаос и выстраивать систему в любом деле, за которое берусь.', a3: 'Как технический директор я специализируюсь на конференциях и премиальных частных мероприятиях. Как видно по портфолио, гала-ужины и проекты на стадионах у меня тоже случаются.', a4: 'Летом живу недалеко от Милана, зимой часто в Дубае. Работаю с проектами в SketchUp и Vectorworks, визуализаторы используем на базе Unreal Engine. Под задачи проекта собираю проверенную команду специалистов, а за результат отвечаю лично.', a5: 'Работаю на русском и английском.', f1: 'лет в продакшне мероприятий', f2: 'проектов', f3: 'стран',
   gH: 'География', gP: 'Базы в Милане и Дубае. Реализованные проекты в 19 странах.', geoH: 'Опыт работы и проверенные технические партнёры в странах:',
-  mail: 'Почта', close: 'Закрыть', foot1: 'Юрий Правдухин · Технический дизайн и продакшн мероприятий', foot2: 'Милан, Италия · Дубай, ОАЭ',
+  mail: 'Почта', close: 'Закрыть', foot1: 'Юрий Правдухин · Технический дизайн и продакшн мероприятий', foot2: 'Милан, Италия · Дубай, ОАЭ', privacy: 'Конфиденциальность',
   countries: ['Италия','Франция','Испания','Греция','Кипр','Мальта','Черногория','Хорватия','Турция','Грузия','Сербия','Болгария','ОАЭ','Мальдивы','Казахстан','Китай','Сингапур','Таиланд','Малайзия'],
   caps: [
    ['День −45', 'Цифровая копия площадки', 'Выезжаем на инспекцию и обходим площадку с ручным SLAM-сканером. За несколько часов получаем облако точек, точную 3D-копию площадки: каждую стену, дерево и ступеньку. Собственное оборудование в Италии и ОАЭ.'],
@@ -865,6 +867,7 @@ const T = {
  }
 };
 let LREADY = false;
+document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('a.pvl'); if (a) a.href = 'privacy/?lang=' + LANG; }, true);
 let LANG = (() => {
   const q = new URLSearchParams(location.search).get('lang'); if (q === 'ru' || q === 'en') return q;
   try { const v = localStorage.getItem('lang'); if (v === 'ru' || v === 'en') return v; } catch (e) {}
@@ -1560,6 +1563,6 @@ function renderPres() {
   document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-l]')) setTimeout(label, 0); });
 })();
 </script>
-<script src="/v8/nav.js?v=31" data-v="D" data-page="main" data-main="/v8/" data-scan="/v8/3d-venue-scanning/"></script>
+<script src="/v8/nav.js?v=32" data-v="D" data-page="main" data-main="/v8/" data-scan="/v8/3d-venue-scanning/"></script>
 </body>
 </html>
