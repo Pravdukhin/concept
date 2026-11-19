@@ -685,6 +685,17 @@ draw();
 (() => {
 if (PAGE !== 'main' && PAGE !== 'scan') return;
 const GC = 'https://pravdukhin.goatcounter.com/count';
+// owner's switch: pravdukhin.com/#toggle-goatcounter stops (or restarts) counting this browser. count.js looks at the
+// hash itself, but the page has already cleaned the address by then, so the switch is done here (the flag is GoatCounter's own)
+if (HASH0 === '#toggle-goatcounter') {
+  let off = false; try { off = localStorage.getItem('skipgc') !== 't'; if (off) localStorage.setItem('skipgc', 't'); else localStorage.removeItem('skipgc'); } catch (e) {}
+  try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+  const ru = (document.documentElement.lang || '').startsWith('ru'), n = document.createElement('div');
+  n.textContent = off ? (ru ? 'Статистика: этот браузер больше не учитывается' : 'Statistics: this browser is no longer counted')
+                      : (ru ? 'Статистика: этот браузер снова учитывается' : 'Statistics: this browser is counted again');
+  n.style.cssText = 'position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483600;background:#0c1b2f;color:#e8ecf1;border:1px solid #f2a648;border-radius:999px;padding:10px 18px;font:400 14px/1.3 Geist,system-ui,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.4);max-width:calc(100vw - 32px);text-align:center';
+  document.body.appendChild(n); setTimeout(() => n.remove(), 6000);
+}
 // the page address without ?lang=, ?fbclid= and the like, so one page is one row (the query still reaches GoatCounter for sources)
 window.goatcounter = Object.assign(window.goatcounter || {}, { path: () => location.pathname });
 if (!document.querySelector('script[data-goatcounter]')) {
