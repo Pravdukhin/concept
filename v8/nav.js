@@ -685,6 +685,8 @@ draw();
 (() => {
 if (PAGE !== 'main' && PAGE !== 'scan') return;
 const GC = 'https://pravdukhin.goatcounter.com/count';
+// the page address without ?lang=, ?fbclid= and the like, so one page is one row (the query still reaches GoatCounter for sources)
+window.goatcounter = Object.assign(window.goatcounter || {}, { path: () => location.pathname });
 if (!document.querySelector('script[data-goatcounter]')) {
   const s = document.createElement('script'); s.async = true; s.src = 'https://gc.zgo.at/count.js'; s.dataset.goatcounter = GC;
   s.addEventListener('load', flush); document.head.appendChild(s);
