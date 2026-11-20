@@ -221,7 +221,6 @@ section.s{padding:96px var(--pad) 40px;max-width:1240px;margin:0 auto;scroll-mar
 .portrait{aspect-ratio:4/5;background:var(--night2);border:1px dashed var(--line);display:grid;place-items:center;color:var(--dim);font-size:14px}
 .about p{margin:0 0 1em;line-height:1.6;font-size:17px;max-width:58ch}
 .about p[data-i="a3"]{margin-bottom:0}   /* a4 goes on right under a3 */
-@media (min-width:901px){ .about.wide .ph-wide.fit{aspect-ratio:auto} .about.wide .ph-wide.fit img{object-position:62% 45%} }
 .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:28px 0 0;padding:0}
 .facts div{border-top:1px solid var(--line);padding-top:14px}
 .facts dt{font-size:clamp(28px,3.4vw,40px);font-weight:300;letter-spacing:-.02em}
@@ -869,13 +868,6 @@ const T = {
  }
 };
 let LREADY = false;
-// v8.2.3: About on the computer: the photo as tall as the text a1…a5
-(() => { const fit = () => { const ph = document.querySelector('#about .ph-wide'), a1 = document.querySelector('#about p[data-i="a1"]'), a5 = document.querySelector('#about p[data-i="a5"]'); if (!ph || !a1 || !a5) return;
-    if (innerWidth <= 900) { ph.classList.remove('fit'); ph.style.height = ''; return; }
-    const h = Math.round(a5.getBoundingClientRect().bottom - a1.getBoundingClientRect().top), min = Math.round(ph.getBoundingClientRect().width / 1.5);
-    if (h > min) { ph.classList.add('fit'); ph.style.height = h + 'px'; } else { ph.classList.remove('fit'); ph.style.height = ''; } };
-  const go = () => { fit(); const t = document.querySelector('#about .about > div:last-child'); if (t && 'ResizeObserver' in window) new ResizeObserver(fit).observe(t); addEventListener('resize', fit); if (document.fonts) document.fonts.ready.then(fit); };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else setTimeout(go, 0); })();
 document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('a.pvl'); if (a) a.href = 'privacy/?lang=' + LANG; }, true);
 let LANG = (() => {
   const q = new URLSearchParams(location.search).get('lang'); if (q === 'ru' || q === 'en') return q;
